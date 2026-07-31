@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solutions/">
+    <Project Path="WebSolution/websolution.client/websolution.client.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+    <Project Path="WebSolution/WebSolution.Server/WebSolution.Server.csproj" Id="22afa160-37a9-4f69-ad46-7ed5e54cd53c" />
+  </Folder>
+</Solution>
