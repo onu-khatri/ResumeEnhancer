@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Domains/">
+    <Project Path="Domains/ResumeDomains/ResumeDomains.csproj" Id="53436fe9-872a-4c0a-b804-634808319608" />
+  </Folder>
   <Folder Name="/Solutions/">
     <Project Path="WebSolution/websolution.client/websolution.client.esproj">
       <Build />
