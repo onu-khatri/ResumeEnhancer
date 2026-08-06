@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\CommonLibrary\CommonLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Implementation\" />
+    <Folder Include="ConversationModels\BusinessRequest\" />
+    <Folder Include="ConversationModels\BusinessResponse\" />
+  </ItemGroup>
+
 </Project>

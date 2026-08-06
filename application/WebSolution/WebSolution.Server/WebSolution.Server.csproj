@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeModuleWeb.csproj" />
     <ProjectReference Include="..\websolution.client\websolution.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
