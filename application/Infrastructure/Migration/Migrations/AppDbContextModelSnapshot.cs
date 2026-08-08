@@ -8,7 +8,7 @@ using Persistence;
 
 #nullable disable
 
-namespace ResumeEnhancer.Infrastructure.Migrations
+namespace ResumeEnhancer.Infrastructure.Migrations.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -29,6 +29,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
@@ -58,7 +78,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     b.HasIndex("PersonalInformationId")
                         .IsUnique();
 
-                    b.ToTable("Address", "resume");
+                    b.ToTable("BR_Address", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Award", b =>
@@ -68,6 +88,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<DateTime?>("AwardDate")
                         .HasColumnType("datetime2");
@@ -92,7 +132,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("PersonalInformationId");
 
-                    b.ToTable("Award", "resume");
+                    b.ToTable("BR_Award", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Certification", b =>
@@ -102,6 +142,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("CertificationName")
                         .IsRequired()
@@ -137,7 +197,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Certification", "resume");
+                    b.ToTable("BR_Certification", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Education", b =>
@@ -147,6 +207,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
@@ -189,7 +269,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Education", "resume");
+                    b.ToTable("BR_Education", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Hobby", b =>
@@ -199,6 +279,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -216,7 +316,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("PersonalInformationId");
 
-                    b.ToTable("Hobby", "resume");
+                    b.ToTable("BR_Hobby", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Language", b =>
@@ -226,6 +326,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -247,7 +367,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("PersonalInformationId");
 
-                    b.ToTable("Language", "resume");
+                    b.ToTable("BR_Language", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.PersonalInformation", b =>
@@ -257,6 +377,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -292,7 +432,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     b.HasIndex("ResumeId")
                         .IsUnique();
 
-                    b.ToTable("PersonalInformation", "resume");
+                    b.ToTable("BR_PersonalInformation", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Project", b =>
@@ -302,6 +442,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -336,7 +496,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Project", "resume");
+                    b.ToTable("BR_Project", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Resume", b =>
@@ -346,6 +506,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Photo")
                         .HasMaxLength(500)
@@ -373,7 +553,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Resume", "resume");
+                    b.ToTable("B_Resume", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.ResumeSectionSetup", b =>
@@ -384,103 +564,68 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SectionTitle")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<bool>("ObsoleteFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("SectionType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("DisplayOrder")
+                        .IsUnique();
+
+                    b.HasIndex("Guid")
                         .IsUnique();
 
                     b.HasIndex("SectionType")
                         .IsUnique();
 
-                    b.ToTable("ResumeSectionSetup", "resume");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DisplayOrder = 1,
-                            IsVisible = true,
-                            SectionTitle = "Education",
-                            SectionType = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DisplayOrder = 2,
-                            IsVisible = true,
-                            SectionTitle = "Certifications",
-                            SectionType = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DisplayOrder = 3,
-                            IsVisible = true,
-                            SectionTitle = "Skills",
-                            SectionType = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DisplayOrder = 4,
-                            IsVisible = true,
-                            SectionTitle = "Languages",
-                            SectionType = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DisplayOrder = 5,
-                            IsVisible = true,
-                            SectionTitle = "Work Experience",
-                            SectionType = 5
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DisplayOrder = 6,
-                            IsVisible = true,
-                            SectionTitle = "Projects",
-                            SectionType = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            DisplayOrder = 7,
-                            IsVisible = true,
-                            SectionTitle = "Awards",
-                            SectionType = 7
-                        },
-                        new
-                        {
-                            Id = 8,
-                            DisplayOrder = 8,
-                            IsVisible = true,
-                            SectionTitle = "Hobbies",
-                            SectionType = 8
-                        },
-                        new
-                        {
-                            Id = 9,
-                            DisplayOrder = 9,
-                            IsVisible = true,
-                            SectionTitle = "Social Media Links",
-                            SectionType = 9
-                        });
+                    b.ToTable("S_ResumeSectionSetup", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Skill", b =>
@@ -490,6 +635,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -515,7 +680,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("Skill", "resume");
+                    b.ToTable("BR_Skill", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.SocialMediaLink", b =>
@@ -525,6 +690,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(100)
@@ -547,7 +732,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("PersonalInformationId");
 
-                    b.ToTable("SocialMediaLink", "resume");
+                    b.ToTable("BR_SocialMediaLink", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.WorkExperience", b =>
@@ -557,6 +742,26 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("CompanyName")
                         .HasMaxLength(200)
@@ -590,7 +795,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("WorkExperience", "resume");
+                    b.ToTable("BR_WorkExperience", "resume");
                 });
 
             modelBuilder.Entity("ResumeModuleDM.Entities.Address", b =>

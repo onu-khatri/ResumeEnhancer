@@ -4,6 +4,8 @@ namespace Persistence;
 
 public class AppDbContext : DbContext
 {
+    private const int MaxConcurrencyRetryCount = 3;
+
     private readonly IReadOnlyCollection<IAppDbContextModelConfiguration> _modelConfigurations;
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
@@ -27,5 +29,45 @@ public class AppDbContext : DbContext
         {
             modelConfiguration.Configure(modelBuilder);
         }
+    }
+
+    public override async Task<int> SaveChangesAsync(
+        bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = default)
+    {
+        for (var retryCount = 0; ; retryCount++)
+        {
+            try
+            {
+                return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException concurrencyException)
+                when (retryCount < MaxConcurrencyRetryCount)
+            {
+                if (!await TryRefreshOriginalValuesAsync(concurrencyException, cancellationToken))
+                {
+                    throw;
+                }
+            }
+        }
+    }
+
+    private static async Task<bool> TryRefreshOriginalValuesAsync(
+        DbUpdateConcurrencyException concurrencyException,
+        CancellationToken cancellationToken)
+    {
+        foreach (var entry in concurrencyException.Entries)
+        {
+            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
+
+            if (databaseValues is null)
+            {
+                return false;
+            }
+
+            entry.OriginalValues.SetValues(databaseValues);
+        }
+
+        return true;
     }
 }

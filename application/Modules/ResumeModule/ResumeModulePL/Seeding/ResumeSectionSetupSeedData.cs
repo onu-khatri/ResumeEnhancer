@@ -9,73 +9,91 @@ internal static class ResumeSectionSetupSeedData
     [
         new ResumeSectionSetup
         {
-            Id = 1,
+            Code = nameof(ResumeSectionType.Education),
+            Description = "Education",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111001"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Education,
-            SectionTitle = "Education",
             DisplayOrder = 1,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 2,
+            Code = nameof(ResumeSectionType.Certifications),
+            Description = "Certifications",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111002"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Certifications,
-            SectionTitle = "Certifications",
             DisplayOrder = 2,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 3,
+            Code = nameof(ResumeSectionType.Skills),
+            Description = "Skills",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111003"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Skills,
-            SectionTitle = "Skills",
             DisplayOrder = 3,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 4,
+            Code = nameof(ResumeSectionType.Languages),
+            Description = "Languages",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111004"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Languages,
-            SectionTitle = "Languages",
             DisplayOrder = 4,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 5,
+            Code = nameof(ResumeSectionType.WorkExperience),
+            Description = "Work Experience",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111005"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.WorkExperience,
-            SectionTitle = "Work Experience",
             DisplayOrder = 5,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 6,
+            Code = nameof(ResumeSectionType.Projects),
+            Description = "Projects",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111006"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Projects,
-            SectionTitle = "Projects",
             DisplayOrder = 6,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 7,
+            Code = nameof(ResumeSectionType.Awards),
+            Description = "Awards",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111007"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Awards,
-            SectionTitle = "Awards",
             DisplayOrder = 7,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 8,
+            Code = nameof(ResumeSectionType.Hobbies),
+            Description = "Hobbies",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111008"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.Hobbies,
-            SectionTitle = "Hobbies",
             DisplayOrder = 8,
             IsVisible = true
         },
         new ResumeSectionSetup
         {
-            Id = 9,
+            Code = nameof(ResumeSectionType.SocialMediaLinks),
+            Description = "Social Media Links",
+            Guid = System.Guid.Parse("11111111-1111-1111-1111-111111111009"),
+            ObsoleteFlag = false,
             SectionType = ResumeSectionType.SocialMediaLinks,
-            SectionTitle = "Social Media Links",
             DisplayOrder = 9,
             IsVisible = true
         }

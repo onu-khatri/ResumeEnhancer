@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
@@ -11,6 +12,13 @@ internal static class MigrationConsole
 {
     private const string DefaultConnectionString =
         "Server=(localdb)\\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+    private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "main",
+            "dev",
+            "test"
+        };
 
     public static async Task<int> RunAsync(string[] args)
     {
@@ -102,14 +110,10 @@ internal static class MigrationConsole
         MigrationCommandLine options,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(options.MigrationName))
-        {
-            throw new InvalidOperationException("A migration name is required when using -c. Example: dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c AddResumeFields");
-        }
-
         var projectPath = FindMigrationProjectPath();
         var projectDirectory = Path.GetDirectoryName(projectPath)
             ?? throw new InvalidOperationException("Unable to resolve the migration project directory.");
+        var migrationName = ResolveMigrationName(options.MigrationName, projectDirectory);
 
         var processStartInfo = new ProcessStartInfo("dotnet")
         {
@@ -122,7 +126,7 @@ internal static class MigrationConsole
         processStartInfo.ArgumentList.Add("ef");
         processStartInfo.ArgumentList.Add("migrations");
         processStartInfo.ArgumentList.Add("add");
-        processStartInfo.ArgumentList.Add(options.MigrationName);
+        processStartInfo.ArgumentList.Add(migrationName);
         processStartInfo.ArgumentList.Add("--project");
         processStartInfo.ArgumentList.Add(projectPath);
         processStartInfo.ArgumentList.Add("--startup-project");
@@ -162,6 +166,173 @@ internal static class MigrationConsole
         {
             throw new InvalidOperationException($"Migration creation failed with exit code {process.ExitCode}.");
         }
+    }
+
+    private static string ResolveMigrationName(string? migrationName, string projectDirectory)
+    {
+        var requestedName = string.IsNullOrWhiteSpace(migrationName)
+            ? GetMigrationNameFromCurrentBranch(projectDirectory)
+            : migrationName.Trim();
+        var normalizedName = NormalizeMigrationName(requestedName);
+
+        if (string.IsNullOrWhiteSpace(normalizedName))
+        {
+            throw new InvalidOperationException(
+                "Unable to resolve a valid migration name. Provide one with -c <name> or -n <name>.");
+        }
+
+        return EnsureUniqueMigrationName(normalizedName, projectDirectory);
+    }
+
+    private static string GetMigrationNameFromCurrentBranch(string projectDirectory)
+    {
+        var branchName = GetCurrentBranchName(projectDirectory);
+
+        if (string.IsNullOrWhiteSpace(branchName))
+        {
+            throw new InvalidOperationException(
+                "A migration name is required because the current Git branch could not be resolved.");
+        }
+
+        if (BranchesThatRequireExplicitMigrationName.Contains(branchName))
+        {
+            throw new InvalidOperationException(
+                $"A migration name is required on the '{branchName}' branch. Example: dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c AddResumeFields");
+        }
+
+        return branchName;
+    }
+
+    private static string? GetCurrentBranchName(string startDirectory)
+    {
+        var directory = new DirectoryInfo(startDirectory);
+
+        while (directory is not null)
+        {
+            var gitPath = Path.Combine(directory.FullName, ".git");
+
+            if (Directory.Exists(gitPath))
+            {
+                return ReadBranchNameFromGitDirectory(gitPath);
+            }
+
+            if (File.Exists(gitPath))
+            {
+                var gitFile = File.ReadAllText(gitPath).Trim();
+
+                if (gitFile.StartsWith("gitdir:", StringComparison.OrdinalIgnoreCase))
+                {
+                    var gitDirectoryPath = gitFile["gitdir:".Length..].Trim();
+                    var resolvedGitDirectoryPath = Path.IsPathRooted(gitDirectoryPath)
+                        ? gitDirectoryPath
+                        : Path.GetFullPath(Path.Combine(directory.FullName, gitDirectoryPath));
+
+                    return ReadBranchNameFromGitDirectory(resolvedGitDirectoryPath);
+                }
+            }
+
+            directory = directory.Parent;
+        }
+
+        return null;
+    }
+
+    private static string? ReadBranchNameFromGitDirectory(string gitDirectory)
+    {
+        var headPath = Path.Combine(gitDirectory, "HEAD");
+
+        if (!File.Exists(headPath))
+        {
+            return null;
+        }
+
+        var head = File.ReadAllText(headPath).Trim();
+        const string headPrefix = "ref: refs/heads/";
+
+        return head.StartsWith(headPrefix, StringComparison.Ordinal)
+            ? head[headPrefix.Length..]
+            : null;
+    }
+
+    private static string NormalizeMigrationName(string migrationName)
+    {
+        var normalizedName = new StringBuilder();
+        var capitalizeNext = true;
+
+        foreach (var character in migrationName)
+        {
+            if (!char.IsLetterOrDigit(character))
+            {
+                capitalizeNext = true;
+                continue;
+            }
+
+            normalizedName.Append(capitalizeNext
+                ? char.ToUpperInvariant(character)
+                : character);
+            capitalizeNext = false;
+        }
+
+        if (normalizedName.Length > 0 && !IsValidIdentifierFirstCharacter(normalizedName[0]))
+        {
+            normalizedName.Insert(0, "Migration");
+        }
+
+        return normalizedName.ToString();
+    }
+
+    private static bool IsValidIdentifierFirstCharacter(char character) =>
+        char.IsLetter(character) || character == '_';
+
+    private static string EnsureUniqueMigrationName(string migrationName, string projectDirectory)
+    {
+        var migrationsDirectory = Path.Combine(projectDirectory, "Migrations");
+        var existingMigrationNames = GetExistingMigrationNames(migrationsDirectory);
+
+        if (!existingMigrationNames.Contains(migrationName))
+        {
+            return migrationName;
+        }
+
+        for (var suffix = 2; ; suffix++)
+        {
+            var candidateName = $"{migrationName}_{suffix}";
+
+            if (!existingMigrationNames.Contains(candidateName))
+            {
+                return candidateName;
+            }
+        }
+    }
+
+    private static HashSet<string> GetExistingMigrationNames(string migrationsDirectory)
+    {
+        var migrationNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        if (!Directory.Exists(migrationsDirectory))
+        {
+            return migrationNames;
+        }
+
+        foreach (var migrationFile in Directory.EnumerateFiles(migrationsDirectory, "*.cs"))
+        {
+            var fileName = Path.GetFileNameWithoutExtension(migrationFile);
+
+            if (fileName.Equals("AppDbContextModelSnapshot", StringComparison.Ordinal)
+                || fileName.EndsWith(".Designer", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var separatorIndex = fileName.IndexOf('_');
+
+            if (separatorIndex >= 0 && separatorIndex < fileName.Length - 1)
+            {
+                migrationNames.Add(fileName[(separatorIndex + 1)..]);
+            }
+        }
+
+        return migrationNames;
     }
 
     private static string FindMigrationProjectPath()
@@ -228,7 +399,7 @@ internal sealed class MigrationCommandLine
 {
     public const string Usage = """
         Migration commands:
-          -c, --create <name>       Create a new EF migration.
+          -c, --create [name]       Create a new EF migration. Uses the current branch name when name is omitted on non-main/dev/test branches.
           -a, --apply               Apply pending migrations to the database.
           -s, --seeding             Run registered seeders.
 
@@ -240,6 +411,7 @@ internal sealed class MigrationCommandLine
 
         Examples:
           dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c AddResumeFields
+          dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c
           dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -a -s
         """;
 

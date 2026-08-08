@@ -1,17 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using DomainLibrary.DomainModel;
 using ResumeModuleDM.Enums;
 
 namespace ResumeModuleDM.Entities;
 
-public class ResumeSectionSetup
+public class ResumeSectionSetup : SetupEntity
 {
-    [Key]
-    public int Id { get; set; }
-
     public ResumeSectionType SectionType { get; set; }
-
-    [MaxLength(100)]
-    public string SectionTitle { get; set; } = string.Empty;
 
     public int DisplayOrder { get; set; }
 

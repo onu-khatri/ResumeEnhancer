@@ -9,7 +9,10 @@ The Persistence project should stay generic. It should know how to build `AppDbC
 - Provides the shared `AppDbContext`.
 - Allows modules to plug their EF model configuration into `AppDbContext`.
 - Provides a common table/schema mapping convention for modules.
+- Applies table prefixes based on `DomainLibrary.DomainModel` categories.
 - Provides a common seeding contract.
+- Provides setup-data seeding helpers for `SetupEntity` and `SetupRelation` data.
+- Maps `AuditEntity.App_Version` as a database-managed rowversion concurrency token.
 - Provides dependency injection helpers for registering the database context.
 
 ## Important Files
@@ -23,6 +26,8 @@ The Persistence project should stay generic. It should know how to build `AppDbC
 | `AppDbContextSeederExtensions.cs` | Runs all registered seeders. |
 | `ModelBuilderModuleMappingExtensions.cs` | Applies module table/schema conventions. |
 | `ModuleSchemaName.cs` | Builds and validates schema names. |
+| `SetupDataSeedingExtensions.cs` | Inserts, updates, and obsoletes setup data by `Guid` and `Code`. |
+| `SeedingUser.cs` | Defines the technical seed user id used by setup seeding. |
 
 ## Big Picture
 
@@ -186,11 +191,21 @@ Rule:
 
 1. If the entity has `[Table("CustomTableName")]`, use that name.
 2. Otherwise, use the entity class name.
+3. If the entity inherits one of the shared domain category bases, add the category prefix.
+
+| Base Type | Prefix | Example |
+| --- | --- | --- |
+| `SetupEntity` | `S_` | `S_ResumeSectionSetup` |
+| `SetupRelation` | `SR_` | `SR_AssignmentType_CommTemplate` |
+| `BusinessEntity` | `B_` | `B_Resume` |
+| `BusinessRelation` | `BR_` | `BR_Education` |
 
 Default example:
 
 ```csharp
-public class Resume
+using DomainLibrary.DomainModel;
+
+public class Resume : BusinessEntity
 {
     public int Id { get; set; }
 }
@@ -199,7 +214,7 @@ public class Resume
 Maps to:
 
 ```text
-Resume
+B_Resume
 ```
 
 Custom table example:
@@ -217,7 +232,7 @@ public class Resume
 Maps to:
 
 ```text
-CandidateResume
+B_CandidateResume
 ```
 
 The schema part of `[Table]` should not be used for module entities. Schema comes from the module schema convention so the whole module stays together.
@@ -355,6 +370,14 @@ This is optional. You can always use:
 dbContext.Set<MyEntity>()
 ```
 
+## Audit And Concurrency
+
+Entities that inherit `AuditEntity` receive audit columns and `App_Version`.
+
+`App_Version` is mapped with `.IsRowVersion()`. SQL Server manages this value, and EF Core uses it for optimistic concurrency checks during update and delete operations. Application code should not manually increment or edit it.
+
+`AppDbContext.SaveChangesAsync` retries concurrency conflicts by refreshing original values from the database, then retrying the save. If the row was deleted, the original concurrency exception is rethrown.
+
 ## Seeding Data
 
 Use `IAppDbContextSeeder` when a module needs default data.
@@ -419,7 +442,8 @@ Good seeder behavior:
 - Insert missing default data.
 - Update existing default data when values change.
 - Avoid duplicates.
-- Use stable ids or stable unique keys for lookup data.
+- Use stable `Guid` and `Code` values for setup data.
+- Mark removed setup seeds as obsolete instead of deleting them.
 
 Risky seeder behavior:
 
@@ -496,6 +520,8 @@ Do not use `[Table(Schema = "...")]` for module entities. Use the module schema 
 Do not register the same module model configuration multiple times with different schemas in the same `AppDbContext`.
 
 Do not write seeders that create duplicate data each time they run.
+
+Do not use EF `HasData` for setup tables that need runtime code/GUID matching or obsolete behavior.
 
 Do not call database migrations from normal web application startup. Use the Migration project for create/apply/seed operations.
 

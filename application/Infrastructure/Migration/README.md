@@ -11,7 +11,7 @@ The web application should not run database migrations every time it starts. Sta
 - Runs registered seeders.
 - Keeps migration code in `Infrastructure/Migration/Migrations`.
 - Uses the same `AppDbContext` and module model configuration as the application.
-- Uses Persistence project conventions for table names, schemas, and module mappings.
+- Uses Persistence project conventions for table names, schemas, domain category prefixes, rowversion columns, and module mappings.
 
 ## Important Files
 
@@ -57,12 +57,22 @@ Table names are decided by the Persistence helper `ApplyModuleTableMappings`:
 
 1. If the entity has `[Table("CustomTableName")]`, EF uses `CustomTableName`.
 2. If the entity does not have a `[Table]` name, EF uses the entity class name.
-3. Schema comes from the module schema, not from each entity configuration.
+3. If the entity inherits a domain category base type, EF prefixes the table name.
+4. Schema comes from the module schema, not from each entity configuration.
+
+| Base Type | Prefix | Example |
+| --- | --- | --- |
+| `SetupEntity` | `S_` | `S_ResumeSectionSetup` |
+| `SetupRelation` | `SR_` | `SR_*` |
+| `BusinessEntity` | `B_` | `B_Resume` |
+| `BusinessRelation` | `BR_` | `BR_WorkExperience` |
 
 Example entity with default table name:
 
 ```csharp
-public class Resume
+using DomainLibrary.DomainModel;
+
+public class Resume : BusinessEntity
 {
     public int Id { get; set; }
 }
@@ -72,7 +82,7 @@ This maps to:
 
 ```text
 schema: resume
-table: Resume
+table: B_Resume
 ```
 
 Example entity with explicit table name:
@@ -91,7 +101,7 @@ This maps to:
 
 ```text
 schema: resume
-table: CandidateResume
+table: B_CandidateResume
 ```
 
 Avoid this in entity configurations:
@@ -144,7 +154,7 @@ The `--` is important. Everything before `--` is for `dotnet run`; everything af
 
 | Option | Meaning | Example |
 | --- | --- | --- |
-| `-c`, `--create` | Create a new EF migration. Requires a migration name. | `-c AddResumeFields` |
+| `-c`, `--create` | Create a new EF migration. Name is optional on feature branches. | `-c AddResumeFields` |
 | `-a`, `--apply` | Apply pending migrations to the configured database. | `-a` |
 | `-s`, `--seeding` | Run registered seeders. | `-s` |
 | `--connection` | Override the database connection string. | `--connection "Server=..."` |
@@ -175,6 +185,22 @@ You can also pass the migration name with `-n`:
 
 ```powershell
 dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c -n AddResumeFields
+```
+
+Create a migration using the current branch name:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c
+```
+
+This only works when the current Git branch is not `main`, `dev`, or `test`. On those shared branches, pass an explicit migration name.
+
+When the requested or inferred migration name already exists, the console appends an incremental suffix:
+
+```text
+AddResumeFields
+AddResumeFields_2
+AddResumeFields_3
 ```
 
 Apply pending migrations:
@@ -239,6 +265,9 @@ This means:
 - Migration files are created inside this project.
 - The migration assembly stays separate from the web application.
 - The web application does not need to reference the migration project.
+- If no migration name is provided, the console tries to use the current Git branch name unless the branch is `main`, `dev`, or `test`.
+- Branch names are normalized into valid migration names before `dotnet ef` is called.
+- Duplicate migration names are resolved by appending `_2`, `_3`, and so on.
 
 Make sure `dotnet ef` is available:
 
@@ -317,7 +346,7 @@ Current module seeders are registered through:
 services.AddResumeModulePersistence();
 ```
 
-The resume module registers `ResumeModuleSeeder`, which inserts or updates default resume section setup data.
+The resume module registers `ResumeModuleSeeder`, which inserts, updates, or obsoletes default resume section setup data by stable `Guid` and `Code`.
 
 ## Adding A New Module To Migrations
 
@@ -427,7 +456,7 @@ services.TryAddEnumerable(
     ServiceDescriptor.Scoped<IAppDbContextSeeder, MyModuleSeeder>());
 ```
 
-Seeders should be safe to run multiple times. Prefer insert-or-update logic instead of blindly adding duplicate data.
+Seeders should be safe to run multiple times. Prefer insert-or-update logic instead of blindly adding duplicate data. For setup data, use the shared setup seeding helper instead of EF `HasData`.
 
 ## Recommended Workflow
 
@@ -453,27 +482,29 @@ dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
 dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -s
 ```
 
-## Current Resume Module Table Rename Migration
+## Current Initial Migration
 
-The migration `NormalizeResumeModuleTableNames` was created after moving table names to the shared convention.
+The migration `InitialSchema` is the clean initial baseline for the current model.
 
-Because Resume module entities do not currently use `[Table("...")]`, table names now come from entity class names:
+Resume module entities inherit `SetupEntity`, `BusinessEntity`, or `BusinessRelation`, so table names include category prefixes from the beginning:
 
-| Old table | New table |
+| Entity | Initial table |
 | --- | --- |
-| `Resumes` | `Resume` |
-| `Addresses` | `Address` |
-| `Awards` | `Award` |
-| `Certifications` | `Certification` |
-| `Hobbies` | `Hobby` |
-| `Languages` | `Language` |
-| `Projects` | `Project` |
-| `Skills` | `Skill` |
-| `SocialMediaLinks` | `SocialMediaLink` |
-| `WorkExperiences` | `WorkExperience` |
-| `ResumeSectionSetups` | `ResumeSectionSetup` |
+| `Resume` | `B_Resume` |
+| `Address` | `BR_Address` |
+| `Award` | `BR_Award` |
+| `Certification` | `BR_Certification` |
+| `Education` | `BR_Education` |
+| `Hobby` | `BR_Hobby` |
+| `Language` | `BR_Language` |
+| `PersonalInformation` | `BR_PersonalInformation` |
+| `Project` | `BR_Project` |
+| `Skill` | `BR_Skill` |
+| `SocialMediaLink` | `BR_SocialMediaLink` |
+| `WorkExperience` | `BR_WorkExperience` |
+| `ResumeSectionSetup` | `S_ResumeSectionSetup` |
 
-The generated migration uses table renames instead of dropping and recreating tables.
+The initial migration also creates setup columns (`Code`, `Description`, `Guid`, `ObsoleteFlag`) and rowversion-backed `App_Version` columns.
 
 ## Troubleshooting
 
