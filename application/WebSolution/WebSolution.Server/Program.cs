@@ -1,3 +1,4 @@
+using Caching;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using ResumeModulePL;
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddApplicationCaching(builder.Configuration);
 builder.Services.AddResumeModulePersistence();
 builder.Services.AddAppDbContext((_, options) =>
 {
