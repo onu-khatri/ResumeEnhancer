@@ -1,6 +1,7 @@
 <Solution>
-  <Folder Name="/CoreLibrary/">
+  <Folder Name="/Core/">
     <Project Path="Core/CommonLibrary/CommonLibrary.csproj" Id="770ba004-fa46-40bf-92f0-b31b756a985f" />
+    <Project Path="Core/DomainLibrary/DomainLibrary.csproj" Id="4dc49a4f-0e25-48bb-bc72-9f5ed6fb08ad" />
   </Folder>
   <Folder Name="/Infrastructure/">
     <Project Path="Infrastructure/Caching/Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />

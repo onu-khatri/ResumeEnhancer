@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DomainLibrary.DomainModel;
 
 namespace ResumeModuleDM.Entities;
 
-public class Hobby
+public class Hobby : BusinessRelation
 {
-    [Key]
-    public int Id { get; set; }
-
     public int PersonalInformationId { get; set; }
 
     [ForeignKey(nameof(PersonalInformationId))]

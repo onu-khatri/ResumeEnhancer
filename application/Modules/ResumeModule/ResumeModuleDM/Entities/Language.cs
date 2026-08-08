@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DomainLibrary.DomainModel;
 
 namespace ResumeModuleDM.Entities;
 
-public class Language
+public class Language : BusinessRelation
 {
-    [Key]
-    public int Id { get; set; }
-
     public int PersonalInformationId { get; set; }
 
     [ForeignKey(nameof(PersonalInformationId))]

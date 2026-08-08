@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DomainLibrary.DomainModel;
 
 namespace ResumeModuleDM.Entities;
 
-public class Skill
+public class Skill : BusinessRelation
 {
-    [Key]
-    public int Id { get; set; }
-
     public int ResumeId { get; set; }
 
     [ForeignKey(nameof(ResumeId))]

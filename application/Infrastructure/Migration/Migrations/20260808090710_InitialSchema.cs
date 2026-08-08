@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
-namespace ResumeEnhancer.Infrastructure.Migrations
+namespace ResumeEnhancer.Infrastructure.Migrations.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialResumeSchema : Migration
+    public partial class InitialSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +15,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                 name: "resume");
 
             migrationBuilder.CreateTable(
-                name: "Resumes",
+                name: "B_Resume",
                 schema: "resume",
                 columns: table => new
                 {
@@ -27,32 +25,45 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     Summary = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     Photo = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ResumeTemplate = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Resumes", x => x.Id);
+                    table.PrimaryKey("PK_B_Resume", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ResumeSectionSetups",
+                name: "S_ResumeSectionSetup",
                 schema: "resume",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SectionType = table.Column<int>(type: "int", nullable: false),
-                    SectionTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false)
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ObsoleteFlag = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResumeSectionSetups", x => x.Id);
+                    table.PrimaryKey("PK_S_ResumeSectionSetup", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Certifications",
+                name: "BR_Certification",
                 schema: "resume",
                 columns: table => new
                 {
@@ -65,22 +76,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CredentialId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CredentialUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Certifications", x => x.Id);
+                    table.PrimaryKey("PK_BR_Certification", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Certifications_Resumes_ResumeId",
+                        name: "FK_BR_Certification_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Education",
+                name: "BR_Education",
                 schema: "resume",
                 columns: table => new
                 {
@@ -95,22 +111,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     Percentage = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: true),
                     Grade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    IsCurrent = table.Column<bool>(type: "bit", nullable: false)
+                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Education", x => x.Id);
+                    table.PrimaryKey("PK_BR_Education", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Education_Resumes_ResumeId",
+                        name: "FK_BR_Education_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PersonalInformation",
+                name: "BR_PersonalInformation",
                 schema: "resume",
                 columns: table => new
                 {
@@ -124,22 +145,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     UseSameAwardsAsProfile = table.Column<bool>(type: "bit", nullable: false),
                     UseSameLanguagesAsProfile = table.Column<bool>(type: "bit", nullable: false),
                     UseSameHobbiesAsProfile = table.Column<bool>(type: "bit", nullable: false),
-                    UseSameSocialMediaLinksAsProfile = table.Column<bool>(type: "bit", nullable: false)
+                    UseSameSocialMediaLinksAsProfile = table.Column<bool>(type: "bit", nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PersonalInformation", x => x.Id);
+                    table.PrimaryKey("PK_BR_PersonalInformation", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PersonalInformation_Resumes_ResumeId",
+                        name: "FK_BR_PersonalInformation_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
+                name: "BR_Project",
                 schema: "resume",
                 columns: table => new
                 {
@@ -152,22 +178,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     TechnologiesUsed = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsCurrent = table.Column<bool>(type: "bit", nullable: false)
+                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.PrimaryKey("PK_BR_Project", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_Resumes_ResumeId",
+                        name: "FK_BR_Project_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Skills",
+                name: "BR_Skill",
                 schema: "resume",
                 columns: table => new
                 {
@@ -177,22 +208,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     SkillName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ProficiencyLevel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     YearsOfExperience = table.Column<decimal>(type: "decimal(4,1)", precision: 4, scale: 1, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Skills", x => x.Id);
+                    table.PrimaryKey("PK_BR_Skill", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Skills_Resumes_ResumeId",
+                        name: "FK_BR_Skill_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkExperiences",
+                name: "BR_WorkExperience",
                 schema: "resume",
                 columns: table => new
                 {
@@ -205,22 +241,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    IsCurrent = table.Column<bool>(type: "bit", nullable: false)
+                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkExperiences", x => x.Id);
+                    table.PrimaryKey("PK_BR_WorkExperience", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkExperiences_Resumes_ResumeId",
+                        name: "FK_BR_WorkExperience_B_Resume_ResumeId",
                         column: x => x.ResumeId,
                         principalSchema: "resume",
-                        principalTable: "Resumes",
+                        principalTable: "B_Resume",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Addresses",
+                name: "BR_Address",
                 schema: "resume",
                 columns: table => new
                 {
@@ -231,22 +272,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     State = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ZipCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
+                    ZipCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Addresses", x => x.Id);
+                    table.PrimaryKey("PK_BR_Address", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Addresses_PersonalInformation_PersonalInformationId",
+                        name: "FK_BR_Address_BR_PersonalInformation_PersonalInformationId",
                         column: x => x.PersonalInformationId,
                         principalSchema: "resume",
-                        principalTable: "PersonalInformation",
+                        principalTable: "BR_PersonalInformation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Awards",
+                name: "BR_Award",
                 schema: "resume",
                 columns: table => new
                 {
@@ -256,22 +302,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     AwardName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     IssuingOrganization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     AwardDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Awards", x => x.Id);
+                    table.PrimaryKey("PK_BR_Award", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Awards_PersonalInformation_PersonalInformationId",
+                        name: "FK_BR_Award_BR_PersonalInformation_PersonalInformationId",
                         column: x => x.PersonalInformationId,
                         principalSchema: "resume",
-                        principalTable: "PersonalInformation",
+                        principalTable: "BR_PersonalInformation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Hobbies",
+                name: "BR_Hobby",
                 schema: "resume",
                 columns: table => new
                 {
@@ -279,22 +330,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonalInformationId = table.Column<int>(type: "int", nullable: false),
                     HobbyName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Hobbies", x => x.Id);
+                    table.PrimaryKey("PK_BR_Hobby", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Hobbies_PersonalInformation_PersonalInformationId",
+                        name: "FK_BR_Hobby_BR_PersonalInformation_PersonalInformationId",
                         column: x => x.PersonalInformationId,
                         principalSchema: "resume",
-                        principalTable: "PersonalInformation",
+                        principalTable: "BR_PersonalInformation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Languages",
+                name: "BR_Language",
                 schema: "resume",
                 columns: table => new
                 {
@@ -303,22 +359,27 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     PersonalInformationId = table.Column<int>(type: "int", nullable: false),
                     LanguageName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ProficiencyLevel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Languages", x => x.Id);
+                    table.PrimaryKey("PK_BR_Language", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Languages_PersonalInformation_PersonalInformationId",
+                        name: "FK_BR_Language_BR_PersonalInformation_PersonalInformationId",
                         column: x => x.PersonalInformationId,
                         principalSchema: "resume",
-                        principalTable: "PersonalInformation",
+                        principalTable: "BR_PersonalInformation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SocialMediaLinks",
+                name: "BR_SocialMediaLink",
                 schema: "resume",
                 columns: table => new
                 {
@@ -327,179 +388,181 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     PersonalInformationId = table.Column<int>(type: "int", nullable: false),
                     Platform = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Url = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    App_CreateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_UpdateUserId = table.Column<int>(type: "int", nullable: true),
+                    App_CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    App_UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    App_Version = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SocialMediaLinks", x => x.Id);
+                    table.PrimaryKey("PK_BR_SocialMediaLink", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SocialMediaLinks_PersonalInformation_PersonalInformationId",
+                        name: "FK_BR_SocialMediaLink_BR_PersonalInformation_PersonalInformationId",
                         column: x => x.PersonalInformationId,
                         principalSchema: "resume",
-                        principalTable: "PersonalInformation",
+                        principalTable: "BR_PersonalInformation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.CreateIndex(
+                name: "IX_B_Resume_UserId",
                 schema: "resume",
-                table: "ResumeSectionSetups",
-                columns: new[] { "Id", "DisplayOrder", "IsVisible", "SectionTitle", "SectionType" },
-                values: new object[,]
-                {
-                    { 1, 1, true, "Education", 1 },
-                    { 2, 2, true, "Certifications", 2 },
-                    { 3, 3, true, "Skills", 3 },
-                    { 4, 4, true, "Languages", 4 },
-                    { 5, 5, true, "Work Experience", 5 },
-                    { 6, 6, true, "Projects", 6 },
-                    { 7, 7, true, "Awards", 7 },
-                    { 8, 8, true, "Hobbies", 8 },
-                    { 9, 9, true, "Social Media Links", 9 }
-                });
+                table: "B_Resume",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresses_PersonalInformationId",
+                name: "IX_BR_Address_PersonalInformationId",
                 schema: "resume",
-                table: "Addresses",
+                table: "BR_Address",
                 column: "PersonalInformationId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Awards_PersonalInformationId",
+                name: "IX_BR_Award_PersonalInformationId",
                 schema: "resume",
-                table: "Awards",
+                table: "BR_Award",
                 column: "PersonalInformationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Certifications_ResumeId",
+                name: "IX_BR_Certification_ResumeId",
                 schema: "resume",
-                table: "Certifications",
+                table: "BR_Certification",
                 column: "ResumeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Education_ResumeId",
+                name: "IX_BR_Education_ResumeId",
                 schema: "resume",
-                table: "Education",
+                table: "BR_Education",
                 column: "ResumeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Hobbies_PersonalInformationId",
+                name: "IX_BR_Hobby_PersonalInformationId",
                 schema: "resume",
-                table: "Hobbies",
+                table: "BR_Hobby",
                 column: "PersonalInformationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Languages_PersonalInformationId",
+                name: "IX_BR_Language_PersonalInformationId",
                 schema: "resume",
-                table: "Languages",
+                table: "BR_Language",
                 column: "PersonalInformationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersonalInformation_ResumeId",
+                name: "IX_BR_PersonalInformation_ResumeId",
                 schema: "resume",
-                table: "PersonalInformation",
+                table: "BR_PersonalInformation",
                 column: "ResumeId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_ResumeId",
+                name: "IX_BR_Project_ResumeId",
                 schema: "resume",
-                table: "Projects",
+                table: "BR_Project",
                 column: "ResumeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Resumes_UserId",
+                name: "IX_BR_Skill_ResumeId",
                 schema: "resume",
-                table: "Resumes",
-                column: "UserId");
+                table: "BR_Skill",
+                column: "ResumeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResumeSectionSetups_DisplayOrder",
+                name: "IX_BR_SocialMediaLink_PersonalInformationId",
                 schema: "resume",
-                table: "ResumeSectionSetups",
+                table: "BR_SocialMediaLink",
+                column: "PersonalInformationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BR_WorkExperience_ResumeId",
+                schema: "resume",
+                table: "BR_WorkExperience",
+                column: "ResumeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_S_ResumeSectionSetup_Code",
+                schema: "resume",
+                table: "S_ResumeSectionSetup",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_S_ResumeSectionSetup_DisplayOrder",
+                schema: "resume",
+                table: "S_ResumeSectionSetup",
                 column: "DisplayOrder",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResumeSectionSetups_SectionType",
+                name: "IX_S_ResumeSectionSetup_Guid",
                 schema: "resume",
-                table: "ResumeSectionSetups",
-                column: "SectionType",
+                table: "S_ResumeSectionSetup",
+                column: "Guid",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Skills_ResumeId",
+                name: "IX_S_ResumeSectionSetup_SectionType",
                 schema: "resume",
-                table: "Skills",
-                column: "ResumeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SocialMediaLinks_PersonalInformationId",
-                schema: "resume",
-                table: "SocialMediaLinks",
-                column: "PersonalInformationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WorkExperiences_ResumeId",
-                schema: "resume",
-                table: "WorkExperiences",
-                column: "ResumeId");
+                table: "S_ResumeSectionSetup",
+                column: "SectionType",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Addresses",
+                name: "BR_Address",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Awards",
+                name: "BR_Award",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Certifications",
+                name: "BR_Certification",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Education",
+                name: "BR_Education",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Hobbies",
+                name: "BR_Hobby",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Languages",
+                name: "BR_Language",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Projects",
+                name: "BR_Project",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "ResumeSectionSetups",
+                name: "BR_Skill",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Skills",
+                name: "BR_SocialMediaLink",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "SocialMediaLinks",
+                name: "BR_WorkExperience",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "WorkExperiences",
+                name: "S_ResumeSectionSetup",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "PersonalInformation",
+                name: "BR_PersonalInformation",
                 schema: "resume");
 
             migrationBuilder.DropTable(
-                name: "Resumes",
+                name: "B_Resume",
                 schema: "resume");
         }
     }

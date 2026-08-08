@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using DomainLibrary.DomainModel;
 
 namespace ResumeModuleDM.Entities;
 
-public class Resume
+public class Resume : BusinessEntity
 {
-    [Key]
-    public int Id { get; set; }
-
     [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
 
