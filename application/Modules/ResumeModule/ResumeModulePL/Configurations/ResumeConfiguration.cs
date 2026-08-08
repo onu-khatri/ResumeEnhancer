@@ -8,8 +8,6 @@ public sealed class ResumeConfiguration : IEntityTypeConfiguration<Resume>
 {
     public void Configure(EntityTypeBuilder<Resume> builder)
     {
-        builder.ToTable("Resumes", "resume");
-
         builder.HasKey(resume => resume.Id);
 
         builder.Property(resume => resume.Title).HasMaxLength(200).IsRequired();

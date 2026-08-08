@@ -8,8 +8,6 @@ public sealed class PersonalInformationConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<PersonalInformation> builder)
     {
-        builder.ToTable("PersonalInformation", "resume");
-
         builder.HasKey(personalInformation => personalInformation.Id);
 
         builder.Property(personalInformation => personalInformation.Email).HasMaxLength(256);
