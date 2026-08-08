@@ -8,13 +8,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\CommonLibrary\CommonLibrary.csproj" />
+    <ProjectReference Include="..\ResumeModuleAM\ResumeModuleAM.csproj" />
+    <ProjectReference Include="..\ResumeModuleDM\ResumeModuleDM.csproj" />
+    <ProjectReference Include="..\ResumeModulePL\ResumeModulePL.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="Implementation\" />
-    <Folder Include="ConversationModels\BusinessRequest\" />
-    <Folder Include="ConversationModels\BusinessResponse\" />
   </ItemGroup>
 
 </Project>

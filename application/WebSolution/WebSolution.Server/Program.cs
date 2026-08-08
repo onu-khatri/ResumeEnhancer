@@ -1,18 +1,18 @@
 using Caching;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using ResumeModulePL;
+using ResumeModuleWeb;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddApplicationCaching(builder.Configuration);
-builder.Services.AddResumeModulePersistence();
 builder.Services.AddAppDbContext((_, options) =>
 {
     options.UseSqlServer(GetConnectionString(builder));
 });
+builder.Services.AddResumeModuleWeb();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

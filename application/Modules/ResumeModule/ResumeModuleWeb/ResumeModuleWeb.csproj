@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ResumeModelSL\ResumeModuleSL.csproj" />
+    <ProjectReference Include="..\ResumeModuleAM\ResumeModuleAM.csproj" />
+    <ProjectReference Include="..\ResumeModelSL\ResumeModuleSL.csproj" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
