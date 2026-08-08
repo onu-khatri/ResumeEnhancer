@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Infrastructure\Migration\Migration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeModulePL.csproj" />
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeModuleWeb.csproj" />

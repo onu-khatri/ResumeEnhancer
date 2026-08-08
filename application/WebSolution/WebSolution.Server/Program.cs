@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using ResumeEnhancer.Infrastructure.Migrations;
 using ResumeModulePL;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,10 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddResumeModulePersistence();
 builder.Services.AddAppDbContext((_, options) =>
 {
-    options.UseSqlServer(GetConnectionString(builder), sqlServerOptions =>
-    {
-        sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
-    });
+    options.UseSqlServer(GetConnectionString(builder));
 });
 
 builder.Services.AddControllers();
