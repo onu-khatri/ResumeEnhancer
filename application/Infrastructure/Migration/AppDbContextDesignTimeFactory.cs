@@ -31,7 +31,7 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
     {
         for (var index = 0; index < args.Length - 1; index++)
         {
-            if (args[index] is "--connection" or "-c")
+            if (args[index] is "--connection" or "--connection-string")
             {
                 return args[index + 1];
             }
