@@ -8,8 +8,6 @@ public sealed class HobbyConfiguration : IEntityTypeConfiguration<Hobby>
 {
     public void Configure(EntityTypeBuilder<Hobby> builder)
     {
-        builder.ToTable("Hobbies", "resume");
-
         builder.HasKey(hobby => hobby.Id);
 
         builder.Property(hobby => hobby.HobbyName).HasMaxLength(100).IsRequired();

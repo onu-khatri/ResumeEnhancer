@@ -8,8 +8,6 @@ public sealed class WorkExperienceConfiguration : IEntityTypeConfiguration<WorkE
 {
     public void Configure(EntityTypeBuilder<WorkExperience> builder)
     {
-        builder.ToTable("WorkExperiences", "resume");
-
         builder.HasKey(workExperience => workExperience.Id);
 
         builder.Property(workExperience => workExperience.JobTitle).HasMaxLength(150);

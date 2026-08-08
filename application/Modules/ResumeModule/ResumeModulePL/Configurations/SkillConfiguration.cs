@@ -8,8 +8,6 @@ public sealed class SkillConfiguration : IEntityTypeConfiguration<Skill>
 {
     public void Configure(EntityTypeBuilder<Skill> builder)
     {
-        builder.ToTable("Skills", "resume");
-
         builder.HasKey(skill => skill.Id);
 
         builder.Property(skill => skill.SkillName).HasMaxLength(100).IsRequired();

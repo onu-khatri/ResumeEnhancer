@@ -8,8 +8,6 @@ public sealed class CertificationConfiguration : IEntityTypeConfiguration<Certif
 {
     public void Configure(EntityTypeBuilder<Certification> builder)
     {
-        builder.ToTable("Certifications", "resume");
-
         builder.HasKey(certification => certification.Id);
 
         builder.Property(certification => certification.CertificationName).HasMaxLength(200).IsRequired();

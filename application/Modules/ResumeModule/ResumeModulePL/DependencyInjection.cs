@@ -9,12 +9,27 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddResumeModulePersistence(this IServiceCollection services)
     {
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IAppDbContextModelConfiguration, ResumeModuleDbContextModelConfiguration>());
+        return services.AddResumeModulePersistence(rootEntitySchema: null);
+    }
+
+    public static IServiceCollection AddResumeModulePersistence(
+        this IServiceCollection services,
+        string? rootEntitySchema)
+    {
+        if (!services.Any(IsResumeModuleModelConfigurationRegistered))
+        {
+            services.AddSingleton<IAppDbContextModelConfiguration>(
+                new ResumeModuleDbContextModelConfiguration(rootEntitySchema));
+        }
 
         services.TryAddEnumerable(
             ServiceDescriptor.Scoped<IAppDbContextSeeder, ResumeModuleSeeder>());
 
         return services;
     }
+
+    private static bool IsResumeModuleModelConfigurationRegistered(ServiceDescriptor serviceDescriptor) =>
+        serviceDescriptor.ServiceType == typeof(IAppDbContextModelConfiguration)
+        && (serviceDescriptor.ImplementationType == typeof(ResumeModuleDbContextModelConfiguration)
+            || serviceDescriptor.ImplementationInstance is ResumeModuleDbContextModelConfiguration);
 }

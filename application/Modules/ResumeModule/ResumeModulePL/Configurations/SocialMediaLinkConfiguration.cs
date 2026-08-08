@@ -8,8 +8,6 @@ public sealed class SocialMediaLinkConfiguration : IEntityTypeConfiguration<Soci
 {
     public void Configure(EntityTypeBuilder<SocialMediaLink> builder)
     {
-        builder.ToTable("SocialMediaLinks", "resume");
-
         builder.HasKey(socialMediaLink => socialMediaLink.Id);
 
         builder.Property(socialMediaLink => socialMediaLink.Platform).HasMaxLength(100).IsRequired();

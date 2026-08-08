@@ -8,8 +8,6 @@ public sealed class LanguageConfiguration : IEntityTypeConfiguration<Language>
 {
     public void Configure(EntityTypeBuilder<Language> builder)
     {
-        builder.ToTable("Languages", "resume");
-
         builder.HasKey(language => language.Id);
 
         builder.Property(language => language.LanguageName).HasMaxLength(100).IsRequired();

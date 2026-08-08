@@ -8,8 +8,6 @@ public sealed class EducationConfiguration : IEntityTypeConfiguration<Education>
 {
     public void Configure(EntityTypeBuilder<Education> builder)
     {
-        builder.ToTable("Education", "resume");
-
         builder.HasKey(education => education.Id);
 
         builder.Property(education => education.Degree).HasMaxLength(200);

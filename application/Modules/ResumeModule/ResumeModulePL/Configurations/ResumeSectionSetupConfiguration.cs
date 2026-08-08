@@ -9,8 +9,6 @@ public sealed class ResumeSectionSetupConfiguration : IEntityTypeConfiguration<R
 {
     public void Configure(EntityTypeBuilder<ResumeSectionSetup> builder)
     {
-        builder.ToTable("ResumeSectionSetups", "resume");
-
         builder.HasKey(sectionSetup => sectionSetup.Id);
 
         builder.Property(sectionSetup => sectionSetup.SectionType).HasConversion<int>();

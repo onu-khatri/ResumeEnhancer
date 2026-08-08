@@ -8,8 +8,6 @@ public sealed class AwardConfiguration : IEntityTypeConfiguration<Award>
 {
     public void Configure(EntityTypeBuilder<Award> builder)
     {
-        builder.ToTable("Awards", "resume");
-
         builder.HasKey(award => award.Id);
 
         builder.Property(award => award.AwardName).HasMaxLength(200).IsRequired();

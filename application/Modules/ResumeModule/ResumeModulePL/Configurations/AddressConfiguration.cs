@@ -8,8 +8,6 @@ public sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
 {
     public void Configure(EntityTypeBuilder<Address> builder)
     {
-        builder.ToTable("Addresses", "resume");
-
         builder.HasKey(address => address.Id);
 
         builder.Property(address => address.StreetAddress).HasMaxLength(200);
