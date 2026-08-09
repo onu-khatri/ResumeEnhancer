@@ -26,6 +26,8 @@
     <Project Path="WebSolution/WebSolution.Server/WebSolution.Server.csproj" Id="22afa160-37a9-4f69-ad46-7ed5e54cd53c" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="../test/IntegrationTest/ResumeEnhancer.IntegrationTests.csproj" Id="89e8eff8-2dce-48dc-8977-e6a15f1510e3" />
     <Project Path="../test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.csproj" Id="c4cd06f3-538c-4f24-a55b-a9c4283c14f4" />
+    <Project Path="../test/TestUtilities/IntegrationSupport/IntegrationSupport.csproj" Id="00b36ef9-5a18-410d-8468-4105a3af037b" />
   </Folder>
 </Solution>

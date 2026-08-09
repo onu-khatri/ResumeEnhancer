@@ -53,3 +53,5 @@ static string GetConnectionString(WebApplicationBuilder builder)
 
     throw new InvalidOperationException("ConnectionStrings:DefaultConnection is required.");
 }
+
+public partial class Program;

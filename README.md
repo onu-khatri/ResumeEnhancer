@@ -15,6 +15,8 @@ The solution is organized by platform area first, then by business module:
 - `Modules` contains business modules. The current implemented module is
   `ResumeModule`.
 - `WebSolution` contains the ASP.NET Core host and React/Vite client.
+- `test` contains unit tests, HTTP integration tests, and reusable integration
+  test support utilities.
 
 The Resume module is split into application model, domain model, service layer,
 persistence layer, and web/API layer projects. The host composes shared
@@ -31,8 +33,8 @@ that every pattern is implemented in its strictest form.
 | Layered Architecture | Strong, about 92% | The solution has clear Core, Infrastructure, Modules, and WebSolution areas. Resume module code is split into AM, DM, SL, PL, Web, and application composition responsibilities. | Some shared infrastructure is still registered directly by the host, which is normal for the current composition style. |
 | Modular Architecture | Strong, about 92% | Resume functionality is isolated under `Modules/ResumeModule`; host-facing registration starts through `WebSolution/ModulesComposition`, so the host does not reference module AM, SL, PL, DM, or Web projects directly. | Cross-module communication rules are not yet needed or formalized because there is only one business module. |
 | Vertical Slice Architecture | Moderate to strong, about 72% | Resume command/query contracts, handlers, validators, and Minimal API endpoints are split per use case, with one endpoint operation per file. | The solution is still primarily layered by project. A stricter vertical-slice structure would group all files for a use case together across Web/SL/PL boundaries. |
-| Clean Architecture | Strong, about 90% | Domain model projects are infrastructure-free, `ResumeModuleSL` owns use cases and persistence ports, `ResumeModulePL` implements those ports, Web does not reference PL, and module composition is isolated in an outer application-level project. | Tests or analyzers would make the dependency rule easier to enforce automatically. |
-| Clean Code principles | Strong, about 88% | Responsibilities are grouped into small folders/files, sample host code has been removed, dependencies are registered explicitly, validation and mapping are centralized, and README files document local rules. | Automated tests would strengthen maintainability further. |
+| Clean Architecture | Strong, about 93% | Domain model projects are infrastructure-free, `ResumeModuleSL` owns use cases and persistence ports, `ResumeModulePL` implements those ports, Web does not reference PL, module composition is isolated in an outer application-level project, integration tests exercise the public HTTP boundary, and architecture tests enforce module dependency rules automatically. | Future cross-module communication rules will need to be formalized when additional business modules are introduced. |
+| Clean Code principles | Strong, about 91% | Responsibilities are grouped into small folders/files, sample host code has been removed, dependencies are registered explicitly, validation and mapping are centralized, README files document local rules, and the test suite now separates unit tests, integration tests, and reusable test support. | Broader module count will eventually require stronger conventions for cross-module contracts. |
 
 ## Current Dependency Rule
 
@@ -71,6 +73,16 @@ ResumeModuleDM
 
 Infrastructure/Persistence
   -> Core/DomainLibrary
+
+ResumeEnhancer.IntegrationTests
+  -> WebSolution.Server
+  -> TestUtilities/IntegrationSupport
+  -> ResumeModuleAM/DM/PL support assertions
+
+TestUtilities/IntegrationSupport
+  -> Core/DomainLibrary
+  -> Infrastructure/Caching
+  -> Infrastructure/Persistence
 ```
 
 The host should not reference Resume module AM, DM, SL, PL, or Web projects
@@ -225,6 +237,9 @@ flowchart TB
 | `application/WebSolution/ModulesComposition` | Application-level module composition boundary; registers module Web/PL projects and exposes endpoint mapping. |
 | `application/WebSolution/WebSolution.Server` | ASP.NET Core host, OpenAPI/Scalar setup, SPA hosting, and dependency composition. |
 | `application/WebSolution/websolution.client` | React + TypeScript + Vite client shell. |
+| `test/ResumeEnhancer.Tests` | Unit and focused component tests for core, infrastructure, composition, and Resume module behavior. |
+| `test/IntegrationTest` | HTTP/API-boundary integration tests that host the real ASP.NET Core application with fake auth and in-memory relational persistence. |
+| `test/TestUtilities/IntegrationSupport` | Reusable integration-test host, fake authentication, database, setupper, data-generation, and xUnit support utilities. |
 
 ## Responsibility-Based Folder Layout
 
@@ -299,6 +314,9 @@ Validation/Shared/
 | Mapster mapping | `ResumeModelSL/Mapping` | Maps AM contracts, DM entities, and persistence result models. |
 | Strategy pattern | `Infrastructure/Caching/Strategies` | Cache provider behavior is selected by configuration. |
 | Code-first migrations | `Infrastructure/Migration` | EF Core migrations live outside normal web startup. |
+| Integration test host builder | `test/TestUtilities/IntegrationSupport/Hosting` | Standardizes `WebApplicationFactory`, fake auth, SQLite in-memory persistence, and selected DI overrides for real HTTP tests. |
+| Setup object pattern | `test/IntegrationTest/Modules/ResumeModule/*.Setup.cs` | Keeps `[Theory]` data compact with description, arrange delegate, input DTO, and assert delegate. |
+| Architecture dependency tests | `test/ResumeEnhancer.Tests/Architecture` | Enforces module layer project-reference, package-reference, and current assembly dependency rules, including future module projects discovered under `application/Modules`. |
 
 Auto-registration attributes, when introduced, should be used only in PL
 implementation projects. Web and SL registrations should stay explicit.
@@ -426,6 +444,7 @@ Data Source=localhost;Integrated Security=True;Persist Security Info=False;Serve
 | Validation | `FluentValidation` and `FluentValidation.DependencyInjectionExtensions`. |
 | Caching | `Microsoft.Extensions.Caching.*`, including in-memory and StackExchangeRedis support. |
 | Client | React + TypeScript + Vite through the `.esproj` client project. |
+| Testing | xUnit.net v3, Shouldly, NSubstitute, Moq, AutoFixture, Bogus, MoreLINQ, NetArchTest, ASP.NET Core MVC Testing, and EF Core SQLite. |
 
 ## Build
 
@@ -433,6 +452,26 @@ Build the full solution:
 
 ```powershell
 dotnet build application\ResumeEnhancerApp.slnx
+```
+
+Run unit tests:
+
+```powershell
+dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore
+```
+
+Run integration tests:
+
+```powershell
+dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore
+```
+
+Current test count:
+
+```text
+Unit tests: 231 passing
+Integration tests: 14 passing
+Total tests: 245 passing
 ```
 
 Run the API host:
@@ -466,5 +505,11 @@ Use the Resume module as the template:
 - Resume CRUD/search/exists API flows are implemented through Minimal APIs,
   Mediator handlers, Mapster mapping, SL-owned repository ports, and PL
   repository adapters.
+- Resume API integration coverage exercises the real HTTP boundary, including
+  routing, JSON binding, validation, mediator handlers, repository persistence,
+  fake authentication headers, and database side effects.
+- Architecture dependency tests enforce the clean dependency rule for current
+  Resume module assemblies and automatically scan future module project files
+  added under `application/Modules`.
 - `Core/CommonLibrary` is intentionally light and currently has no active
   shared helpers.
