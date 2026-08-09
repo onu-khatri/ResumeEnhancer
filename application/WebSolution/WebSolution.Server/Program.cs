@@ -2,6 +2,8 @@ using Caching;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using ResumeModuleWeb;
+using ResumeModuleWeb.MiniApis;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,10 @@ app.MapStaticAssets();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Resume Enhancer API");
+    });
 }
 
 app.UseHttpsRedirection();
@@ -34,6 +40,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapResumeModuleApis();
 
 app.MapFallbackToFile("/index.html");
 
@@ -46,11 +53,6 @@ static string GetConnectionString(WebApplicationBuilder builder)
     if (!string.IsNullOrWhiteSpace(connectionString))
     {
         return connectionString;
-    }
-
-    if (builder.Environment.IsDevelopment())
-    {
-        return "Server=(localdb)\\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
     }
 
     throw new InvalidOperationException("ConnectionStrings:DefaultConnection is required.");

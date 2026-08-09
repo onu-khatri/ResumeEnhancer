@@ -8,7 +8,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations;
 public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     private const string DefaultConnectionString =
-        "Server=(localdb)\\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+        "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
 
     public AppDbContext CreateDbContext(string[] args)
     {

@@ -2,6 +2,7 @@
   <Folder Name="/Core/">
     <Project Path="Core/CommonLibrary/CommonLibrary.csproj" Id="770ba004-fa46-40bf-92f0-b31b756a985f" />
     <Project Path="Core/DomainLibrary/DomainLibrary.csproj" Id="4dc49a4f-0e25-48bb-bc72-9f5ed6fb08ad" />
+    <Project Path="Core/WebLibrary/WebLibrary.csproj" Id="9e1ffca5-8773-47a8-8ea1-602d61e1d377" />
   </Folder>
   <Folder Name="/Infrastructure/">
     <Project Path="Infrastructure/Caching/Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />

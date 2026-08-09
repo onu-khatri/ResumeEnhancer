@@ -167,6 +167,8 @@ Commands can be combined. When combined, the console runs them in this order:
 2. Apply migrations.
 3. Run seeders.
 
+The migration console is verbose by default. It prints the active action, EF CLI command, pending migrations, registered seeders, EF Core diagnostic logs, warnings, and full exception stack traces when a command fails. Messages are color-coded by severity: debug is dark gray, information is gray, progress steps are cyan, successful operations are green, warnings are yellow, and errors are red.
+
 ## Common Usage
 
 Show help:
@@ -230,7 +232,7 @@ dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c
 Use a custom connection string:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s --connection "Server=(localdb)\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s --connection "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer"
 ```
 
 ## Connection String Resolution
@@ -242,13 +244,13 @@ The migration console chooses the connection string in this order:
 3. Default local development connection string:
 
 ```text
-Server=(localdb)\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer
 ```
 
 Example using the environment variable in PowerShell:
 
 ```powershell
-$env:RESUME_ENHANCER_CONNECTION_STRING = "Server=.;Database=ResumeEnhancerDb;Trusted_Connection=True;TrustServerCertificate=True"
+$env:RESUME_ENHANCER_CONNECTION_STRING = "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer"
 dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s
 ```
 
@@ -257,7 +259,7 @@ dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
 When you run `-c`, the console internally runs:
 
 ```powershell
-dotnet ef migrations add <MigrationName> --project <MigrationProject> --startup-project <MigrationProject> --context Persistence.AppDbContext --output-dir Migrations
+dotnet ef --verbose migrations add <MigrationName> --project <MigrationProject> --startup-project <MigrationProject> --context Persistence.AppDbContext --output-dir Migrations
 ```
 
 This means:
@@ -330,6 +332,8 @@ await dbContext.Database.MigrateAsync(cancellationToken);
 
 `MigrateAsync` applies all pending migrations. If the database does not exist, EF Core creates it.
 
+Before applying, the console prints the database provider and the pending migration list. EF Core logs are written to the console with detailed errors enabled.
+
 ## How Seeding Works
 
 When you run `-s`, the console calls:
@@ -339,6 +343,8 @@ await serviceProvider.SeedAppDbContextAsync(cancellationToken);
 ```
 
 That extension method finds all registered `IAppDbContextSeeder` implementations and runs them.
+
+The console prints every registered seeder and reports each seeder before and after it runs.
 
 Current module seeders are registered through:
 

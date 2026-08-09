@@ -13,21 +13,29 @@ The Persistence project should stay generic. It should know how to build `AppDbC
 - Provides a common seeding contract.
 - Provides setup-data seeding helpers for `SetupEntity` and `SetupRelation` data.
 - Maps `AuditEntity.App_Version` as a database-managed rowversion concurrency token.
+- Provides a scoped `UnitOfWork<AppDbContext>` persistence boundary.
+- Provides common audited-entity repositories and query loading helpers.
 - Provides dependency injection helpers for registering the database context.
 
 ## Important Files
 
 | File | Purpose |
 | --- | --- |
-| `AppDbContext.cs` | Shared EF Core `DbContext` used by the application. |
-| `DependencyInjection.cs` | Registers `AppDbContext` in dependency injection. |
-| `IAppDbContextModelConfiguration.cs` | Contract that modules implement to configure their entities. |
-| `IAppDbContextSeeder.cs` | Contract that modules implement to seed data. |
-| `AppDbContextSeederExtensions.cs` | Runs all registered seeders. |
-| `ModelBuilderModuleMappingExtensions.cs` | Applies module table/schema conventions. |
-| `ModuleSchemaName.cs` | Builds and validates schema names. |
-| `SetupDataSeedingExtensions.cs` | Inserts, updates, and obsoletes setup data by `Guid` and `Code`. |
-| `SeedingUser.cs` | Defines the technical seed user id used by setup seeding. |
+| `Audit/IAudit.cs` | Audit-user contract used by audit-aware saves. |
+| `Composition/DependencyInjection.cs` | Registers `AppDbContext`, unit of work, repositories, and loaders in dependency injection. |
+| `Context/AppDbContext.cs` | Shared EF Core `DbContext` used by the application. |
+| `Context/IAppDbContextModelConfiguration.cs` | Contract that modules implement to configure their entities. |
+| `Context/ModelBuilderModuleMappingExtensions.cs` | Applies module table/schema conventions. |
+| `Context/ModuleSchemaName.cs` | Builds and validates schema names. |
+| `Loading/ModelLoader.cs` | Typed model-loader builder for nested include paths. |
+| `Querying/IQuerySpecification.cs` | Query specification contract for reusable repository queries. |
+| `Repositories/AuditEntityRepository.cs` | Default repository implementation for common `AuditEntity` operations. |
+| `Seeding/AppDbContextSeederExtensions.cs` | Runs all registered seeders. |
+| `Seeding/IAppDbContextSeeder.cs` | Contract that modules implement to seed data. |
+| `Seeding/SetupDataSeedingExtensions.cs` | Inserts, updates, and obsoletes setup data by `Guid` and `Code`. |
+| `Seeding/SeedingUser.cs` | Defines the technical seed user id used by setup seeding. |
+| `Transactions/*DbTransaction.cs` | Relational, nested, and non-relational transaction wrappers. |
+| `UnitOfWork/UnitOfWork.cs` | Coordinates repositories, saves, setup preloading, and transactions for one persistence scope. |
 
 ## Big Picture
 
@@ -47,6 +55,91 @@ AppDbContext
 ```
 
 This keeps the core persistence layer reusable and lets each module own its own mapping rules.
+
+## Unit Of Work
+
+`UnitOfWork<AppDbContext>` is registered as scoped when `AddAppDbContext` is called. In a normal request or service scope, the system creates one scoped `AppDbContext` and one scoped `UnitOfWork<AppDbContext>`.
+
+The unit of work is an infrastructure boundary. It coordinates repository access, save operations, setup entity preloading, and transaction creation. It does not contain business rules.
+
+```csharp
+public sealed class ResumeService
+{
+    private readonly IUnitOfWork<AppDbContext> _unitOfWork;
+
+    public ResumeService(IUnitOfWork<AppDbContext> unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task SaveResumeAsync(Resume resume, IAudit audit, CancellationToken cancellationToken)
+    {
+        var resumes = _unitOfWork.GetRepo<Resume>();
+
+        await resumes.AddAsync(resume, cancellationToken);
+        await _unitOfWork.SaveAsync(audit, cancellationToken);
+    }
+}
+```
+
+`SaveAsync(IAudit)` delegates to `AppDbContext.SaveChangesAsync(auditUser)`, where audit fields, validation, and optimistic concurrency retry are handled.
+
+## Repository Access
+
+Use `GetRepo<TElement>()` for common audited-entity work:
+
+```csharp
+var resumes = unitOfWork.GetRepo<Resume>();
+
+var exists = await resumes.ExistsAsync(resumeId, cancellationToken);
+var page = await resumes.FindAsync(
+    pageNumber: 1,
+    pageSize: 25,
+    filter: resume => resume.UserId == userId,
+    cancellationToken: cancellationToken);
+```
+
+Use `GetRepo<TIRepo, TElement>()` for custom repositories registered by a module:
+
+```csharp
+var resumeRepository = unitOfWork.GetRepo<IResumeRepository, Resume>();
+```
+
+Use `GetRepoLight<TIRepo>()` for custom repositories that are not tied to a single entity type.
+
+## Transactions
+
+`CreateTransactionAsync` returns a transaction wrapper:
+
+- non-relational providers receive a no-op `NonRelationalDbTransaction`.
+- relational providers begin a real EF transaction when none exists.
+- relational providers return a nested wrapper when a transaction is already active.
+
+```csharp
+await using var transaction = await unitOfWork.CreateTransactionAsync(cancellationToken);
+
+await unitOfWork.SaveAsync(audit, cancellationToken);
+await transaction.CommitAsync(cancellationToken);
+```
+
+Nested transaction commit is a no-op. Nested rollback rolls back the active EF transaction.
+
+## Query Specification And Model Loader
+
+`IQuerySpecification<T>` gives modules a reusable query shape with criteria, includes, ordering, projection, and a final `GetQuery` method.
+
+`IModelLoader<TModel>` provides a typed way to describe nested include paths:
+
+```csharp
+var loader = new ModelLoader<Resume>()
+    .Build(resume => resume
+        .Load(model => model.PersonalInformation)
+        .Load(model => model.Skills)
+        .NavigateCollection(model => model.WorkExperiences)
+            .LoadRelated());
+```
+
+The repository resolves loader paths against EF metadata and includes only valid navigation paths. This means a path can point through a navigation to a specific scalar property, while EF only receives the navigation portion needed to load the object graph.
 
 ## Register AppDbContext
 

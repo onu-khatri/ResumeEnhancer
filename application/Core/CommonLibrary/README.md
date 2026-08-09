@@ -7,3 +7,7 @@ Domain base classes live in `Core/DomainLibrary`, not here. Use CommonLibrary fo
 ## Dependency Rule
 
 CommonLibrary should stay lightweight and dependency-conscious. Avoid references to infrastructure projects, module projects, or application host projects.
+
+## Current Shared Helpers
+
+No shared helpers are currently required here. Keep ASP.NET Core result formatting in `Core/WebLibrary`, not here.
