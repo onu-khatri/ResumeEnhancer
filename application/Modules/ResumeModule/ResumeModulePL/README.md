@@ -9,7 +9,7 @@ ResumeModulePL owns:
 - EF Core entity configurations.
 - Resume module schema registration.
 - `AppDbContext` extension methods for Resume `DbSet<T>` access.
-- Repository contracts and EF-backed repository implementations.
+- EF-backed implementations of service-layer persistence ports.
 - Resume setup seed data.
 - Dependency injection for module persistence registration.
 
@@ -20,9 +20,12 @@ ResumeModulePL owns:
 | `Composition` | Dependency injection registration for Resume persistence services. |
 | `Configurations` | EF Core entity type configurations. |
 | `Context` | Resume schema, model configuration, and `AppDbContext` Resume `DbSet<T>` extensions. |
-| `Contracts` | Persistence-layer repository contracts and result/criteria models. |
-| `Repositories` | EF-backed repository implementations. |
+| `Repositories` | EF-backed implementations of ports from `ResumeModuleSL.Abstractions.Persistence`. |
 | `Seeding` | Resume setup seed data and seeders. |
+
+## Dependency Rule
+
+`ResumeModulePL` may reference `ResumeModuleSL` only to implement persistence abstractions. `ResumeModuleSL` must not reference this project. Keep EF Core and `AppDbContext` code here or in shared `Infrastructure/Persistence`, and keep business rules in SL handlers.
 
 ## Table Mapping
 

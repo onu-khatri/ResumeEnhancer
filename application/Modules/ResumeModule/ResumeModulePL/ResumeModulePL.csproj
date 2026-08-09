@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Infrastructure\Caching\Caching.csproj" />
     <ProjectReference Include="..\..\..\Infrastructure\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\ResumeModuleDM\ResumeModuleDM.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Contracts\" />
+    <ProjectReference Include="..\ResumeModelSL\ResumeModuleSL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

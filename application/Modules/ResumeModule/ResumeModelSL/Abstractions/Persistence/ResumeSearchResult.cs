@@ -1,6 +1,6 @@
 using ResumeModuleDM.Entities;
 
-namespace ResumeModulePL.Contracts;
+namespace ResumeModuleSL.Abstractions.Persistence;
 
 public sealed class ResumeSearchResult
 {

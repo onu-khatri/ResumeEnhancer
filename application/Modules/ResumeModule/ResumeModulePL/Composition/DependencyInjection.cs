@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Persistence;
-using ResumeModulePL.Contracts;
 using ResumeModulePL.Repositories;
 using ResumeModulePL.Seeding;
+using ResumeModuleSL.Abstractions.Persistence;
 
 namespace ResumeModulePL;
 

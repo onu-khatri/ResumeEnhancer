@@ -1,7 +1,7 @@
 using DomainLibrary.DomainModel;
 using ResumeModuleDM.Entities;
 
-namespace ResumeModulePL.Contracts;
+namespace ResumeModuleSL.Abstractions.Persistence;
 
 public interface IResumeRepository
 {

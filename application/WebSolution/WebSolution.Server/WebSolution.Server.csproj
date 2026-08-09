@@ -25,8 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\Caching\Caching.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
-    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleAM\ResumeModuleAM.csproj" />
-    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeModuleWeb.csproj" />
+    <ProjectReference Include="..\ModulesComposition\ModulesComposition.csproj" />
     <ProjectReference Include="..\websolution.client\websolution.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

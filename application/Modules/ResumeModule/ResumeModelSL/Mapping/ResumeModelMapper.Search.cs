@@ -1,7 +1,7 @@
 using Mapster;
 using ResumeModuleAM.Requests;
 using ResumeModuleAM.Responses;
-using ResumeModulePL.Contracts;
+using ResumeModuleSL.Abstractions.Persistence;
 
 namespace ResumeModuleSL.Handlers;
 

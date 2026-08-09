@@ -1,5 +1,5 @@
 using Mediator;
-using ResumeModulePL.Contracts;
+using ResumeModuleSL.Abstractions.Persistence;
 using ResumeModuleSL.Contracts;
 
 namespace ResumeModuleSL.Handlers;
