@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ResumeEnhancer.TestUtilities.IntegrationSupport</AssemblyName>
+    <RootNamespace>ResumeEnhancer.TestUtilities.IntegrationSupport</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.10" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\application\Core\DomainLibrary\DomainLibrary.csproj" />
+    <ProjectReference Include="..\..\..\application\Infrastructure\Caching\Caching.csproj" />
+    <ProjectReference Include="..\..\..\application\Infrastructure\Persistence\Persistence.csproj" />
+  </ItemGroup>
+</Project>
