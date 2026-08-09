@@ -25,4 +25,7 @@
     </Project>
     <Project Path="WebSolution/WebSolution.Server/WebSolution.Server.csproj" Id="22afa160-37a9-4f69-ad46-7ed5e54cd53c" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="../test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.csproj" Id="c4cd06f3-538c-4f24-a55b-a9c4283c14f4" />
+  </Folder>
 </Solution>
