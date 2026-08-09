@@ -21,4 +21,8 @@
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeModulePL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+  </ItemGroup>
+
 </Project>

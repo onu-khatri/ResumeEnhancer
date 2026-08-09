@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\Core\DomainLibrary\DomainLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+  </ItemGroup>
+
 </Project>
