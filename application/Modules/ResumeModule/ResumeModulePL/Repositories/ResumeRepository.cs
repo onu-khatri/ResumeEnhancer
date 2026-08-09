@@ -2,7 +2,7 @@ using DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using ResumeModuleDM.Entities;
-using ResumeModulePL.Contracts;
+using ResumeModuleSL.Abstractions.Persistence;
 
 namespace ResumeModulePL.Repositories;
 

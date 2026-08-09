@@ -1,16 +1,19 @@
 # ResumeModuleSL Project
 
-This project is intended for the Resume module service layer.
+This project contains the Resume module service layer.
 
-Service-layer code should coordinate use cases, validation, and application workflows. Shared request/response application models belong in `ResumeModuleAM`, domain entities belong in `ResumeModuleDM`, and persistence-specific behavior stays in `ResumeModulePL`.
+Service-layer code should coordinate use cases and application workflows. Shared request/response application models belong in `ResumeModuleAM`, domain entities belong in `ResumeModuleDM`, and persistence-specific behavior stays in `ResumeModulePL`.
+
+Persistence contracts needed by handlers live here under `Abstractions/Persistence`. That lets the service layer depend on its own ports while the persistence layer implements them.
 
 The project is grouped by CQRS responsibility:
 
+- `Abstractions/Persistence`: repository ports plus persistence criteria/result contracts consumed by handlers.
 - `Composition`: dependency registration through `AddResumeModuleApplication()`, which is called by `ResumeModuleWeb`.
 - `Contracts`: command and query contracts consumed by Mediator.
 - `Handlers`: command and query handlers that coordinate use cases.
 - `Mapping`: Mapster-backed mapping and update helpers used by handlers.
 
-`ResumeModuleSL` owns the dependency from the service layer to `ResumeModuleDM` and `ResumeModulePL`, so web/API code does not reference domain or persistence directly.
+`ResumeModuleSL` depends on `ResumeModuleAM` and `ResumeModuleDM`. It does not reference `ResumeModulePL`; PL implements the persistence ports declared in this project and is registered by the outer composition root.
 
-Object-to-object mapping between AM contracts, DM entities, and PL result models should use Mapster configuration in `Mapping`. Keep custom code there limited to workflow concerns such as access checks and EF collection synchronization.
+Object-to-object mapping between AM contracts, DM entities, and persistence result models should use Mapster configuration in `Mapping`. Keep custom code there limited to workflow concerns such as access checks and EF collection synchronization.

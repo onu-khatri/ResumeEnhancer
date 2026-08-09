@@ -18,6 +18,7 @@
     <Project Path="Modules/ResumeModule/ResumeModuleWeb/ResumeModuleWeb.csproj" Id="be2902f1-7647-4804-8541-5d8f8bc07e7c" />
   </Folder>
   <Folder Name="/Solutions/">
+    <Project Path="WebSolution/ModulesComposition/ModulesComposition.csproj" Id="4b9de104-b791-4e50-b920-a0076d47fa60" />
     <Project Path="WebSolution/websolution.client/websolution.client.esproj">
       <Build />
       <Deploy />

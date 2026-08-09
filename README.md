@@ -1,328 +1,470 @@
 # ResumeEnhancer
 
-ResumeEnhancer is a modular .NET solution for building resume-related domain,
-persistence, migration, caching, API, and web-client components.
+ResumeEnhancer is a modular .NET solution for resume management. It combines a
+layered modular-monolith architecture with CQRS-style application handlers,
+Minimal APIs, shared EF Core persistence infrastructure, explicit migrations,
+and a React/Vite client shell.
 
 ## Architecture Summary
 
-The project currently follows a pragmatic modular monolith style with layered
-module projects and clean dependency boundaries. The host starts module
-registration through each module's Web project, while lower-layer dependencies
-flow through the module layers. The host does not need direct references to
-module domain, service, or persistence projects.
+The solution is organized by platform area first, then by business module:
 
-| Architecture | Current status | How this project applies it |
-| --- | --- | --- |
-| Clean Architecture | Partially implemented and actively aligned | Shared domain types live in `Core/DomainLibrary` and do not reference EF Core, ASP.NET Core, caching, or module persistence. Infrastructure projects depend inward on core/domain code. The host wires shared infrastructure and calls module Web registration, while domain and persistence stay behind the service layer. |
-| Clean Code principles | Followed as coding guidance, not a separate architecture | Projects have focused responsibilities, explicit names, nullable reference types enabled, dependency injection extension methods, provider abstractions such as `ICacheProvider`, and module-specific documentation. |
-| Vertical Slice Architecture | Structural foundation exists | Business capability is grouped under `Modules/ResumeModule`. The module reserves separate web, application-model, service, domain, and persistence projects so each resume use case can own its endpoint, request/response model, service workflow, validation, and persistence behavior within the module boundary. Full feature folders/handlers are not implemented yet. |
-| Modular Architecture | Implemented | Resume functionality is isolated in `Modules/ResumeModule`, split into `ResumeModuleAM`, `ResumeModuleDM`, `ResumeModuleSL`, `ResumeModulePL`, and `ResumeModuleWeb`. Shared infrastructure is reusable and module-agnostic. New business areas should be added as sibling modules. |
-| Layered Architecture | Implemented | The solution is separated into Core, Infrastructure, Modules, and WebSolution. Inside the Resume module, application models, domain model, service layer, persistence layer, and web/API layer are separate projects. |
+- `Core` contains shared domain and common library projects.
+- `Infrastructure` contains reusable technical capabilities such as caching,
+  persistence, and migrations.
+- `Modules` contains business modules. The current implemented module is
+  `ResumeModule`.
+- `WebSolution` contains the ASP.NET Core host and React/Vite client.
 
-## Current Resume Module Rule
+The Resume module is split into application model, domain model, service layer,
+persistence layer, and web/API layer projects. The host composes shared
+infrastructure and enters all modules through `WebSolution/ModulesComposition`;
+that boundary registers module web layers and persistence adapters.
 
-The host and module Web layer should not bypass the service layer:
+## Architecture Fit
 
-```text
-WebSolution.Server -> ResumeModuleWeb + ResumeModuleAM
-ResumeModuleWeb -> ResumeModuleAM + ResumeModuleSL
-ResumeModuleSL -> ResumeModuleAM + ResumeModuleDM + ResumeModulePL
-ResumeModulePL -> ResumeModuleDM + shared infrastructure
-```
+These scores are a qualitative snapshot of the current structure, not a claim
+that every pattern is implemented in its strictest form.
 
-This keeps HTTP concerns in Web, use-case coordination in SL, domain entities in
-DM, request/response contracts in AM, and EF Core/database concerns in PL.
+| Architecture or practice | Current fit | How the project fulfills it | Remaining gap or tradeoff |
+| --- | --- | --- | --- |
+| Layered Architecture | Strong, about 92% | The solution has clear Core, Infrastructure, Modules, and WebSolution areas. Resume module code is split into AM, DM, SL, PL, Web, and application composition responsibilities. | Some shared infrastructure is still registered directly by the host, which is normal for the current composition style. |
+| Modular Architecture | Strong, about 92% | Resume functionality is isolated under `Modules/ResumeModule`; host-facing registration starts through `WebSolution/ModulesComposition`, so the host does not reference module AM, SL, PL, DM, or Web projects directly. | Cross-module communication rules are not yet needed or formalized because there is only one business module. |
+| Vertical Slice Architecture | Moderate to strong, about 72% | Resume command/query contracts, handlers, validators, and Minimal API endpoints are split per use case, with one endpoint operation per file. | The solution is still primarily layered by project. A stricter vertical-slice structure would group all files for a use case together across Web/SL/PL boundaries. |
+| Clean Architecture | Strong, about 90% | Domain model projects are infrastructure-free, `ResumeModuleSL` owns use cases and persistence ports, `ResumeModulePL` implements those ports, Web does not reference PL, and module composition is isolated in an outer application-level project. | Tests or analyzers would make the dependency rule easier to enforce automatically. |
+| Clean Code principles | Strong, about 88% | Responsibilities are grouped into small folders/files, sample host code has been removed, dependencies are registered explicitly, validation and mapping are centralized, and README files document local rules. | Automated tests would strengthen maintainability further. |
 
-## High-Level Architecture Graph
+## Current Dependency Rule
 
-```mermaid
-flowchart TB
-    subgraph WebSolution["WebSolution"]
-        Client["websolution.client<br/>React/Vite"]
-        Server["WebSolution.Server<br/>ASP.NET Core host"]
-    end
-
-    subgraph ResumeModule["ResumeModule"]
-        ModuleWeb["ResumeModuleWeb<br/>Endpoints and module entry"]
-        ModuleAM["ResumeModuleAM<br/>Request and response models"]
-        ModuleSL["ResumeModuleSL<br/>Use cases and workflows"]
-        ModulePL["ResumeModulePL<br/>EF configuration and seed data"]
-        ModuleDM["ResumeModuleDM<br/>Domain entities and enums"]
-    end
-
-    subgraph Infrastructure["Infrastructure"]
-        Caching["Caching<br/>Provider-neutral cache"]
-        Persistence["Persistence<br/>Shared AppDbContext"]
-        Migration["Migration<br/>EF Core migration console"]
-    end
-
-    subgraph Core["Core"]
-        CommonLibrary["CommonLibrary"]
-        DomainLibrary["DomainLibrary<br/>Domain base types"]
-    end
-
-    Database["SQL Server database"]
-    CacheStore["In-memory, Redis, or MemCache"]
-
-    Client --> Server
-    Server --> ModuleWeb
-    Server --> ModuleAM
-    Server --> Caching
-    Server --> Persistence
-
-    ModuleWeb --> ModuleAM
-    ModuleWeb --> ModuleSL
-    ModuleSL --> ModuleAM
-    ModuleSL --> ModuleDM
-    ModuleSL --> ModulePL
-    ModuleSL --> CommonLibrary
-
-    ModulePL --> ModuleDM
-    ModulePL --> Persistence
-    ModulePL --> Caching
-
-    ModuleDM --> DomainLibrary
-    Persistence --> DomainLibrary
-    Persistence --> Database
-    Caching --> CacheStore
-
-    Migration --> Persistence
-    Migration --> ModulePL
-```
-
-Key point: `WebSolution.Server` composes shared infrastructure and calls the
-module Web registration. `ResumeModuleWeb` depends on `ResumeModuleSL`, and
-`ResumeModuleSL` depends on `ResumeModuleDM` and `ResumeModulePL`; the host does
-not reference module internals directly.
-
-## Additional Architecture And Patterns In Use
-
-The requested list misses a few important styles and patterns already present:
-
-| Style or pattern | Where it appears | Why it matters |
-| --- | --- | --- |
-| Modular monolith | One solution and host application compose independent modules | Keeps deployment simple while preserving module boundaries for future growth. |
-| Domain-oriented design | `DomainLibrary.DomainModel` and `ResumeModuleDM/Entities` | Entity categories such as setup data, business data, and business relations make the domain model explicit. |
-| Composition root | `WebSolution.Server/Program.cs`, module dependency injection methods, and `Infrastructure/Migration/Program.cs` | The host composes shared infrastructure; each module starts registration from its Web project and delegates lower-layer registration through SL and PL. |
-| Dependency Injection | `AddApplicationCaching`, `AddAppDbContext`, `AddResumeModuleWeb`, `AddResumeModuleApplication`, `AddResumeModulePersistence` | Keeps modules and infrastructure replaceable and testable. |
-| Strategy Pattern | `Infrastructure/Caching/Strategies` | Cache provider behavior can switch between in-memory, Redis, and MemCache through configuration. |
-| Code-first persistence | `Infrastructure/Migration` and EF Core configurations | Database schema is generated from module-owned entity configurations and migrations. |
-
-## Solution Layout
-
-| Path | Purpose |
-| --- | --- |
-| `application/Core/DomainLibrary` | Shared domain base types such as audit, setup, and business entities. |
-| `application/Core/CommonLibrary` | General-purpose shared helpers that are not domain model concepts. |
-| `application/Infrastructure/Persistence` | Shared EF Core `AppDbContext`, module mapping conventions, and setup seeding helpers. |
-| `application/Infrastructure/Migration` | EF Core migration console for creating, applying, and seeding database changes. |
-| `application/Infrastructure/Caching` | Provider-neutral cache abstractions and in-memory, Redis, and MemCache strategies. |
-| `application/Modules/ResumeModule/ResumeModuleAM` | Resume module request and response application models shared by Web and SL. |
-| `application/Modules/ResumeModule/ResumeModuleDM` | Resume module domain entities and enums. |
-| `application/Modules/ResumeModule/ResumeModelSL` | Resume module service-layer project (`ResumeModuleSL`) for use cases, service contracts, and application workflows. |
-| `application/Modules/ResumeModule/ResumeModulePL` | Resume module EF Core configurations, schema registration, and seed data. |
-| `application/Modules/ResumeModule/ResumeModuleWeb` | Resume module endpoints and host-facing module entry boundary. |
-| `application/WebSolution/WebSolution.Server` | ASP.NET Core host API, SPA hosting, OpenAPI setup, and dependency composition. |
-| `application/WebSolution/websolution.client` | React/Vite client application. |
-
-## Dependency Direction
-
-The dependency direction is the main guardrail that keeps the architecture
-clean:
+The dependency direction is the main architectural guardrail:
 
 ```text
 WebSolution.Server
   -> Infrastructure/Caching
   -> Infrastructure/Persistence
-  -> Modules/ResumeModule/ResumeModuleAM
-  -> Modules/ResumeModule/ResumeModuleWeb
+  -> WebSolution/ModulesComposition
+
+ModulesComposition
+  -> ResumeModuleWeb
+  -> ResumeModulePL
 
 ResumeModuleWeb
+  -> Core/WebLibrary
   -> ResumeModuleAM
   -> ResumeModuleSL
 
 ResumeModuleSL
   -> ResumeModuleAM
   -> ResumeModuleDM
-  -> ResumeModulePL
-  -> Core/CommonLibrary
 
 ResumeModulePL
+  -> ResumeModuleSL (persistence abstractions)
   -> ResumeModuleDM
   -> Infrastructure/Persistence
-  -> Infrastructure/Caching
+
+Infrastructure/Migration
+  -> Infrastructure/Persistence
+  -> Modules/ResumeModule/ResumeModulePL
 
 ResumeModuleDM
   -> Core/DomainLibrary
 
 Infrastructure/Persistence
   -> Core/DomainLibrary
-
-Infrastructure/Caching
-  -> no project references
 ```
 
-Recommended rule: domain model projects should not reference infrastructure or
-web projects. Web projects should depend on application models and service-layer
-entry points, not domain or persistence. Service-layer projects should
-coordinate use cases and own the dependency to domain and persistence.
-Persistence-layer projects should own EF Core configuration, schema
-registration, and seed data. The host should not reference module `DM`, `SL`, or
-`PL` projects directly.
+The host should not reference Resume module AM, DM, SL, PL, or Web projects
+directly; it should enter modules through `WebSolution/ModulesComposition`.
+`ModulesComposition` owns module registration, so it may reference module Web
+and PL projects. `ResumeModuleWeb` must not reference PL. `ResumeModuleSL` must
+not reference PL; it defines persistence ports under application abstractions,
+and PL implements them. Domain entities stay in DM, use-case orchestration stays
+in SL, EF/database work stays in PL and shared Persistence, and HTTP concerns
+stay in Web.
 
-## Dependency Flow Graph
+## Outer-To-Domain Dependency Flow
+
+Solid arrows show current compile-time dependency flow from outer layers toward
+domain types. Domain projects do not depend back on web, application,
+persistence, caching, or migration projects.
 
 ```mermaid
 flowchart LR
-    Server["WebSolution.Server"]
-    ModuleWeb["ResumeModuleWeb"]
-    ModuleAM["ResumeModuleAM"]
-    ModuleSL["ResumeModuleSL"]
-    ModulePL["ResumeModulePL"]
-    ModuleDM["ResumeModuleDM"]
-    Caching["Infrastructure/Caching"]
-    Persistence["Infrastructure/Persistence"]
-    CommonLibrary["Core/CommonLibrary"]
-    DomainLibrary["Core/DomainLibrary"]
+    subgraph Outer["Outer Layer"]
+        Browser["React/Vite client"]
+        Host["WebSolution.Server<br/>ASP.NET Core host"]
+        MigrationConsole["Migration console"]
+    end
 
-    Server --> ModuleWeb
-    Server --> ModuleAM
+    subgraph WebBoundary["Web/API Boundary"]
+        ModuleComposition["ModulesComposition<br/>module DI + endpoint facade"]
+        ModuleWeb["ResumeModuleWeb<br/>Minimal APIs + validators"]
+        WebLibrary["Core/WebLibrary"]
+        AM["ResumeModuleAM<br/>request/response contracts"]
+    end
+
+    subgraph Application["Application / Use Cases"]
+        SL["ResumeModuleSL<br/>CQRS contracts + handlers"]
+        Ports["SL Abstractions/Persistence<br/>repository ports + result models"]
+        Mapping["Mapster mapping helpers"]
+    end
+
+    subgraph InfrastructureAdapters["Persistence / Infrastructure Adapters"]
+        PL["ResumeModulePL<br/>EF adapters + configuration"]
+        Persistence["Infrastructure/Persistence<br/>AppDbContext + UoW"]
+        Caching["Infrastructure/Caching"]
+    end
+
+    subgraph Domain["Domain Layer"]
+        DM["ResumeModuleDM<br/>Resume entities"]
+        DomainLibrary["Core/DomainLibrary<br/>domain base types"]
+    end
+
+    Browser --> Host
+    Host --> ModuleComposition
+    Host --> Persistence
+    Host --> Caching
+
+    ModuleComposition --> ModuleWeb
+    ModuleComposition --> PL
+
+    ModuleWeb --> WebLibrary
+    ModuleWeb --> AM
+    ModuleWeb --> SL
+
+    SL --> AM
+    SL --> Ports
+    SL --> Mapping
+    SL --> DM
+
+    PL --> Ports
+    PL --> DM
+    PL --> Persistence
+
+    Persistence --> DomainLibrary
+    DM --> DomainLibrary
+    MigrationConsole --> Persistence
+    MigrationConsole --> PL
+```
+
+## High-Level Graph
+
+```mermaid
+flowchart TB
+    subgraph WebSolution["WebSolution"]
+        Client["websolution.client<br/>React + Vite"]
+        Server["WebSolution.Server<br/>ASP.NET Core host"]
+    end
+
+    subgraph ResumeModule["ResumeModule"]
+        Composition["ModulesComposition<br/>module facade"]
+        Web["ResumeModuleWeb<br/>Minimal APIs + validation"]
+        AM["ResumeModuleAM<br/>Requests + responses"]
+        SL["ResumeModuleSL<br/>CQRS handlers + mapping"]
+        Ports["SL Persistence Ports<br/>IResumeRepository + criteria/results"]
+        PL["ResumeModulePL<br/>EF adapters + configuration"]
+        DM["ResumeModuleDM<br/>Domain entities"]
+    end
+
+    subgraph Infrastructure["Infrastructure"]
+        Caching["Caching<br/>ICacheProvider + strategies"]
+        Persistence["Persistence<br/>AppDbContext + UoW"]
+        Migration["Migration<br/>EF migration console"]
+    end
+
+    subgraph Core["Core"]
+        DomainLibrary["DomainLibrary<br/>Audit/domain bases"]
+        CommonLibrary["CommonLibrary"]
+        WebLibrary["WebLibrary<br/>ASP.NET helpers"]
+    end
+
+    Database["SQL Server"]
+
+    Client --> Server
+    Server --> Composition
     Server --> Caching
     Server --> Persistence
 
-    ModuleWeb --> ModuleAM
-    ModuleWeb --> ModuleSL
-    ModuleSL --> ModuleAM
-    ModuleSL --> ModuleDM
-    ModuleSL --> ModulePL
-    ModuleSL --> CommonLibrary
+    Composition --> Web
+    Composition --> PL
 
-    ModulePL --> ModuleDM
-    ModulePL --> Persistence
-    ModulePL --> Caching
+    Web --> WebLibrary
+    Web --> AM
+    Web --> SL
 
-    ModuleDM --> DomainLibrary
+    SL --> AM
+    SL --> Ports
+    SL --> DM
+
+    PL --> Ports
+    PL --> DM
+    PL --> Persistence
+
+    DM --> DomainLibrary
     Persistence --> DomainLibrary
+    Persistence --> Database
+    Migration --> Persistence
+    Migration --> PL
 ```
 
-The graph intentionally stops direct host access at `ResumeModuleWeb` and
-`ResumeModuleAM`. `ResumeModuleSL`, `ResumeModulePL`, and `ResumeModuleDM`
-remain module internals from the host's point of view, and `ResumeModuleWeb`
-does not reference `ResumeModuleDM` or `ResumeModulePL`.
+## Solution Layout
 
-## How The Architectures Work Together
+| Path | Purpose |
+| --- | --- |
+| `application/Core/DomainLibrary` | Shared domain base classes such as `AuditEntity`, `SetupEntity`, `BusinessEntity`, and relation bases. |
+| `application/Core/CommonLibrary` | Reserved for framework-neutral shared utilities. It currently has no active shared helpers. |
+| `application/Core/WebLibrary` | ASP.NET Core-specific endpoint execution and request/header helpers. |
+| `application/Infrastructure/Caching` | Provider-neutral `ICacheProvider` with in-memory, Redis/distributed cache, and MemCache strategies. |
+| `application/Infrastructure/Persistence` | Shared `AppDbContext`, unit of work, repositories, model loading, query specifications, transaction wrappers, and setup seeding helpers. |
+| `application/Infrastructure/Migration` | Console project for creating EF migrations, applying migrations, and running seeders. |
+| `application/Modules/ResumeModule/ResumeModuleAM` | Resume request and response contracts shared by Web and SL. |
+| `application/Modules/ResumeModule/ResumeModuleDM` | Resume domain entities and setup/business relation model. |
+| `application/Modules/ResumeModule/ResumeModelSL` | Resume service layer project named `ResumeModuleSL`; owns CQRS contracts, Mediator handlers, persistence abstractions, and Mapster mapping helpers. |
+| `application/Modules/ResumeModule/ResumeModulePL` | Resume persistence layer; owns EF configurations, module schema, implementations of SL-owned persistence ports, and seed data. |
+| `application/Modules/ResumeModule/ResumeModuleWeb` | Resume module web boundary; owns Minimal API endpoints and FluentValidation validators. |
+| `application/WebSolution/ModulesComposition` | Application-level module composition boundary; registers module Web/PL projects and exposes endpoint mapping. |
+| `application/WebSolution/WebSolution.Server` | ASP.NET Core host, OpenAPI/Scalar setup, SPA hosting, and dependency composition. |
+| `application/WebSolution/websolution.client` | React + TypeScript + Vite client shell. |
 
-The application uses layered architecture at the solution and module level, then
-uses modular architecture to group layers by business capability. Clean
-Architecture principles guide dependency direction so domain code remains free
-of infrastructure details. Vertical slicing should be applied inside each module
-as use cases are added.
+## Responsibility-Based Folder Layout
 
-For example, a future "create resume" feature should be placed inside the
-Resume module rather than spread across unrelated shared folders:
+`Infrastructure/Persistence` is grouped by persistence responsibility:
 
 ```text
-Modules/ResumeModule
-  ResumeModuleWeb
-    MiniApis/CreateResumeEndpoint.cs
-  ResumeModuleAM
-    Requests/CreateResumeRequest.cs
-    Responses/CreateResumeResponse.cs
-  ResumeModelSL
-    Implementation/CreateResumeService.cs
-  ResumeModuleDM
-    Entities/Resume.cs
-  ResumeModulePL
-    Configurations/ResumeConfiguration.cs
+Audit/
+Composition/
+Context/
+Loading/
+Querying/
+Repositories/
+Seeding/
+Transactions/
+UnitOfWork/
 ```
 
-That keeps the feature vertically owned by the module while still respecting the
-layer boundaries.
+`ResumeModelSL` is grouped by CQRS/service-layer responsibility:
 
-## Module Composition
-
-The host application composes the current module and shared infrastructure in
-`application/WebSolution/WebSolution.Server/Program.cs`:
-
-```csharp
-builder.Services.AddApplicationCaching(builder.Configuration);
-builder.Services.AddAppDbContext((_, options) =>
-{
-    options.UseSqlServer(GetConnectionString(builder));
-});
-builder.Services.AddResumeModuleWeb();
+```text
+Composition/
+Abstractions/Persistence/
+Contracts/Commands/
+Contracts/Queries/
+Handlers/Commands/
+Handlers/Queries/
+Mapping/
 ```
 
-`ResumeModuleWeb` starts Resume module dependency registration:
+`ResumeModulePL` is grouped by persistence responsibility:
 
-```csharp
-services.AddResumeModuleApplication();
+```text
+Composition/
+Configurations/
+Context/
+Repositories/
+Seeding/
 ```
 
-`ResumeModuleSL` owns service-layer access to domain and persistence, and it
-registers persistence dependencies:
+`ModulesComposition` is grouped as a small host-facing facade:
 
-```csharp
-services.AddResumeModulePersistence();
+```text
+DependencyInjection.cs
 ```
 
-`ResumeModulePL` registers its model configuration and seeder through
-`AddResumeModulePersistence`, but neither the host nor `ResumeModuleWeb`
-references `ResumeModulePL` directly. The shared `AppDbContext` receives
-registered `IAppDbContextModelConfiguration` services and applies them in
-`OnModelCreating`. This allows each module to own its EF Core mapping without
-hardcoding module knowledge into shared persistence or exposing module internals
-to the host or web layer.
+`ResumeModuleWeb` separates route registration, command endpoints, query
+endpoints, and request validators:
+
+```text
+MiniApis/Commands/
+MiniApis/Queries/
+Validation/PersonalInformation/
+Validation/Resumes/
+Validation/Sections/
+Validation/Shared/
+```
+
+## Patterns In Use
+
+| Pattern | Where | Notes |
+| --- | --- | --- |
+| Modular monolith | Whole solution | One deployable host with isolated business modules. |
+| Module composition boundary | `WebSolution/ModulesComposition` | Host references one module composition project; it composes Resume and future module Web/PL projects. |
+| Layered module architecture | Resume module AM/DM/SL/PL/Web projects | Keeps transport, contracts, use cases, domain, and persistence separate. |
+| CQRS-style handlers | `ResumeModelSL/Contracts` and `ResumeModelSL/Handlers` | Commands and queries are separate contracts handled through Mediator. |
+| Mediator pattern | `ResumeModuleWeb` + `ResumeModelSL` | Minimal APIs send commands/queries to SL handlers via the martinothamar `Mediator` package. |
+| Repository pattern | `ResumeModelSL/Abstractions/Persistence`, `ResumeModulePL/Repositories`, and `Infrastructure/Persistence/Repositories` | SL defines Resume-specific persistence ports, PL implements them, and shared Persistence exposes common audited-entity repositories. |
+| Unit of Work | `Infrastructure/Persistence/UnitOfWork` | One scoped `AppDbContext` and one scoped `UnitOfWork<AppDbContext>` per DI scope. |
+| Query Specification | `Infrastructure/Persistence/Querying` | Reusable criteria/include/order/projection query shapes for audited entities. |
+| Model Loader | `Infrastructure/Persistence/Loading` | Typed nested include-path builder for repository queries. |
+| FluentValidation | `ResumeModuleWeb/Validation` | Request validation is a web-layer concern. SL handlers assume valid request contracts. |
+| Mapster mapping | `ResumeModelSL/Mapping` | Maps AM contracts, DM entities, and persistence result models. |
+| Strategy pattern | `Infrastructure/Caching/Strategies` | Cache provider behavior is selected by configuration. |
+| Code-first migrations | `Infrastructure/Migration` | EF Core migrations live outside normal web startup. |
+
+Auto-registration attributes, when introduced, should be used only in PL
+implementation projects. Web and SL registrations should stay explicit.
+
+## Resume API Surface
+
+Resume Minimal APIs are grouped under:
+
+```text
+/api/resumes
+```
+
+Current endpoints:
+
+| Method | Route | Use case |
+| --- | --- | --- |
+| `POST` | `/api/resumes/` | Create a resume. |
+| `PUT` | `/api/resumes/{resumeId}` | Update a resume. |
+| `DELETE` | `/api/resumes/{resumeId}` | Delete one resume. |
+| `POST` | `/api/resumes/delete` | Delete multiple resumes. |
+| `GET` | `/api/resumes/{resumeId}` | Get resume detail. |
+| `POST` | `/api/resumes/search` | Search resumes with paging and filters. |
+| `GET` | `/api/resumes/{resumeId}/exists` | Check resume existence. |
+
+Endpoint handlers live one operation per file under
+`ResumeModuleWeb/MiniApis/Commands` and `ResumeModuleWeb/MiniApis/Queries`.
+
+## Persistence Model
+
+`Infrastructure/Persistence` provides a shared `AppDbContext` and persistence
+toolkit:
+
+- audit-aware `SaveChangesAsync(IAudit)`
+- optimistic concurrency retry for rowversion-backed `AuditEntity.App_Version`
+- common `IAuditEntityRepository<T>` operations
+- paged query results
+- query specifications
+- typed nested model loaders
+- relational, nested, and non-relational transaction wrappers
+- setup-data seeding helpers
+- module table/schema mapping conventions
+
+`UnitOfWork<AppDbContext>` is scoped with the `AppDbContext` and coordinates
+repositories, save operations, setup entity preloading, and transaction entry.
+It is infrastructure only; business rules belong in module handlers/services.
 
 ## Domain Table Categories
 
-Domain entities inherit from `DomainLibrary.DomainModel` base classes:
+Shared domain base types in `DomainLibrary.DomainModel` drive table categories:
 
-- `SetupEntity` maps to `S_*` tables and represents seedable setup/master data.
-- `SetupRelation` maps to `SR_*` tables and represents seedable setup/config relationships.
-- `BusinessEntity` maps to `B_*` tables and represents live business records.
-- `BusinessRelation` maps to `BR_*` tables and represents live relationship or child records.
+| Base type | Table prefix | Use |
+| --- | --- | --- |
+| `SetupEntity` | `S_` | Seedable setup/master data. |
+| `SetupRelation` | `SR_` | Seedable setup/config relationships. |
+| `BusinessEntity` | `B_` | Operational root business records. |
+| `BusinessRelation` | `BR_` | Operational child/relationship records. |
 
-`SetupData` types carry `Code`, `Description`, `Guid`, and `ObsoleteFlag`.
-`AuditEntity.App_Version` is a SQL Server rowversion byte array used by EF Core
-optimistic concurrency checks.
+The Resume module schema is `resume`, so examples include
+`resume.B_Resume`, `resume.BR_Education`, and
+`resume.S_ResumeSectionSetup`.
 
-## Adding A New Module
+## Validation And Mapping Rules
 
-Use the existing Resume module as the template:
+- Web request validation belongs in `ResumeModuleWeb`.
+- FluentValidation validators live beside the web endpoints by request area.
+- Simple and cross-field request rules should be expressed in validators.
+- SL handlers should not duplicate request validation.
+- Mapping belongs in `ResumeModelSL/Mapping` and uses Mapster.
+- Custom mapping code should stay focused on workflow concerns such as access
+  checks, normalization, and EF collection synchronization.
 
-1. Create `Modules/<ModuleName>/<ModuleName>DM` for domain entities.
-2. Create `<ModuleName>AM` for request and response application models.
-3. Create `<ModuleName>SL` for use cases, service contracts, and application workflows.
-4. Create `<ModuleName>PL` for EF Core configurations, schema registration, and seeders.
-5. Create `<ModuleName>Web` for controllers, minimal APIs, and module dependency registration.
-6. Register service dependencies with an `Add<ModuleName>Application` extension method.
-7. Register persistence dependencies with an `Add<ModuleName>Persistence` extension method.
-8. Reference `<ModuleName>DM` and `<ModuleName>PL` from `<ModuleName>SL`.
-9. Call `<ModuleName>Persistence` from `<ModuleName>SL`, not from `<ModuleName>Web`.
-10. Call `<ModuleName>Application` from `<ModuleName>Web` through an `Add<ModuleName>Web` extension method.
-11. Reference the module persistence project from `Infrastructure/Migration`.
-12. Reference only `<ModuleName>Web` and `<ModuleName>AM` from `WebSolution.Server`.
-13. Create and review an EF Core migration.
+## Migration Workflow
 
-## Current Architecture Notes
+Migrations are handled by the console project, not by normal web startup.
 
-- The Resume module has complete domain and persistence foundations.
-- `ResumeModuleAM` is the application-model bridge between `ResumeModuleWeb` and `ResumeModuleSL`.
-- `ResumeModuleWeb` is the Resume module host-facing entry boundary.
-- `ResumeModuleSL` owns the dependency to `ResumeModuleDM` and `ResumeModulePL`.
-- The Resume service layer and web/API module are currently scaffolds, so full vertical feature slices should be added as features are implemented.
-- The current web API still includes the default `WeatherForecast` sample endpoint. It should be removed once the first real Resume endpoint is added.
-- The project does not currently use CQRS, Event Sourcing, Microservices, Repository pattern, or Mediator pattern. Add those only when they solve a real problem.
+Show migration help:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help
+```
+
+Create a migration:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c AddResumeFields
+```
+
+Apply pending migrations:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
+```
+
+Run seeders:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -s
+```
+
+Create, apply, and seed:
+
+```powershell
+dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c AddResumeFields -a -s
+```
+
+The migration console is verbose by default. It prints EF CLI details, pending
+migrations, registered seeders, EF diagnostics, colored severity messages, and
+full exception stack traces on failure.
+
+Default development connection string:
+
+```text
+Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer
+```
+
+## Main Dependencies
+
+| Area | Dependencies |
+| --- | --- |
+| Runtime | .NET `net10.0` projects with nullable reference types enabled. |
+| Web/API | ASP.NET Core, `Microsoft.AspNetCore.OpenApi`, `Scalar.AspNetCore`. |
+| Persistence | EF Core `Microsoft.EntityFrameworkCore`, `Relational`, `SqlServer`, and `Design` for migrations. |
+| CQRS/Mediator | `Mediator.Abstractions` and `Mediator.SourceGenerator`. |
+| Mapping | `Mapster`. |
+| Validation | `FluentValidation` and `FluentValidation.DependencyInjectionExtensions`. |
+| Caching | `Microsoft.Extensions.Caching.*`, including in-memory and StackExchangeRedis support. |
+| Client | React + TypeScript + Vite through the `.esproj` client project. |
 
 ## Build
+
+Build the full solution:
 
 ```powershell
 dotnet build application\ResumeEnhancerApp.slnx
 ```
 
-## Migrations
+Run the API host:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help
+dotnet run --project application\WebSolution\WebSolution.Server\WebSolution.Server.csproj
 ```
+
+In development, the host maps OpenAPI and Scalar API reference UI through
+`MapOpenApi()` and `MapScalarApiReference()`.
+
+## Adding A New Module
+
+Use the Resume module as the template:
+
+1. Create `<ModuleName>DM` for domain entities.
+2. Create `<ModuleName>AM` for request and response contracts.
+3. Create `<ModuleName>SL` for CQRS contracts, handlers, mapping, and persistence ports.
+4. Create `<ModuleName>PL` for EF configuration, schema, seeders, and implementations of SL-owned ports.
+5. Create `<ModuleName>Web` for Minimal APIs, controllers, validators, and module web registration.
+6. Add the module to `WebSolution/ModulesComposition` for host-facing registration and endpoint mapping.
+7. Register persistence with `Add<ModuleName>Persistence()` inside `ModulesComposition`.
+8. Register web/application dependencies with `Add<ModuleName>Web()` inside `ModulesComposition`.
+9. Expose module registration through `AddApplicationModules()`.
+10. Reference the module PL project from `Infrastructure/Migration`.
+11. Reference only `WebSolution/ModulesComposition` from the host.
+12. Create and review an EF migration.
+
+## Current Notes
+
+- Resume CRUD/search/exists API flows are implemented through Minimal APIs,
+  Mediator handlers, Mapster mapping, SL-owned repository ports, and PL
+  repository adapters.
+- `Core/CommonLibrary` is intentionally light and currently has no active
+  shared helpers.

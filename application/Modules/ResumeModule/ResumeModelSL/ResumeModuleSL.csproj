@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ResumeModuleAM\ResumeModuleAM.csproj" />
     <ProjectReference Include="..\ResumeModuleDM\ResumeModuleDM.csproj" />
-    <ProjectReference Include="..\ResumeModulePL\ResumeModulePL.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-namespace ResumeModulePL.Contracts;
+namespace ResumeModuleSL.Abstractions.Persistence;
 
 public sealed class ResumeSearchCriteria
 {

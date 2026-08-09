@@ -1,8 +1,7 @@
 using Caching;
 using Microsoft.EntityFrameworkCore;
+using ModulesComposition;
 using Persistence;
-using ResumeModuleWeb;
-using ResumeModuleWeb.MiniApis;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +13,8 @@ builder.Services.AddAppDbContext((_, options) =>
 {
     options.UseSqlServer(GetConnectionString(builder));
 });
-builder.Services.AddResumeModuleWeb();
+builder.Services.AddApplicationModules();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -39,8 +36,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
-app.MapResumeModuleApis();
+app.MapApplicationModuleApis();
 
 app.MapFallbackToFile("/index.html");
 
