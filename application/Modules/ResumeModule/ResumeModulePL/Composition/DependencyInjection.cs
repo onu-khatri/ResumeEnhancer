@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Persistence;
+using ResumeModulePL.Contracts;
+using ResumeModulePL.Repositories;
 using ResumeModulePL.Seeding;
 
 namespace ResumeModulePL;
@@ -24,6 +26,7 @@ public static class DependencyInjection
 
         services.TryAddEnumerable(
             ServiceDescriptor.Scoped<IAppDbContextSeeder, ResumeModuleSeeder>());
+        services.TryAddScoped<IResumeRepository, ResumeRepository>();
 
         return services;
     }

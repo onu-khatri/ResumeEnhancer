@@ -9,8 +9,20 @@ ResumeModulePL owns:
 - EF Core entity configurations.
 - Resume module schema registration.
 - `AppDbContext` extension methods for Resume `DbSet<T>` access.
+- Repository contracts and EF-backed repository implementations.
 - Resume setup seed data.
 - Dependency injection for module persistence registration.
+
+## Project Layout
+
+| Folder | Purpose |
+| --- | --- |
+| `Composition` | Dependency injection registration for Resume persistence services. |
+| `Configurations` | EF Core entity type configurations. |
+| `Context` | Resume schema, model configuration, and `AppDbContext` Resume `DbSet<T>` extensions. |
+| `Contracts` | Persistence-layer repository contracts and result/criteria models. |
+| `Repositories` | EF-backed repository implementations. |
+| `Seeding` | Resume setup seed data and seeders. |
 
 ## Table Mapping
 

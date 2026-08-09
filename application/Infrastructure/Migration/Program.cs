@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Persistence;
 using ResumeEnhancer.Infrastructure.Migrations;
 using ResumeModulePL;
@@ -11,7 +12,7 @@ return await MigrationConsole.RunAsync(args);
 internal static class MigrationConsole
 {
     private const string DefaultConnectionString =
-        "Server=(localdb)\\mssqllocaldb;Database=ResumeEnhancerDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+        "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
     private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -19,6 +20,7 @@ internal static class MigrationConsole
             "dev",
             "test"
         };
+    private static readonly object ConsoleSync = new();
 
     public static async Task<int> RunAsync(string[] args)
     {
@@ -26,7 +28,7 @@ internal static class MigrationConsole
 
         if (options.ShowHelp || !options.HasActions)
         {
-            Console.WriteLine(MigrationCommandLine.Usage);
+            WriteInfo(MigrationCommandLine.Usage);
             return options.ShowHelp ? 0 : 1;
         }
 
@@ -39,6 +41,9 @@ internal static class MigrationConsole
 
         try
         {
+            WriteStep("Migration command started.");
+            WriteInfo($"Actions: {options.DescribeActions()}");
+
             if (options.CreateMigration)
             {
                 await CreateMigrationAsync(options, cancellationTokenSource.Token);
@@ -55,21 +60,22 @@ internal static class MigrationConsole
 
                 if (options.SeedData)
                 {
-                    await serviceProvider.SeedAppDbContextAsync(cancellationTokenSource.Token);
-                    Console.WriteLine("Seed data has been applied.");
+                    await SeedDataAsync(serviceProvider, cancellationTokenSource.Token);
                 }
             }
 
+            WriteStep("Migration command completed.");
             return 0;
         }
         catch (OperationCanceledException)
         {
-            Console.Error.WriteLine("Migration command was cancelled.");
+            WriteWarning("Migration command was cancelled.");
             return 130;
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine(exception.Message);
+            WriteError("Migration command failed with an unhandled exception.");
+            WriteError(exception.ToString());
             return 1;
         }
     }
@@ -86,6 +92,8 @@ internal static class MigrationConsole
         services.AddResumeModulePersistence();
         services.AddAppDbContext((_, options) =>
         {
+            options.EnableDetailedErrors();
+            options.LogTo(WriteEfLog, LogLevel.Debug);
             options.UseSqlServer(connectionString, sqlServerOptions =>
             {
                 sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
@@ -101,9 +109,64 @@ internal static class MigrationConsole
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var databaseProvider = dbContext.Database.ProviderName ?? "unknown provider";
+        var pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
 
+        WriteStep("Checking pending EF Core migrations.");
+        WriteInfo($"Database provider: {databaseProvider}");
+
+        if (pendingMigrations.Count == 0)
+        {
+            WriteInfo("Pending migrations: none.");
+        }
+        else
+        {
+            WriteInfo($"Pending migrations ({pendingMigrations.Count}):");
+
+            foreach (var migration in pendingMigrations)
+            {
+                WriteInfo($"  - {migration}");
+            }
+        }
+
+        WriteStep("Applying pending EF Core migrations.");
         await dbContext.Database.MigrateAsync(cancellationToken);
-        Console.WriteLine("Pending migrations have been applied.");
+        WriteSuccess("Pending migrations have been applied.");
+    }
+
+    private static async Task SeedDataAsync(
+        IServiceProvider serviceProvider,
+        CancellationToken cancellationToken)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var seeders = scope.ServiceProvider
+            .GetServices<IAppDbContextSeeder>()
+            .ToList();
+
+        WriteStep("Checking registered seeders.");
+
+        if (seeders.Count == 0)
+        {
+            WriteWarning("Registered seeders: none.");
+            return;
+        }
+
+        WriteInfo($"Registered seeders ({seeders.Count}):");
+
+        foreach (var seeder in seeders)
+        {
+            WriteInfo($"  - {seeder.GetType().FullName}");
+        }
+
+        foreach (var seeder in seeders)
+        {
+            WriteStep($"Running seeder {seeder.GetType().FullName}.");
+            await seeder.SeedAsync(dbContext, cancellationToken);
+            WriteSuccess($"Seeder completed: {seeder.GetType().FullName}");
+        }
+
+        WriteSuccess("Seed data has been applied.");
     }
 
     private static async Task CreateMigrationAsync(
@@ -115,6 +178,10 @@ internal static class MigrationConsole
             ?? throw new InvalidOperationException("Unable to resolve the migration project directory.");
         var migrationName = ResolveMigrationName(options.MigrationName, projectDirectory);
 
+        WriteStep("Creating EF Core migration.");
+        WriteInfo($"Migration project: {projectPath}");
+        WriteInfo($"Migration name: {migrationName}");
+
         var processStartInfo = new ProcessStartInfo("dotnet")
         {
             UseShellExecute = false,
@@ -124,6 +191,7 @@ internal static class MigrationConsole
         };
 
         processStartInfo.ArgumentList.Add("ef");
+        processStartInfo.ArgumentList.Add("--verbose");
         processStartInfo.ArgumentList.Add("migrations");
         processStartInfo.ArgumentList.Add("add");
         processStartInfo.ArgumentList.Add(migrationName);
@@ -142,6 +210,9 @@ internal static class MigrationConsole
             processStartInfo.ArgumentList.Add("--connection");
             processStartInfo.ArgumentList.Add(options.ConnectionString);
         }
+
+        WriteStep("Launching EF Core CLI.");
+        WriteDebug($"  {FormatCommand(processStartInfo)}");
 
         using var process = new Process { StartInfo = processStartInfo };
 
@@ -164,8 +235,11 @@ internal static class MigrationConsole
 
         if (process.ExitCode != 0)
         {
-            throw new InvalidOperationException($"Migration creation failed with exit code {process.ExitCode}.");
+            throw new InvalidOperationException(
+                $"Migration creation failed with exit code {process.ExitCode}. Command: {FormatCommand(processStartInfo)}");
         }
+
+        WriteSuccess("Migration files have been created.");
     }
 
     private static string ResolveMigrationName(string? migrationName, string projectDirectory)
@@ -390,9 +464,158 @@ internal static class MigrationConsole
     {
         if (!string.IsNullOrWhiteSpace(value))
         {
-            writer.WriteLine(value);
+            WriteMessage(ClassifyLogMessage(value, writer == Console.Error), value, writer);
         }
     }
+
+    private static void WriteEfLog(string message)
+    {
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            var trimmedMessage = message.TrimEnd();
+            WriteMessage(ClassifyLogMessage(trimmedMessage, isErrorStream: false), trimmedMessage);
+        }
+    }
+
+    private static void WriteStep(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Step, $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}] {message}");
+
+    private static void WriteDebug(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Debug, message);
+
+    private static void WriteInfo(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Info, message);
+
+    private static void WriteSuccess(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Success, message);
+
+    private static void WriteWarning(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Warning, message, Console.Error);
+
+    private static void WriteError(string message) =>
+        WriteMessage(ConsoleMessageSeverity.Error, message, Console.Error);
+
+    private static void WriteMessage(
+        ConsoleMessageSeverity severity,
+        string message,
+        TextWriter? writer = null)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        writer ??= severity is ConsoleMessageSeverity.Warning or ConsoleMessageSeverity.Error
+            ? Console.Error
+            : Console.Out;
+
+        lock (ConsoleSync)
+        {
+            var useColor =
+                (writer == Console.Out && !Console.IsOutputRedirected)
+                || (writer == Console.Error && !Console.IsErrorRedirected);
+            var originalColor = Console.ForegroundColor;
+
+            try
+            {
+                if (useColor)
+                {
+                    Console.ForegroundColor = GetColor(severity);
+                }
+
+                writer.WriteLine(message);
+            }
+            finally
+            {
+                if (useColor)
+                {
+                    Console.ForegroundColor = originalColor;
+                }
+            }
+        }
+    }
+
+    private static ConsoleColor GetColor(ConsoleMessageSeverity severity) =>
+        severity switch
+        {
+            ConsoleMessageSeverity.Debug => ConsoleColor.DarkGray,
+            ConsoleMessageSeverity.Info => ConsoleColor.Gray,
+            ConsoleMessageSeverity.Step => ConsoleColor.Cyan,
+            ConsoleMessageSeverity.Success => ConsoleColor.Green,
+            ConsoleMessageSeverity.Warning => ConsoleColor.Yellow,
+            ConsoleMessageSeverity.Error => ConsoleColor.Red,
+            _ => Console.ForegroundColor
+        };
+
+    private static ConsoleMessageSeverity ClassifyLogMessage(string message, bool isErrorStream)
+    {
+        var normalizedMessage = message.TrimStart();
+
+        if (StartsWithAny(normalizedMessage, "fail:", "fatal:", "crit:", "critical:", "error:")
+            || ContainsAny(normalizedMessage, "Unhandled exception", "System.Exception", "SqlException", "ERROR "))
+        {
+            return ConsoleMessageSeverity.Error;
+        }
+
+        if (StartsWithAny(normalizedMessage, "warn:", "warning:")
+            || ContainsAny(normalizedMessage, " warning ", "Warning:", "NU190"))
+        {
+            return ConsoleMessageSeverity.Warning;
+        }
+
+        if (StartsWithAny(normalizedMessage, "dbug:", "debug:", "trce:", "trace:"))
+        {
+            return ConsoleMessageSeverity.Debug;
+        }
+
+        if (StartsWithAny(normalizedMessage, "info:", "information:"))
+        {
+            return ConsoleMessageSeverity.Info;
+        }
+
+        return isErrorStream
+            ? ConsoleMessageSeverity.Error
+            : ConsoleMessageSeverity.Info;
+    }
+
+    private static bool StartsWithAny(string value, params string[] prefixes) =>
+        prefixes.Any(prefix => value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+    private static bool ContainsAny(string value, params string[] fragments) =>
+        fragments.Any(fragment => value.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+
+    private static string FormatCommand(ProcessStartInfo processStartInfo)
+    {
+        var command = new StringBuilder(processStartInfo.FileName);
+        var redactNextArgument = false;
+
+        foreach (var argument in processStartInfo.ArgumentList)
+        {
+            command.Append(' ');
+            command.Append(redactNextArgument
+                ? QuoteArgument("<connection-string>")
+                : QuoteArgument(argument));
+            redactNextArgument = argument.Equals("--connection", StringComparison.OrdinalIgnoreCase)
+                || argument.Equals("--connection-string", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return command.ToString();
+    }
+
+    private static string QuoteArgument(string argument) =>
+        string.IsNullOrEmpty(argument) || argument.Any(char.IsWhiteSpace) || argument.Contains('"')
+            ? $"\"{argument.Replace("\"", "\\\"", StringComparison.Ordinal)}\""
+            : argument;
+}
+
+internal enum ConsoleMessageSeverity
+{
+    Debug,
+    Info,
+    Step,
+    Success,
+    Warning,
+    Error
 }
 
 internal sealed class MigrationCommandLine
@@ -428,6 +651,30 @@ internal sealed class MigrationCommandLine
     public string? ConnectionString { get; private set; }
 
     public bool HasActions => CreateMigration || ApplyMigrations || SeedData;
+
+    public string DescribeActions()
+    {
+        var actions = new List<string>();
+
+        if (CreateMigration)
+        {
+            actions.Add("create migration");
+        }
+
+        if (ApplyMigrations)
+        {
+            actions.Add("apply migrations");
+        }
+
+        if (SeedData)
+        {
+            actions.Add("seed data");
+        }
+
+        return actions.Count == 0
+            ? "none"
+            : string.Join(", ", actions);
+    }
 
     public static MigrationCommandLine Parse(string[] args)
     {
