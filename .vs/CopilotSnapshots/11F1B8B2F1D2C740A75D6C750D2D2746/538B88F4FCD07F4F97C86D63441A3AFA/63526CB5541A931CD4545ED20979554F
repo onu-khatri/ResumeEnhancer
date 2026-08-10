@@ -1,4 +1,4 @@
-using Caching;
+﻿using Caching;
 using Microsoft.EntityFrameworkCore;
 using ModulesComposition;
 using Persistence;
@@ -16,7 +16,6 @@ builder.Services.AddAppDbContext((_, options) =>
 builder.Services.AddApplicationModules();
 
 builder.Services.AddOpenApi();
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -33,10 +32,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
