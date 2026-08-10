@@ -9,7 +9,7 @@
     <DockerfileContext>..\..</DockerfileContext>
     <SpaRoot>..\websolution.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:56866</SpaProxyServerUrl>
+    <SpaProxyServerUrl>http://localhost:56866</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
