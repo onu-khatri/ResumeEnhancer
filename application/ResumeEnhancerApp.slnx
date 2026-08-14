@@ -10,6 +10,13 @@
     <Project Path="Infrastructure/Persistence/Persistence.csproj" Id="65e64fdb-d687-414b-8c51-3f564d536c08" />
   </Folder>
   <Folder Name="/Modules/" />
+  <Folder Name="/Modules/AuthModule/">
+    <Project Path="AuthModuleAM/AuthModuleAM.csproj" Id="d6317e52-9ca7-42be-b912-973a6ec8b3a0" />
+    <Project Path="AuthModuleDM/AuthModuleDM.csproj" Id="c1bbebca-b287-472b-96a3-089d3c653d1f" />
+    <Project Path="AuthModulePL/AuthModulePL.csproj" Id="57281d23-a544-4509-9aff-8ec47631b5c8" />
+    <Project Path="AuthModuleSL/AuthModuleSL.csproj" Id="57ed13e0-a68d-460f-ad48-eda92cfd5d05" />
+    <Project Path="AuthModuleWeb/AuthModuleWeb.csproj" Id="3c9f5790-bb8f-47db-8c7d-849b468051cd" />
+  </Folder>
   <Folder Name="/Modules/ResumeModule/">
     <Project Path="Modules/ResumeModule/ResumeModelSL/ResumeModuleSL.csproj" Id="5fe300a2-a6df-4b86-97bb-c600d9689738" />
     <Project Path="Modules/ResumeModule/ResumeModuleAM/ResumeModuleAM.csproj" Id="daaa3f13-474b-4859-96da-cb5b7691c51c" />

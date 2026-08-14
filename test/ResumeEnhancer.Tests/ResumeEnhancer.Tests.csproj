@@ -21,5 +21,6 @@
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModelSL\ResumeModuleSL.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleWeb\ResumeModuleWeb.csproj" />
     <ProjectReference Include="..\..\application\WebSolution\ModulesComposition\ModulesComposition.csproj" />
+    <ProjectReference Include="..\..\application\WebSolution\WebSolution.Server\WebSolution.Server.csproj" />
   </ItemGroup>
 </Project>

@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Shouldly;
 using Persistence;
 using ResumeEnhancer.Infrastructure.Migrations;
 using ResumeModuleDM.Entities;
-
+using Shouldly;
 namespace ResumeEnhancer.Tests.Infrastructure.Migration;
 
 public sealed class AppDbContextDesignTimeFactoryTests
@@ -14,11 +13,18 @@ public sealed class AppDbContextDesignTimeFactoryTests
         var factory = new AppDbContextDesignTimeFactory();
 
         using var dbContext = factory.CreateDbContext(
-            ["--connection", "Server=(local);Database=ResumeEnhancerTests;Trusted_Connection=True;TrustServerCertificate=True"]);
+        [
+            "--connection",
+            "Server=(local);Database=ResumeEnhancerTests;Trusted_Connection=True;TrustServerCertificate=True"
+        ]);
 
         dbContext.ShouldBeOfType<AppDbContext>();
-        dbContext.Database.ProviderName.ShouldBe("Microsoft.EntityFrameworkCore.SqlServer");
-        dbContext.Model.FindEntityType(typeof(Resume)).ShouldNotBeNull();
+        dbContext.Database.ProviderName
+            .ShouldBe("Microsoft.EntityFrameworkCore.SqlServer");
+
+        dbContext.Model
+            .FindEntityType(typeof(Resume))
+            .ShouldNotBeNull();
     }
 
     [Fact]

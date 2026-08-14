@@ -1,3 +1,5 @@
+using AuthModulePL.Configurations;
+using AuthModulePL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Persistence;
@@ -8,7 +10,7 @@ namespace ResumeEnhancer.Infrastructure.Migrations;
 public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     private const string DefaultConnectionString =
-        "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
+        "Server=localhost;Database=ResumeEnhancer;Integrated Security=True;Encrypt=False;";
 
     public AppDbContext CreateDbContext(string[] args)
     {
@@ -24,7 +26,7 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
             })
             .Options;
 
-        return new AppDbContext(options, [new ResumeModuleDbContextModelConfiguration()]);
+        return new AppDbContext(options, [new ResumeModuleDbContextModelConfiguration(), new AuthModuleDbContextConfigurations()]);
     }
 
     private static string? GetConnectionStringFromArgs(string[] args)

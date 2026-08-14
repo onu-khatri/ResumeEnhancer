@@ -19,6 +19,9 @@ public static class DependencyInjection
         });
         services.AddValidatorsFromAssemblyContaining<CreateResumeRequestValidator>();
 
+        services.AddControllers().AddApplicationPart(typeof(DependencyInjection).Assembly); // add-controllers from the current assembly
+        // Mere assembly mein jo controllers hain, unko MVC controller discovery mein include karo.
+
         return services;
     }
 }

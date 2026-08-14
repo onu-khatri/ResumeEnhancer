@@ -1,3 +1,4 @@
+using AuthModuleWeb;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ResumeModulePL;
@@ -12,6 +13,8 @@ public static class DependencyInjection
     {
         services.AddResumeModulePersistence();
         services.AddResumeModuleWeb();
+        services.AddAuthModuleWebDI();
+       
 
         return services;
     }

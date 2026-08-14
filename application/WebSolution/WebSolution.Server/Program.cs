@@ -16,6 +16,7 @@ builder.Services.AddAppDbContext((_, options) =>
 builder.Services.AddApplicationModules();
 
 builder.Services.AddOpenApi();
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -37,8 +38,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-
+app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 app.MapApplicationModuleApis();
 

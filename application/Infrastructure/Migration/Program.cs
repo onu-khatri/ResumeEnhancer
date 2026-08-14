@@ -12,7 +12,7 @@ return await MigrationConsole.RunAsync(args);
 internal static class MigrationConsole
 {
     private const string DefaultConnectionString =
-        "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
+    "Server=localhost;Database=ResumeEnhancer;Integrated Security=True;Encrypt=False;";
     private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName =
         new(StringComparer.OrdinalIgnoreCase)
         {
