@@ -4,10 +4,11 @@ Granular YES/NO companion to `knowledge-quality-gates.md`. A NO is a defect to f
 
 ## Frontmatter & structure
 
-- [ ] Has `title`, `intent`, `scope`, `audience`, `last_reviewed`, `status`, `source_plan`, `validation`.
-- [ ] `status` is `draft` | `reviewed` | `stable` and matches what was actually done.
-- [ ] `intent` is an action (not a noun); `scope` states in/out; `audience` names a role; `last_reviewed` is today.
-- [ ] `source_plan` points to the real `*.kb_plan.md`.
+- [ ] `*.pre-knowledge.md` has `title`, `intent`, `scope`, `audience`, `last_reviewed`, `status`, `source_plan`, `validation`.
+- [ ] Final `*.knowledge.md` has `title`, `intent`, `scope`, `audience`, `last_reviewed`, and omits `status`, `source_plan`, and `validation`.
+- [ ] `*.pre-knowledge.md` status is `draft` | `reviewed` | `stable` and matches what was actually done.
+- [ ] `intent` is an action (not a noun); `scope` states in/out; `audience` explicitly names the real reader, not `combination`; `last_reviewed` is today.
+- [ ] `*.pre-knowledge.md` source_plan points to the real `*.kb_plan.md`.
 
 ## Evidence & grounding
 
@@ -22,7 +23,7 @@ Granular YES/NO companion to `knowledge-quality-gates.md`. A NO is a defect to f
 
 ## User interview (Gate D)
 
-- [ ] The `question` tool was used; every ambiguity, preference, option, and gap was surfaced.
+- [ ] The interview was run one question at a time; the VS Code question UI tool was used when available, otherwise the fallback limitation was recorded.
 - [ ] If missing from the prompt, `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, and `Applicability` were explicitly asked and recorded.
 - [ ] A multi-selection list of the core template sections was presented to the user; any extra section beyond the core set was proposed separately and explicitly approved before inclusion.
 - [ ] Evidence style preference was asked explicitly (for example: snippet-first vs. file/line references).
@@ -48,5 +49,6 @@ Granular YES/NO companion to `knowledge-quality-gates.md`. A NO is a defect to f
 
 ## Validation record
 
-- [ ] `validation` lists gates A–H PASS/FAIL, `assumptions`, and gaps.
+- [ ] `*.pre-knowledge.md` `validation` lists gates A–H PASS/FAIL, `assumptions`, and gaps.
+- [ ] Final `*.knowledge.md` strips `status`, `source_plan`, and `validation`.
 - [ ] After saving the final `*.knowledge.md`, the user was asked whether to delete the intermediate `*.kb_plan.md` and `*.pre-knowledge.md` files.

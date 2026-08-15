@@ -2,14 +2,14 @@
 
 Use this template as the starting shape for every `*.pre-knowledge.md` and final `*.knowledge.md` artifact. Keep the structure lightweight by default. Start with the core sections below, then add only the extra sections that the user explicitly approved after you discovered they would improve the artifact.
 
-## Frontmatter (required)
+## `*.pre-knowledge.md` frontmatter (required)
 
 ```yaml
 ---
 title: <short title>
 intent: <what this knowledge helps an agent DO, not what the topic IS>
 scope: <what is in and out; name the topic boundary>
-audience: <implementer | reviewer | planner | onboarder | combination>
+audience: <explicit named audience such as AI agent implementer, reviewer, and planner>
 last_reviewed: <YYYY-MM-DD>
 status: draft | reviewed | stable
 source_plan: KnowledgeBase/<topic-name>.kb_plan.md
@@ -33,6 +33,20 @@ validation:
 
 Keep the frontmatter short. Only expand `assumptions` or `known_gaps` when they are real.
 
+## Final `*.knowledge.md` frontmatter (required)
+
+Final knowledge artifacts should keep only durable reader-facing metadata and should not carry workflow bookkeeping fields such as `status`, `source_plan`, or `validation`.
+
+```yaml
+---
+title: <short title>
+intent: <what this knowledge helps an agent DO, not what the topic IS>
+scope: <what is in and out; name the topic boundary>
+audience: <explicit named audience such as AI agent implementer, reviewer, and planner>
+last_reviewed: <YYYY-MM-DD>
+---
+```
+
 ## Core sections (start here)
 
 ### Intent
@@ -47,6 +61,7 @@ The trigger conditions: the agent situation that makes this artifact the right o
 
 Repo-specific terms, symbols, and responsibilities, defined at first use.
 Expectation: include short code snippets for the key abstractions so an agent can understand the role of the concept without reopening the repository immediately.
+Expectation: when linking files, use repository-relative markdown links so the artifact remains portable across machines.
 
 ### Main workflows
 
@@ -96,6 +111,6 @@ Keep a private scratch list while investigating; include a public evidence map o
 | ...   | ...                | Observed / Inferred / Recommended |
 ```
 
-## Validation block (required in frontmatter)
+## Validation block (required in `*.pre-knowledge.md` only)
 
-Complete after running the sequential gates (`knowledge-quality-gates.md`), the checklist (`artifact-validator-checklist.md`), and the artifact cross-examination (`artifact-cross-examination.md`). The gates run in order A→H; Gate D is the user interview and must pass before E–H are attempted. A `status` of `stable` is only valid if you re-ran the validator against current code this session. Keep `status: draft` for unapproved `.pre-knowledge.md` artifacts.
+Complete after running the sequential gates (`knowledge-quality-gates.md`), the checklist (`artifact-validator-checklist.md`), and the artifact cross-examination (`artifact-cross-examination.md`). The gates run in order A→H; Gate D is the user interview and must pass before E–H are attempted. A `status` of `stable` is only valid if you re-ran the validator against current code this session. Keep `status: draft` for unapproved `.pre-knowledge.md` artifacts. Before saving the final `*.knowledge.md`, remove `status`, `source_plan`, and `validation`.

@@ -15,8 +15,11 @@ Default authoring preferences for this repository's knowledge artifacts:
 - Prefer **short code snippets** as the primary evidence style for important claims.
 - Keep **every included section self-sufficient**: an agent should understand the section's main behavior without reopening the code for first-pass comprehension.
 - Use raw file-path references sparingly. When references are needed, prefer **interface or type names linked to their files** over general file inventories.
+- In saved knowledge artifacts, use **repository-relative markdown links** such as `../application/...` or `../test/...` so links remain portable across machines and workspaces.
 - If a section cannot be explained clearly with a snippet, either add the snippet or narrow the section; do not leave the agent dependent on "go read the code" as the main path.
 - Keep the artifact template lightweight by default: start from a small core set of sections, then add extra sections only when the topic genuinely needs them and the user approves them.
+- Final `*.knowledge.md` files should contain durable knowledge only. Do not carry workflow-only metadata such as `status`, `source_plan`, or `validation` into the final artifact.
+- Audience should be named explicitly for the real reader, for example `AI agent implementer, reviewer, and planner`, instead of vague placeholders such as `combination`.
 
 ## Use when
 
@@ -32,13 +35,13 @@ A one-off answer is enough and no saved artifact is needed.
 |---|------|------|
 | 1 | Check `KnowledgeBase/` for an existing artifact; extend it or start fresh | — |
 | 2 | Frame the topic and investigate, keeping an evidence map | A |
-| 3 | Interview the user (framing: objective, audience, depth of knowledge, expected structure, applicability, scope, core-section selection, evidence style, extra-section approval) via the `question` tool | — |
+| 3 | Interview the user (framing: objective, audience, depth of knowledge, expected structure, applicability, scope, core-section selection, evidence style, extra-section approval) in an interactive one-question-at-a-time flow, preferring the VS Code question UI tool when available | — |
 | 4 | Write `KnowledgeBase/<topic-name>.kb_plan.md`; **wait for approval** | — |
 | 5 | Compose `KnowledgeBase/<topic-name>.pre-knowledge.md` with snippet-first, self-sufficient sections | B–C |
 | 6 | **Interview the user again** (resolve ambiguities, preferences, options; confirm core sections and any discovered extra sections) | D |
 | 7 | Validate: consistency, boundary, currency, record | E–H |
 | 8 | Cross-examine the artifact; fix defects; **wait for draft approval** | — |
-| 9 | Save `KnowledgeBase/<topic-name>.knowledge.md`, report, and ask whether to delete `*.kb_plan.md` and `*.pre-knowledge.md` | H |
+| 9 | Save `KnowledgeBase/<topic-name>.knowledge.md`, strip workflow-only metadata from the final file, report, and ask whether to delete `*.kb_plan.md` and `*.pre-knowledge.md` | H |
 
 Gates A–H (defined in `references/knowledge-quality-gates.md`):
 
@@ -61,8 +64,11 @@ Gates A–H (defined in `references/knowledge-quality-gates.md`):
 - Save artifacts under `KnowledgeBase/`.
 - Do not skip the user interview just because the initial prompt already contains some scope details; confirm unresolved preferences explicitly.
 - If the prompt does not explicitly provide `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, or `Applicability`, ask for them and do not assume them.
+- Run the interview one question at a time. Prefer the VS Code question UI tool when it is available in the active mode so the user can answer with option buttons and multi-select where needed.
+- If the VS Code question UI tool is not available, fall back to plain chat questions one by one and record that limitation explicitly.
 - Do not rely on path-only evidence where a short snippet would better ground the claim.
 - Do not leave a kept section too thin; every included section should contain enough concrete snippet material that a cold-start agent can reason from the artifact itself.
+- `*.pre-knowledge.md` may include workflow metadata needed for approval and validation. Final `*.knowledge.md` should omit `status`, `source_plan`, and `validation`.
 
 ## Artifact status
 
