@@ -15,7 +15,7 @@ Use this note when the code touches a trust boundary or a protected data path. I
 - Are audit-user and ownership-user headers kept distinct and never conflated?
 
 ### Input validation and injection
-- Are user-controlled request fields covered by FluentValidation in `<ModuleName>ModuleWeb/Validation`?
+- Are user-controlled request fields covered by FluentValidation in `ResumeEnhancer.<ModuleName>.Web/Validation`?
 - Are search/filter values applied through EF query composition (parameterized), never string-built SQL?
 - Are paging, date ranges, and id lists validated before they reach the query?
 

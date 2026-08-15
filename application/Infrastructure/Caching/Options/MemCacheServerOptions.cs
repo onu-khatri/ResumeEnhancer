@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class MemCacheServerOptions
 {
@@ -6,3 +6,4 @@ public sealed class MemCacheServerOptions
 
     public int Port { get; set; } = 11211;
 }
+

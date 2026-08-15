@@ -1,6 +1,6 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public class ModelLoader<TModel> : IModelLoader<TModel>
     where TModel : AuditEntity
@@ -24,3 +24,4 @@ public class ModelLoader<TModel> : IModelLoader<TModel>
     public List<IncludablePath> GetIncludablePaths() =>
         _navigationPaths;
 }
+

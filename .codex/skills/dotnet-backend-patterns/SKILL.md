@@ -25,11 +25,11 @@ Use this skill as the backend implementation playbook for ResumeEnhancer.
 
 ## Core rules
 
-- keep HTTP concerns in `<ModuleName>ModuleWeb`
-- keep request/response contracts in `<ModuleName>ModuleAM`
-- keep contracts, handlers, and mapping workflow in `<ModuleName>ModuleSL`
-- keep domain entities in `<ModuleName>ModuleDM`
-- keep EF configuration, repositories, and seeding in `<ModuleName>ModulePL`
+- keep HTTP concerns in `ResumeEnhancer.<ModuleName>.Web`
+- keep request/response contracts in `ResumeEnhancer.<ModuleName>.AM`
+- keep contracts, handlers, and mapping workflow in `ResumeEnhancer.<ModuleName>.SL`
+- keep domain entities in `ResumeEnhancer.<ModuleName>.DM`
+- keep EF configuration, repositories, and seeding in `ResumeEnhancer.<ModuleName>.PL`
 - use the `Mediator` source generator, not MediatR
 - use Mapster mapping with explicit `.Ignore()` for navigation properties
 - prefer `IUnitOfWork<AppDbContext>` and `IAuditEntityRepository<>` over new abstractions
@@ -44,5 +44,6 @@ Use this skill as the backend implementation playbook for ResumeEnhancer.
 ## Definition of Done
 
 - `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- Relevant unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore`.
-- When persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- Relevant unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`.
+- When persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
+

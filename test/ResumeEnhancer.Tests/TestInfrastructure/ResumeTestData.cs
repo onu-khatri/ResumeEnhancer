@@ -1,7 +1,7 @@
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.TestInfrastructure;
+namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal static class ResumeTestData
 {
@@ -189,3 +189,5 @@ internal static class ResumeTestData
         return resume;
     }
 }
+
+

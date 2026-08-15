@@ -1,7 +1,7 @@
 using Shouldly;
-using ResumeModuleAM.Responses;
+using ResumeEnhancer.ResumeModule.AM.Responses;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.ApplicationModel;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.ApplicationModel;
 
 public sealed class ResumeResponseTests
 {
@@ -51,3 +51,5 @@ public sealed class ResumeResponseTests
         response.HasFailures.ShouldBeFalse();
     }
 }
+
+

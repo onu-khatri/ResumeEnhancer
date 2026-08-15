@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace WebLibrary.Endpoints;
+namespace ResumeEnhancer.Core.WebLibrary.Endpoints;
 
 public static class ApiEndpointExecutor
 {
@@ -37,3 +37,4 @@ public static class ApiEndpointExecutor
         }
     }
 }
+

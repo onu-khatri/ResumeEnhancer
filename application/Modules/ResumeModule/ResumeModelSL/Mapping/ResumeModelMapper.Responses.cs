@@ -1,8 +1,8 @@
 using Mapster;
-using ResumeModuleAM.Responses;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -25,3 +25,4 @@ internal static partial class ResumeModelMapper
     }
 
 }
+

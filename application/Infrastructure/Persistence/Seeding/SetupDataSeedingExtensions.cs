@@ -1,7 +1,7 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public static class SetupDataSeedingExtensions
 {
@@ -156,3 +156,4 @@ public static class SetupDataSeedingExtensions
     private static bool WasManagedBySeeder(ISetupData setupData) =>
         setupData.App_UpdateUserId is null or SeedingUser.UserId;
 }
+

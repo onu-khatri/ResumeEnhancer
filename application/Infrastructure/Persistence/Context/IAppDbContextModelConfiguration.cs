@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IAppDbContextModelConfiguration
 {
     void Configure(ModelBuilder modelBuilder);
 }
+

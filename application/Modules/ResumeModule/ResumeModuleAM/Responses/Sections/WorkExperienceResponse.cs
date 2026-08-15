@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class WorkExperienceResponse
 {
@@ -18,3 +18,4 @@ public sealed class WorkExperienceResponse
 
     public bool IsCurrent { get; set; }
 }
+

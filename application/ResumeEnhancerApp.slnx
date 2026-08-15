@@ -1,33 +1,34 @@
 <Solution>
   <Folder Name="/Core/">
-    <Project Path="Core/CommonLibrary/CommonLibrary.csproj" Id="770ba004-fa46-40bf-92f0-b31b756a985f" />
-    <Project Path="Core/DomainLibrary/DomainLibrary.csproj" Id="4dc49a4f-0e25-48bb-bc72-9f5ed6fb08ad" />
-    <Project Path="Core/WebLibrary/WebLibrary.csproj" Id="9e1ffca5-8773-47a8-8ea1-602d61e1d377" />
+    <Project Path="Core/CommonLibrary/ResumeEnhancer.Core.CommonLibrary.csproj" Id="770ba004-fa46-40bf-92f0-b31b756a985f" />
+    <Project Path="Core/DomainLibrary/ResumeEnhancer.Core.DomainLibrary.csproj" Id="4dc49a4f-0e25-48bb-bc72-9f5ed6fb08ad" />
+    <Project Path="Core/WebLibrary/ResumeEnhancer.Core.WebLibrary.csproj" Id="9e1ffca5-8773-47a8-8ea1-602d61e1d377" />
   </Folder>
   <Folder Name="/Infrastructure/">
-    <Project Path="Infrastructure/Caching/Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />
-    <Project Path="Infrastructure/Migration/Migration.csproj" Id="4a241c97-7f35-4104-bbf7-63c19f8f6e3e" />
-    <Project Path="Infrastructure/Persistence/Persistence.csproj" Id="65e64fdb-d687-414b-8c51-3f564d536c08" />
+    <Project Path="Infrastructure/Caching/ResumeEnhancer.Infrastructure.Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />
+    <Project Path="Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj" Id="4a241c97-7f35-4104-bbf7-63c19f8f6e3e" />
+    <Project Path="Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj" Id="65e64fdb-d687-414b-8c51-3f564d536c08" />
   </Folder>
   <Folder Name="/Modules/" />
   <Folder Name="/Modules/ResumeModule/">
-    <Project Path="Modules/ResumeModule/ResumeModelSL/ResumeModuleSL.csproj" Id="5fe300a2-a6df-4b86-97bb-c600d9689738" />
-    <Project Path="Modules/ResumeModule/ResumeModuleAM/ResumeModuleAM.csproj" Id="daaa3f13-474b-4859-96da-cb5b7691c51c" />
-    <Project Path="Modules/ResumeModule/ResumeModuleDM/ResumeModuleDM.csproj" Id="dbde9041-e2d0-4a4a-9b82-b45722835d70" />
-    <Project Path="Modules/ResumeModule/ResumeModulePL/ResumeModulePL.csproj" Id="f93a1041-6d7f-4867-bfaa-9901b851e363" />
-    <Project Path="Modules/ResumeModule/ResumeModuleWeb/ResumeModuleWeb.csproj" Id="be2902f1-7647-4804-8541-5d8f8bc07e7c" />
+    <Project Path="Modules/ResumeModule/ResumeModelSL/ResumeEnhancer.ResumeModule.SL.csproj" Id="5fe300a2-a6df-4b86-97bb-c600d9689738" />
+    <Project Path="Modules/ResumeModule/ResumeModuleAM/ResumeEnhancer.ResumeModule.AM.csproj" Id="daaa3f13-474b-4859-96da-cb5b7691c51c" />
+    <Project Path="Modules/ResumeModule/ResumeModuleDM/ResumeEnhancer.ResumeModule.DM.csproj" Id="dbde9041-e2d0-4a4a-9b82-b45722835d70" />
+    <Project Path="Modules/ResumeModule/ResumeModulePL/ResumeEnhancer.ResumeModule.PL.csproj" Id="f93a1041-6d7f-4867-bfaa-9901b851e363" />
+    <Project Path="Modules/ResumeModule/ResumeModuleWeb/ResumeEnhancer.ResumeModule.Web.csproj" Id="be2902f1-7647-4804-8541-5d8f8bc07e7c" />
   </Folder>
   <Folder Name="/Solutions/">
-    <Project Path="WebSolution/ModulesComposition/ModulesComposition.csproj" Id="4b9de104-b791-4e50-b920-a0076d47fa60" />
-    <Project Path="WebSolution/websolution.client/websolution.client.esproj">
+    <Project Path="WebSolution/ModulesComposition/ResumeEnhancer.WebSolution.ModulesComposition.csproj" Id="4b9de104-b791-4e50-b920-a0076d47fa60" />
+    <Project Path="WebSolution/websolution.client/ResumeEnhancer.WebSolution.Client.esproj">
       <Build />
       <Deploy />
     </Project>
-    <Project Path="WebSolution/WebSolution.Server/WebSolution.Server.csproj" Id="22afa160-37a9-4f69-ad46-7ed5e54cd53c" />
+    <Project Path="WebSolution/WebSolution.Server/ResumeEnhancer.WebSolution.Server.csproj" Id="22afa160-37a9-4f69-ad46-7ed5e54cd53c" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="../test/IntegrationTest/ResumeEnhancer.IntegrationTests.csproj" Id="89e8eff8-2dce-48dc-8977-e6a15f1510e3" />
-    <Project Path="../test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.csproj" Id="c4cd06f3-538c-4f24-a55b-a9c4283c14f4" />
-    <Project Path="../test/TestUtilities/IntegrationSupport/IntegrationSupport.csproj" Id="00b36ef9-5a18-410d-8468-4105a3af037b" />
+    <Project Path="../test/IntegrationTest/ResumeEnhancer.Tests.Integration.csproj" Id="89e8eff8-2dce-48dc-8977-e6a15f1510e3" />
+    <Project Path="../test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.Unit.csproj" Id="c4cd06f3-538c-4f24-a55b-a9c4283c14f4" />
+    <Project Path="../test/TestUtilities/IntegrationSupport/ResumeEnhancer.TestUtilities.IntegrationSupport.csproj" Id="00b36ef9-5a18-410d-8468-4105a3af037b" />
   </Folder>
 </Solution>
+

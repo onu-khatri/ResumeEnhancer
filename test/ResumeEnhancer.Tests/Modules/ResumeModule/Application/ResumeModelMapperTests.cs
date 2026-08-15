@@ -1,12 +1,12 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
-using ResumeModuleSL.Abstractions.Persistence;
-using ResumeModuleSL.Handlers;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.SL.Handlers;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Application;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Application;
 
 public sealed class ResumeModelMapperTests
 {
@@ -194,7 +194,7 @@ public sealed class ResumeModelMapperTests
             SearchText = " engineer ",
             ResumeTemplate = " modern ",
             SortBy = ResumeSearchSortBy.Title,
-            SortDirection = ResumeModuleAM.Requests.SortDirection.Ascending
+            SortDirection = ResumeEnhancer.ResumeModule.AM.Requests.SortDirection.Ascending
         };
 
         var criteria = ResumeModelMapper.ToCriteria(request);
@@ -212,7 +212,7 @@ public sealed class ResumeModelMapperTests
         var request = new ResumeSearchRequest
         {
             SortBy = (ResumeSearchSortBy)999,
-            SortDirection = (ResumeModuleAM.Requests.SortDirection)999
+            SortDirection = (ResumeEnhancer.ResumeModule.AM.Requests.SortDirection)999
         };
 
         var criteria = ResumeModelMapper.ToCriteria(request);
@@ -274,3 +274,6 @@ public sealed class ResumeModelMapperTests
         exception.Message.ShouldContain("does not belong");
     }
 }
+
+
+

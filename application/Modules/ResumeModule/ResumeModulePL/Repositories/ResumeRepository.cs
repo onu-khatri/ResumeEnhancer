@@ -1,10 +1,10 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
-using ResumeModuleDM.Entities;
-using ResumeModuleSL.Abstractions.Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
-namespace ResumeModulePL.Repositories;
+namespace ResumeEnhancer.ResumeModule.PL.Repositories;
 
 public sealed class ResumeRepository : IResumeRepository
 {
@@ -362,3 +362,4 @@ public sealed class ResumeRepository : IResumeRepository
         public int? UserId { get; }
     }
 }
+

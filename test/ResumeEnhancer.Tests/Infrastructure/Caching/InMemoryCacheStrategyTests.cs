@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Caching.Memory;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class InMemoryCacheStrategyTests
 {
@@ -64,3 +64,5 @@ public sealed class InMemoryCacheStrategyTests
             () => strategy.GetAsync("key", cancellationTokenSource.Token));
     }
 }
+
+

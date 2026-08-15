@@ -1,7 +1,7 @@
-using ResumeModuleDM.Entities;
-using ResumeModuleDM.Enums;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Enums;
 
-namespace ResumeModulePL.Seeding;
+namespace ResumeEnhancer.ResumeModule.PL.Seeding;
 
 internal static class ResumeSectionSetupSeedData
 {
@@ -99,3 +99,4 @@ internal static class ResumeSectionSetupSeedData
         }
     ];
 }
+

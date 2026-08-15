@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class Certification : BusinessRelation
 {
@@ -30,3 +30,4 @@ public class Certification : BusinessRelation
     [MaxLength(1000)]
     public string? Description { get; set; }
 }
+

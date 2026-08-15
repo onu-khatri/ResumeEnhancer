@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL.Configurations;
+namespace ResumeEnhancer.ResumeModule.PL.Configurations;
 
 public sealed class ResumeConfiguration : IEntityTypeConfiguration<Resume>
 {
@@ -19,3 +19,4 @@ public sealed class ResumeConfiguration : IEntityTypeConfiguration<Resume>
         builder.HasIndex(resume => resume.UserId);
     }
 }
+

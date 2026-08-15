@@ -1,8 +1,8 @@
 using AutoFixture;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -122,3 +122,4 @@ internal sealed class IntegrationTestSetupper<TProgram> : ISetupper
         _scope.Dispose();
     }
 }
+

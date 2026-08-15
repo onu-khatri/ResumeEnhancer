@@ -2,15 +2,15 @@ using System.Reflection;
 using System.Xml.Linq;
 using NetArchTest.Rules;
 using Shouldly;
-using ModulesComposition;
-using Persistence;
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
-using ResumeModulePL;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb;
+using ResumeEnhancer.WebSolution.ModulesComposition;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.PL;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web;
 
-namespace ResumeEnhancer.Tests.Architecture;
+namespace ResumeEnhancer.Tests.Unit.Architecture;
 
 public sealed class DependencyRuleTests
 {
@@ -37,11 +37,11 @@ public sealed class DependencyRuleTests
             new AssemblyDependencyRule(
                 "ResumeModuleAM contracts stay transport/domain/infrastructure-free",
                 typeof(CreateResumeRequest).Assembly,
-                "ResumeModuleDM",
-                "ResumeModuleSL",
-                "ResumeModulePL",
-                "ResumeModuleWeb",
-                "Persistence",
+                "ResumeEnhancer.ResumeModule.DM",
+                "ResumeEnhancer.ResumeModule.SL",
+                "ResumeEnhancer.ResumeModule.PL",
+                "ResumeEnhancer.ResumeModule.Web",
+                "ResumeEnhancer.Infrastructure.Persistence",
                 "Microsoft.AspNetCore",
                 "Microsoft.EntityFrameworkCore")
         ];
@@ -50,11 +50,11 @@ public sealed class DependencyRuleTests
             new AssemblyDependencyRule(
                 "ResumeModuleDM domain stays infrastructure-free",
                 typeof(Resume).Assembly,
-                "ResumeModuleAM",
-                "ResumeModuleSL",
-                "ResumeModulePL",
-                "ResumeModuleWeb",
-                "Persistence",
+                "ResumeEnhancer.ResumeModule.AM",
+                "ResumeEnhancer.ResumeModule.SL",
+                "ResumeEnhancer.ResumeModule.PL",
+                "ResumeEnhancer.ResumeModule.Web",
+                "ResumeEnhancer.Infrastructure.Persistence",
                 "Microsoft.AspNetCore",
                 "Microsoft.EntityFrameworkCore")
         ];
@@ -63,9 +63,9 @@ public sealed class DependencyRuleTests
             new AssemblyDependencyRule(
                 "ResumeModuleSL use cases do not depend on Web PL or infrastructure",
                 typeof(CreateResumeCommand).Assembly,
-                "ResumeModulePL",
-                "ResumeModuleWeb",
-                "Persistence",
+                "ResumeEnhancer.ResumeModule.PL",
+                "ResumeEnhancer.ResumeModule.Web",
+                "ResumeEnhancer.Infrastructure.Persistence",
                 "Microsoft.AspNetCore",
                 "Microsoft.EntityFrameworkCore")
         ];
@@ -73,16 +73,16 @@ public sealed class DependencyRuleTests
         [
             new AssemblyDependencyRule(
                 "ResumeModuleWeb HTTP boundary does not depend on persistence adapter",
-                typeof(ResumeModuleWeb.DependencyInjection).Assembly,
-                "ResumeModulePL",
+                typeof(ResumeEnhancer.ResumeModule.Web.DependencyInjection).Assembly,
+                "ResumeEnhancer.ResumeModule.PL",
                 "Microsoft.EntityFrameworkCore")
         ];
         yield return
         [
             new AssemblyDependencyRule(
                 "ResumeModulePL persistence adapter does not depend on Web",
-                typeof(ResumeModulePL.DependencyInjection).Assembly,
-                "ResumeModuleWeb",
+                typeof(ResumeEnhancer.ResumeModule.PL.DependencyInjection).Assembly,
+                "ResumeEnhancer.ResumeModule.Web",
                 "Microsoft.AspNetCore")
         ];
     }
@@ -134,7 +134,7 @@ public sealed class DependencyRuleTests
             ApplicationRoot,
             "WebSolution",
             "WebSolution.Server",
-            "WebSolution.Server.csproj"));
+            "ResumeEnhancer.WebSolution.Server.csproj"));
         var moduleReferences = project.ProjectReferences
             .Where(reference => reference.Area == ProjectArea.Module)
             .Select(reference => reference.DisplayName)
@@ -147,7 +147,7 @@ public sealed class DependencyRuleTests
     [Fact]
     public void ModulesComposition_ShouldReferenceOnlyModuleWebAndPersistenceAdapters()
     {
-        var project = LoadProject(typeof(ModulesComposition.DependencyInjection).Assembly);
+        var project = LoadProject(typeof(ResumeEnhancer.WebSolution.ModulesComposition.DependencyInjection).Assembly);
         var violations = project.ProjectReferences
             .Where(reference => reference.Area == ProjectArea.Module
                 && reference.Layer is not ModuleLayer.Web and not ModuleLayer.PL)
@@ -164,11 +164,11 @@ public sealed class DependencyRuleTests
             ApplicationRoot,
             "Infrastructure",
             "Migration",
-            "Migration.csproj"));
+            "ResumeEnhancer.Infrastructure.Migration.csproj"));
         var violations = project.ProjectReferences
             .Where(reference =>
                 (reference.Area == ProjectArea.Module && reference.Layer != ModuleLayer.PL)
-                || (reference.Area == ProjectArea.Infrastructure && !reference.ProjectName.Equals("Persistence", StringComparison.Ordinal)))
+                || (reference.Area == ProjectArea.Infrastructure && !reference.ProjectName.Equals("ResumeEnhancer.Infrastructure.Persistence", StringComparison.Ordinal)))
             .Select(reference => reference.DisplayName)
             .ToArray();
 
@@ -226,17 +226,17 @@ public sealed class DependencyRuleTests
     private static IReadOnlySet<string> GetAllowedCoreReferences(ModuleLayer sourceLayer) =>
         sourceLayer switch
         {
-            ModuleLayer.AM => new HashSet<string> { "CommonLibrary" },
-            ModuleLayer.DM => new HashSet<string> { "CommonLibrary", "DomainLibrary" },
-            ModuleLayer.SL => new HashSet<string> { "CommonLibrary" },
-            ModuleLayer.Web => new HashSet<string> { "CommonLibrary", "WebLibrary" },
-            ModuleLayer.PL => new HashSet<string> { "CommonLibrary" },
+            ModuleLayer.AM => new HashSet<string> { "ResumeEnhancer.Core.CommonLibrary" },
+            ModuleLayer.DM => new HashSet<string> { "ResumeEnhancer.Core.CommonLibrary", "ResumeEnhancer.Core.DomainLibrary" },
+            ModuleLayer.SL => new HashSet<string> { "ResumeEnhancer.Core.CommonLibrary" },
+            ModuleLayer.Web => new HashSet<string> { "ResumeEnhancer.Core.CommonLibrary", "ResumeEnhancer.Core.WebLibrary" },
+            ModuleLayer.PL => new HashSet<string> { "ResumeEnhancer.Core.CommonLibrary" },
             _ => throw new InvalidOperationException($"Unsupported module layer '{sourceLayer}'.")
         };
 
     private static IReadOnlySet<string> GetAllowedInfrastructureReferences(ModuleLayer sourceLayer) =>
         sourceLayer == ModuleLayer.PL
-            ? new HashSet<string> { "Persistence" }
+            ? new HashSet<string> { "ResumeEnhancer.Infrastructure.Persistence" }
             : new HashSet<string>();
 
     private static bool IsForbiddenPackage(ProjectModel project, string packageName)
@@ -490,3 +490,7 @@ public sealed class DependencyRuleTests
             $"Module project '{projectName}' does not follow a supported layer suffix: AM, DM, SL, PL, or Web.");
     }
 }
+
+
+
+

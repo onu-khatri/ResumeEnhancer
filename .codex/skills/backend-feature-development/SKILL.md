@@ -40,9 +40,9 @@ Use this skill to move from a ResumeEnhancer story to review-ready backend code 
 
 ## ResumeEnhancer focus
 
-- `<ModuleName>ModuleWeb` request validation and endpoint wiring
-- `<ModuleName>ModuleSL` contracts, handlers, and mapping
-- `<ModuleName>ModulePL` repository and EF Core behavior
+- `ResumeEnhancer.<ModuleName>.Web` request validation and endpoint wiring
+- `ResumeEnhancer.<ModuleName>.SL` contracts, handlers, and mapping
+- `ResumeEnhancer.<ModuleName>.PL` repository and EF Core behavior
 - traceability from story language to code and tests
 
 ## Output requirements
@@ -55,7 +55,8 @@ Use this skill to move from a ResumeEnhancer story to review-ready backend code 
 ## Definition of Done
 
 - `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- Unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore`.
-- When contracts or persistence change, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- Unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`.
+- When contracts or persistence change, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
 - Contract changes are backward-compatible or explicitly flagged as breaking.
 - Migration and seed-data impact is stated for the reviewer.
+

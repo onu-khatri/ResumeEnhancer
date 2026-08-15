@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class Hobby : BusinessRelation
 {
@@ -17,3 +17,4 @@ public class Hobby : BusinessRelation
     [MaxLength(500)]
     public string? Description { get; set; }
 }
+

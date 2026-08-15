@@ -1,10 +1,10 @@
-# ResumeModulePL Project
+# ResumeEnhancer.ResumeModule.PL Project
 
 This project contains the Resume module persistence layer.
 
 ## Purpose
 
-ResumeModulePL owns:
+ResumeEnhancer.ResumeModule.PL owns:
 
 - EF Core entity configurations.
 - Resume module schema registration.
@@ -20,12 +20,12 @@ ResumeModulePL owns:
 | `Composition` | Dependency injection registration for Resume persistence services. |
 | `Configurations` | EF Core entity type configurations. |
 | `Context` | Resume schema, model configuration, and `AppDbContext` Resume `DbSet<T>` extensions. |
-| `Repositories` | EF-backed implementations of ports from `ResumeModuleSL.Abstractions.Persistence`. |
+| `Repositories` | EF-backed implementations of ports from `ResumeEnhancer.ResumeModule.SL.Abstractions.ResumeEnhancer.Infrastructure.Persistence`. |
 | `Seeding` | Resume setup seed data and seeders. |
 
 ## Dependency Rule
 
-`ResumeModulePL` may reference `ResumeModuleSL` only to implement persistence abstractions. `ResumeModuleSL` must not reference this project. Keep EF Core and `AppDbContext` code here or in shared `Infrastructure/Persistence`, and keep business rules in SL handlers.
+`ResumeEnhancer.ResumeModule.PL` may reference `ResumeEnhancer.ResumeModule.SL` only to implement persistence abstractions. `ResumeEnhancer.ResumeModule.SL` must not reference this project. Keep EF Core and `AppDbContext` code here or in shared `Infrastructure/Persistence`, and keep business rules in SL handlers.
 
 ## Table Mapping
 
@@ -49,3 +49,4 @@ Setup seeding:
 - marks removed seeder-managed setup rows as `ObsoleteFlag = true`
 
 Do not use EF `HasData` for setup tables in this module.
+

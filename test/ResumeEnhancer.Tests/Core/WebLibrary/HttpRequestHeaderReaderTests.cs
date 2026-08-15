@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Shouldly;
-using WebLibrary.Http;
+using ResumeEnhancer.Core.WebLibrary.Http;
 
-namespace ResumeEnhancer.Tests.Core.WebLibrary;
+namespace ResumeEnhancer.Tests.Unit.Core.WebLibrary;
 
 public sealed class HttpRequestHeaderReaderTests
 {
@@ -71,3 +71,5 @@ public sealed class HttpRequestHeaderReaderTests
         exception.ParamName.ShouldBe("X-Test");
     }
 }
+
+

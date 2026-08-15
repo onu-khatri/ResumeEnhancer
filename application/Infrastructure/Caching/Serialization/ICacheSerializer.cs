@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public interface ICacheSerializer
 {
@@ -6,3 +6,4 @@ public interface ICacheSerializer
 
     T? Deserialize<T>(byte[] value);
 }
+

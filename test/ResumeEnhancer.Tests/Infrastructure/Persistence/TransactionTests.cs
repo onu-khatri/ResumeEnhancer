@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using NSubstitute;
 using Shouldly;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class TransactionTests
 {
@@ -104,3 +104,5 @@ public sealed class TransactionTests
         cancellationToken.ThrowIfCancellationRequested();
     }
 }
+
+

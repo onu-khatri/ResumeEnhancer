@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IUnitOfWorkTransaction : IDisposable, IAsyncDisposable
 {
@@ -8,3 +8,4 @@ public interface IUnitOfWorkTransaction : IDisposable, IAsyncDisposable
 
     Task RollbackAsync(CancellationToken cancellationToken = default);
 }
+

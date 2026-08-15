@@ -1,8 +1,8 @@
 using FluentValidation;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.Shared;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
-namespace ResumeModuleWeb.Validation.Sections;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.Sections;
 
 public sealed class EducationRequestValidator : AbstractValidator<EducationRequest>
 {
@@ -38,3 +38,4 @@ public sealed class EducationRequestValidator : AbstractValidator<EducationReque
             .MaximumLength(50);
     }
 }
+

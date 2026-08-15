@@ -1,4 +1,4 @@
-namespace ResumeModuleSL.Abstractions.Persistence;
+namespace ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
 public sealed class ResumeDeleteResult
 {
@@ -22,3 +22,4 @@ public sealed class ResumeDeleteResult
 
     public IReadOnlyList<int> ForbiddenIds { get; }
 }
+

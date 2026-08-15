@@ -42,7 +42,7 @@ Use this skill to make ResumeEnhancer fast without sacrificing clarity or correc
 
 ## Verification
 
-- Backend: run integration tests and observe query behavior: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- Backend: run integration tests and observe query behavior: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
 - Frontend: `npm run build` and profile with the browser devtools performance panel.
 
 ## Definition of Done
@@ -50,3 +50,4 @@ Use this skill to make ResumeEnhancer fast without sacrificing clarity or correc
 - The bottleneck is identified and fixed at its source.
 - Query shape, paging, and indexing decisions are documented.
 - Build and tests pass after the change.
+

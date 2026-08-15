@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL.Configurations;
+namespace ResumeEnhancer.ResumeModule.PL.Configurations;
 
 public sealed class WorkExperienceConfiguration : IEntityTypeConfiguration<WorkExperience>
 {
@@ -21,3 +21,4 @@ public sealed class WorkExperienceConfiguration : IEntityTypeConfiguration<WorkE
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+

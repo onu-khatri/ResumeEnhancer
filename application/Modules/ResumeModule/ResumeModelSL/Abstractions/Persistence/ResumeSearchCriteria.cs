@@ -1,4 +1,4 @@
-namespace ResumeModuleSL.Abstractions.Persistence;
+namespace ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
 public sealed class ResumeSearchCriteria
 {
@@ -43,3 +43,4 @@ public enum ResumeSortDirection
     Ascending = 0,
     Descending = 1
 }
+

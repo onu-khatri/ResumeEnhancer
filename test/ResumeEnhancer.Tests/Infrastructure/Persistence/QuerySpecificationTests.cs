@@ -1,8 +1,8 @@
 using Shouldly;
-using Persistence;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class QuerySpecificationTests
 {
@@ -67,3 +67,5 @@ public sealed class QuerySpecificationTests
             ApplyOrderBy(expression);
     }
 }
+
+

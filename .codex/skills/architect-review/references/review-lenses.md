@@ -4,10 +4,10 @@ Use these lenses when a change is large enough that line-by-line correctness is 
 
 ## Boundary checks
 
-- Do dependencies still point the right way (`Web -> SL -> AM/DM -> DomainLibrary`, `PL -> Persistence/DM/SL`)?
+- Do dependencies still point the right way (`Web -> SL -> AM/DM -> ResumeEnhancer.Core.DomainLibrary`, `PL -> Persistence/DM/SL`)?
 - Did transport concerns leak into business or persistence logic (e.g., `HttpContext` or `IResult` in a handler)?
 - Are request/response contracts (AM) intentionally shaped, and are DM entities never serialized to the client?
-- Is cross-module wiring confined to `ModulesComposition`?
+- Is cross-module wiring confined to `ResumeEnhancer.WebSolution.ModulesComposition`?
 
 ## Evolution checks
 
@@ -19,7 +19,7 @@ Use these lenses when a change is large enough that line-by-line correctness is 
 
 - Migration and rollout complexity: is schema change isolated to a module and covered by a migration?
 - Testability and observability: can the change be verified through unit or integration tests?
-- Cross-layer naming and responsibility drift: do symbols stay in their owning project (`<ModuleName>ModuleWeb`, `<ModuleName>ModuleSL`, `<ModuleName>ModulePL`, `<ModuleName>ModuleDM`)?
+- Cross-layer naming and responsibility drift: do symbols stay in their owning project (`ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.SL`, `ResumeEnhancer.<ModuleName>.PL`, `ResumeEnhancer.<ModuleName>.DM`)?
 
 ## Review output
 

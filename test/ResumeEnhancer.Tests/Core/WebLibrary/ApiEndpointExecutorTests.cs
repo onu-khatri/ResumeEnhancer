@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using WebLibrary.Endpoints;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.Core.WebLibrary.Endpoints;
 
-namespace ResumeEnhancer.Tests.Core.WebLibrary;
+namespace ResumeEnhancer.Tests.Unit.Core.WebLibrary;
 
 public sealed class ApiEndpointExecutorTests
 {
@@ -86,3 +86,5 @@ public sealed class ApiEndpointExecutorTests
         snapshot.Body.ShouldContain("bad state");
     }
 }
+
+

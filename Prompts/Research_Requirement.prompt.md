@@ -209,7 +209,7 @@ For every capability infer the likely backend requirements, including:
 * Subscription management
 * Audit logging
 * Version history
-* Caching
+* ResumeEnhancer.Infrastructure.Caching
 * Rate limiting
 * Security controls
 
@@ -1952,3 +1952,4 @@ It should contain enough detail that the product can subsequently be:
 Do not provide a superficial overview.
 
 Go to **nth-level functional depth** while maintaining clear organization, traceability, and distinction between evidence and inference.
+

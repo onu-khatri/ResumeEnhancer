@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeModulePL.csproj" />
-    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeModuleWeb.csproj" />
+    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
+    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
   </ItemGroup>
 
 </Project>
+

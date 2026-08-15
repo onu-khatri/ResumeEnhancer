@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class HobbyResponse
 {
@@ -8,3 +8,4 @@ public sealed class HobbyResponse
 
     public string? Description { get; set; }
 }
+

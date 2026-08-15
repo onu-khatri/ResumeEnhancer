@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public class AuditEntityRepository<TElement> : IAuditEntityRepository<TElement>
     where TElement : AuditEntity
@@ -273,3 +273,4 @@ public class AuditEntityRepository<TElement> : IAuditEntityRepository<TElement>
         }
     }
 }
+

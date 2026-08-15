@@ -1,10 +1,10 @@
 using Mapster;
-using ResumeModuleAM.Requests;
-using ResumeModuleAM.Responses;
-using ResumeModuleDM.Entities;
-using ResumeModuleSL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -186,3 +186,4 @@ internal static partial class ResumeModelMapper
             ? ResumeSortDirection.Ascending
             : ResumeSortDirection.Descending;
 }
+

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class WorkExperienceRequest
 {
@@ -25,3 +25,4 @@ public sealed class WorkExperienceRequest
 
     public bool IsCurrent { get; set; }
 }
+

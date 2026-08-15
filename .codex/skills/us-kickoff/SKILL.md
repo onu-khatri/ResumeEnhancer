@@ -67,7 +67,7 @@ Identify shared files and cross-cutting surfaces before parallelizing:
 - AM request/response contracts and validators
 - EF migrations and seed data
 - shared UI primitives, router, and app shell
-- `ModulesComposition` and module registration
+- `ResumeEnhancer.WebSolution.ModulesComposition` and module registration
 
 ### 5. Plan parallel groups
 
@@ -112,3 +112,4 @@ For a serial chain, drive one story at a time through `full-stack-feature-orches
 ## Reference
 
 Read `references/kickoff-playbook.md` for the status model, approval-summary template, and workstream reporting format.
+

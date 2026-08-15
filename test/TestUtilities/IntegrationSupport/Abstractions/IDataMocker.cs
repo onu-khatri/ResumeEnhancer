@@ -1,4 +1,4 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -9,3 +9,4 @@ public interface IDataMocker
         Action<int, TEntity>? populator = null)
         where TEntity : class, IAuditEntity;
 }
+

@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IUnitOfWorkFactory<TDbContext>
     where TDbContext : AppDbContext
@@ -7,3 +7,4 @@ public interface IUnitOfWorkFactory<TDbContext>
 
     IUnitOfWorkScope<TDbContext> CreateScope();
 }
+

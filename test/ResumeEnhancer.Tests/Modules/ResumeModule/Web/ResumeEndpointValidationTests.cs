@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Shouldly;
-using ResumeModuleWeb.MiniApis;
-using ResumeModuleWeb.Validation.Shared;
+using ResumeEnhancer.ResumeModule.Web.MiniApis;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Web;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Web;
 
 public sealed class ResumeEndpointValidationTests
 {
@@ -79,3 +79,5 @@ public sealed class ResumeEndpointValidationTests
         ResumeEndpointHeaders.ReadUserId(httpContext).ShouldBe("user-1");
     }
 }
+
+

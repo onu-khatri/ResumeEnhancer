@@ -1,7 +1,7 @@
 using Shouldly;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class PagedQueryResultTests
 {
@@ -31,3 +31,5 @@ public sealed class PagedQueryResultTests
         result.HasNextPage.ShouldBeTrue();
     }
 }
+
+

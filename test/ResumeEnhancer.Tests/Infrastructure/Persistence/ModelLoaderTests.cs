@@ -1,8 +1,8 @@
 using Shouldly;
-using Persistence;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class ModelLoaderTests
 {
@@ -51,3 +51,5 @@ public sealed class ModelLoaderTests
         Should.Throw<ArgumentNullException>(() => navigator.Navigate<object>(null!));
     }
 }
+
+

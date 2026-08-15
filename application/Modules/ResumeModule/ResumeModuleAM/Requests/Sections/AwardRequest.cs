@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class AwardRequest
 {
@@ -19,3 +19,4 @@ public sealed class AwardRequest
     [MaxLength(1000)]
     public string? Description { get; set; }
 }
+

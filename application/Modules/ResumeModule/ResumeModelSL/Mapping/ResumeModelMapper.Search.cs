@@ -1,9 +1,9 @@
 using Mapster;
-using ResumeModuleAM.Requests;
-using ResumeModuleAM.Responses;
-using ResumeModuleSL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -20,3 +20,4 @@ internal static partial class ResumeModelMapper
     public static ResumeDeleteResponse MapDelete(ResumeDeleteResult result) =>
         result.Adapt<ResumeDeleteResponse>(MapsterConfig);
 }
+

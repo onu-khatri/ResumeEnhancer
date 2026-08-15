@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Persistence;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class AuditEntityRepositoryTests
 {
@@ -138,3 +138,5 @@ public sealed class AuditEntityRepositoryTests
         }
     }
 }
+
+

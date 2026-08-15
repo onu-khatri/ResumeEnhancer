@@ -10,11 +10,11 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 
 - Treat `application/WebSolution/ModulesComposition` as the host-facing module composition boundary.
 - Do not bypass module boundaries by wiring the host directly to module internals when an existing composition path already exists.
-- Keep HTTP concerns in `ResumeModuleWeb`.
-- Keep request/response contracts in `ResumeModuleAM`.
-- Keep use-case orchestration, Mediator contracts, handlers, and mapping workflow logic in `ResumeModelSL`.
-- Keep domain entities and domain-only concepts in `ResumeModuleDM`.
-- Keep EF configuration, repository adapters, and schema-specific persistence behavior in `ResumeModulePL`.
+- Keep HTTP concerns in `ResumeEnhancer.ResumeModule.Web`.
+- Keep request/response contracts in `ResumeEnhancer.ResumeModule.AM`.
+- Keep use-case orchestration, Mediator contracts, handlers, and mapping workflow logic in `ResumeEnhancer.ResumeModule.SL`.
+- Keep domain entities and domain-only concepts in `ResumeEnhancer.ResumeModule.DM`.
+- Keep EF configuration, repository adapters, and schema-specific persistence behavior in `ResumeEnhancer.ResumeModule.PL`.
 - Keep shared infrastructure behavior inside `application/Infrastructure`.
 - Keep frontend feature logic inside `application/WebSolution/websolution.client/src/features`.
 
@@ -43,10 +43,10 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 ## Commands
 
 - Full solution build: `dotnet build application\ResumeEnhancerApp.slnx`
-- Unit tests: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore`
-- Integration tests: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`
-- API host: `dotnet run --project application\WebSolution\WebSolution.Server\WebSolution.Server.csproj`
-- Migration help: `dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help`
+- Unit tests: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`
+- Integration tests: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`
+- API host: `dotnet run --project application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj`
+- Migration help: `dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help`
 
 ## Checks Required For Instruction-Oriented Changes
 
@@ -59,3 +59,6 @@ When changing `AGENTS.md`, `.codex/`, or `Prompts/`:
 ## Knowledge Artifact Location
 
 - Save durable project knowledge under `KnowledgeBase/` unless the user explicitly requests another location.
+
+
+

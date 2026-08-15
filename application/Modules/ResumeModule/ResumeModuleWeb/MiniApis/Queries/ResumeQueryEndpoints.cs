@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-namespace ResumeModuleWeb.MiniApis.Queries;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Queries;
 
 internal static partial class ResumeQueryEndpoints
 {
@@ -18,3 +18,4 @@ internal static partial class ResumeQueryEndpoints
         return group;
     }
 }
+

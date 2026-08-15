@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public readonly record struct CacheResult<T>(bool Found, T? Value)
 {
@@ -6,3 +6,4 @@ public readonly record struct CacheResult<T>(bool Found, T? Value)
 
     public static CacheResult<T> Hit(T? value) => new(true, value);
 }
+

@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class CacheEntryOptions
 {
@@ -11,3 +11,4 @@ public sealed class CacheEntryOptions
 
     public bool NeverExpire { get; init; }
 }
+

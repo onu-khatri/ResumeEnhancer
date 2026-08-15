@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using WebLibrary.Http;
+using ResumeEnhancer.Core.WebLibrary.Http;
 
-namespace ResumeModuleWeb.MiniApis;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis;
 
 internal static class ResumeEndpointHeaders
 {
@@ -14,3 +14,4 @@ internal static class ResumeEndpointHeaders
     public static int? ReadAuditUserId(HttpContext httpContext) =>
         HttpRequestHeaderReader.ReadOptionalInt32(httpContext, AuditUserIdHeader);
 }
+

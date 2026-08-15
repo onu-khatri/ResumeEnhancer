@@ -1,7 +1,7 @@
-using DomainLibrary.DomainModel;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModuleSL.Abstractions.Persistence;
+namespace ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
 public interface IResumeRepository
 {
@@ -37,3 +37,4 @@ public interface IResumeRepository
         string? userId = null,
         CancellationToken cancellationToken = default);
 }
+

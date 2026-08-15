@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class ApplicationCacheProvider(
     ICacheStrategy cacheStrategy,
@@ -77,3 +77,4 @@ internal sealed class ApplicationCacheProvider(
             : null;
     }
 }
+

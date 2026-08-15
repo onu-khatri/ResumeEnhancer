@@ -1,15 +1,15 @@
-# Persistence Project
+# ResumeEnhancer.Infrastructure.Persistence Project
 
 This project contains the shared Entity Framework Core infrastructure used by the application and all modules.
 
-The Persistence project should stay generic. It should know how to build `AppDbContext`, run module model configurations, apply table/schema conventions, and execute seeders. It should not contain business entities for a specific module.
+`ResumeEnhancer.Infrastructure.Persistence` should stay generic. It should know how to build `AppDbContext`, run module model configurations, apply table/schema conventions, and execute seeders. It should not contain business entities for a specific module.
 
 ## What This Project Does
 
 - Provides the shared `AppDbContext`.
 - Allows modules to plug their EF model configuration into `AppDbContext`.
 - Provides a common table/schema mapping convention for modules.
-- Applies table prefixes based on `DomainLibrary.DomainModel` categories.
+- Applies table prefixes based on `ResumeEnhancer.Core.DomainLibrary.DomainModel` categories.
 - Provides a common seeding contract.
 - Provides setup-data seeding helpers for `SetupEntity` and `SetupRelation` data.
 - Maps `AuditEntity.App_Version` as a database-managed rowversion concurrency token.
@@ -149,7 +149,7 @@ Example from a web application:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -211,7 +211,7 @@ Example:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 using MyModuleDM.Entities;
 
 public sealed class MyModuleDbContextModelConfiguration : IAppDbContextModelConfiguration
@@ -296,7 +296,7 @@ Rule:
 Default example:
 
 ```csharp
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public class Resume : BusinessEntity
 {
@@ -408,7 +408,7 @@ Example:
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 public static class DependencyInjection
 {
@@ -440,7 +440,7 @@ Example:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 public static class AppDbContextMyModuleExtensions
 {
@@ -479,7 +479,7 @@ Example:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class MyModuleSeeder : IAppDbContextSeeder
 {
@@ -604,7 +604,7 @@ public class MyEntity
 
 ## Common Mistakes
 
-Do not put module-specific entities in the Persistence project. Keep entities in module domain model projects.
+Do not put module-specific entities in the ResumeEnhancer.Infrastructure.Persistence project. Keep entities in module domain model projects.
 
 Do not hardcode `ToTable` in every entity configuration. Use `ApplyModuleTableMappings`.
 
@@ -644,4 +644,6 @@ If seed data is not applied, check:
 - The seeder implements `IAppDbContextSeeder`.
 - The seeder is registered in dependency injection.
 - The Migration console was run with `-s`.
+
+
 

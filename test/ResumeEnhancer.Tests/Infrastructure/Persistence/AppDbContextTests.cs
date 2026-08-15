@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Persistence;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
-using ResumeModulePL;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.PL;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class AppDbContextTests
 {
@@ -182,3 +182,5 @@ public sealed class AppDbContextTests
         ResumeModuleDatabase.GetSchema("identity").ShouldBe("identity_resume");
     }
 }
+
+

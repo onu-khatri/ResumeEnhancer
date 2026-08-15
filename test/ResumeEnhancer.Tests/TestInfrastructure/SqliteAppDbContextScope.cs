@@ -1,12 +1,12 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Persistence;
-using ResumeModulePL;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.PL;
 
-namespace ResumeEnhancer.Tests.TestInfrastructure;
+namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal sealed class SqliteAppDbContextScope : IDisposable
 {
@@ -66,3 +66,5 @@ internal sealed class SqliteAppDbContextScope : IDisposable
         }
     }
 }
+
+

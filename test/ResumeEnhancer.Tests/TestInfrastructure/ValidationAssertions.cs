@@ -1,7 +1,7 @@
 using FluentValidation.Results;
 using Shouldly;
 
-namespace ResumeEnhancer.Tests.TestInfrastructure;
+namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal static class ValidationAssertions
 {
@@ -31,3 +31,4 @@ internal static class ValidationAssertions
             .ShouldBeEmpty();
     }
 }
+

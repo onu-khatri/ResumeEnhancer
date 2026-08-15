@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
-namespace ResumeEnhancer.Tests.TestInfrastructure;
+namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal static class ResultAssertionHelpers
 {
@@ -38,3 +38,4 @@ internal static class ResultAssertionHelpers
 }
 
 internal sealed record ResultSnapshot(int StatusCode, string Body);
+

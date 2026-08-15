@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class ResumeSearchRequest
 {
@@ -37,3 +37,4 @@ public sealed class ResumeSearchRequest
     [EnumDataType(typeof(SortDirection))]
     public SortDirection SortDirection { get; set; } = SortDirection.Descending;
 }
+

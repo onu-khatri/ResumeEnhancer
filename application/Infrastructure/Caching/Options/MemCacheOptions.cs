@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class MemCacheOptions
 {
@@ -11,3 +11,4 @@ public sealed class MemCacheOptions
 
     public TimeSpan ReceiveTimeout { get; set; } = TimeSpan.FromSeconds(2);
 }
+

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class RelationalDbTransaction : IUnitOfWorkTransaction
 {
@@ -45,3 +45,4 @@ public sealed class RelationalDbTransaction : IUnitOfWorkTransaction
         await _transaction.DisposeAsync();
     }
 }
+

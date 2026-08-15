@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using Microsoft.Extensions.Options;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class MemCacheStrategy(IOptions<CacheOptions> options) : ICacheStrategy
 {
@@ -226,3 +226,4 @@ internal sealed class MemCacheStrategy(IOptions<CacheOptions> options) : ICacheS
         }
     }
 }
+

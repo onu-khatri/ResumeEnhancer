@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 internal sealed class UnitOfWorkScope<TDbContext> : IUnitOfWorkScope<TDbContext>
     where TDbContext : AppDbContext
@@ -34,3 +34,4 @@ internal sealed class UnitOfWorkScope<TDbContext> : IUnitOfWorkScope<TDbContext>
         return ValueTask.CompletedTask;
     }
 }
+

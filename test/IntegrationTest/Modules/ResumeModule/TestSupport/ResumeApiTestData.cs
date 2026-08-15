@@ -1,9 +1,9 @@
 using Bogus;
-using ResumeModuleAM.Requests;
-using ResumeModuleAM.Responses;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 internal static class ResumeApiTestData
 {
@@ -260,3 +260,5 @@ internal static class ResumeApiTestData
         return new Faker("en");
     }
 }
+
+

@@ -1,7 +1,7 @@
 using Shouldly;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class ModuleSchemaNameTests
 {
@@ -45,3 +45,5 @@ public sealed class ModuleSchemaNameTests
         exception.Message.ShouldContain("only letters, numbers, and underscores");
     }
 }
+
+

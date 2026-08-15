@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public interface ICacheProvider
 {
@@ -22,3 +22,4 @@ public interface ICacheProvider
         string key,
         CancellationToken cancellationToken = default);
 }
+

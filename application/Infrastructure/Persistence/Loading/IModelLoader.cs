@@ -1,6 +1,6 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IModelLoader
 {
@@ -12,3 +12,4 @@ public interface IModelLoader<TModel> : IModelLoader
 {
     IModelLoader<TModel> Build(Action<IModelLoaderNavigator<TModel>> buildAction);
 }
+

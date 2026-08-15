@@ -1,7 +1,7 @@
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 using Microsoft.EntityFrameworkCore;
-using ModulesComposition;
-using Persistence;
+using ResumeEnhancer.WebSolution.ModulesComposition;
+using ResumeEnhancer.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,3 +59,4 @@ static string GetConnectionString(WebApplicationBuilder builder)
 }
 
 public partial class Program;
+

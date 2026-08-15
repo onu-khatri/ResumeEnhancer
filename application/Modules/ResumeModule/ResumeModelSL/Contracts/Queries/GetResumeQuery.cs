@@ -1,8 +1,9 @@
 using Mediator;
-using ResumeModuleAM.Responses;
+using ResumeEnhancer.ResumeModule.AM.Responses;
 
-namespace ResumeModuleSL.Contracts;
+namespace ResumeEnhancer.ResumeModule.SL.Contracts;
 
 public sealed record GetResumeQuery(
     int ResumeId,
     string? UserId = null) : IQuery<ResumeDetailResponse?>;
+

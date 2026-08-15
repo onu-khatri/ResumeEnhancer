@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {
@@ -158,3 +158,4 @@ public class AppDbContext : DbContext
         return true;
     }
 }
+

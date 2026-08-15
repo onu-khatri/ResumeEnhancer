@@ -1,10 +1,10 @@
-# ResumeModuleDM Project
+# ResumeEnhancer.ResumeModule.DM Project
 
 This project contains the Resume module domain model.
 
 ## Entity Categories
 
-Resume module entities inherit the shared domain categories from `DomainLibrary.DomainModel`.
+Resume module entities inherit the shared domain categories from `ResumeEnhancer.Core.DomainLibrary.DomainModel`.
 
 | Entity | Category | Table |
 | --- | --- | --- |
@@ -27,6 +27,7 @@ Child tables with foreign keys are modeled as business relation tables.
 ## Rules
 
 - Keep entity classes persistence-light.
-- Put EF Core configuration in `ResumeModulePL`.
+- Put EF Core configuration in `ResumeEnhancer.ResumeModule.PL`.
 - Use `SetupEntity` only for seedable setup/master data.
 - Use `BusinessRelation` for FK child or relationship rows.
+

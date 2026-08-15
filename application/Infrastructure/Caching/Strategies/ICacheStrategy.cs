@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal interface ICacheStrategy
 {
@@ -18,3 +18,4 @@ internal interface ICacheStrategy
         string key,
         CancellationToken cancellationToken = default);
 }
+

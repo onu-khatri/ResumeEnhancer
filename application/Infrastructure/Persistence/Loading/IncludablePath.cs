@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class IncludablePath : IEquatable<IncludablePath>
 {
@@ -78,3 +78,4 @@ public sealed class IncludablePath : IEquatable<IncludablePath>
         }
     }
 }
+

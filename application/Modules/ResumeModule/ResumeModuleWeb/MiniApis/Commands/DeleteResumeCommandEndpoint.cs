@@ -1,10 +1,10 @@
 using Mediator;
 using Microsoft.AspNetCore.Http;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb.Validation.Shared;
-using WebLibrary.Endpoints;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
+using ResumeEnhancer.Core.WebLibrary.Endpoints;
 
-namespace ResumeModuleWeb.MiniApis.Commands;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
 
 internal static partial class ResumeCommandEndpoints
 {
@@ -22,3 +22,4 @@ internal static partial class ResumeCommandEndpoints
                     ResumeEndpointHeaders.ReadUserId(httpContext)),
                 cancellationToken)));
 }
+

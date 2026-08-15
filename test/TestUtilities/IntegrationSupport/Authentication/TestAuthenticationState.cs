@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -76,3 +76,4 @@ internal sealed class TestAuthenticationState
         }
     }
 }
+

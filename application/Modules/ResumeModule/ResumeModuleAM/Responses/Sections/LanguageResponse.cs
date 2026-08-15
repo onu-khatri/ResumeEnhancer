@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class LanguageResponse
 {
@@ -10,3 +10,4 @@ public sealed class LanguageResponse
 
     public string? Description { get; set; }
 }
+

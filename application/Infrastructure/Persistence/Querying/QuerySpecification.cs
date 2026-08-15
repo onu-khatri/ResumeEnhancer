@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public class QuerySpecification<T> : IQuerySpecification<T>
     where T : AuditEntity
@@ -61,3 +61,4 @@ public class QuerySpecification<T> : IQuerySpecification<T>
         OrderByDescending = orderByDescending;
     }
 }
+

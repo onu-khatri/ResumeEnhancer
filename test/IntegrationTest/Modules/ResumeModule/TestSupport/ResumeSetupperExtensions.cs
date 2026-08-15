@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 internal static class ResumeSetupperExtensions
 {
@@ -63,3 +63,5 @@ internal static class ResumeSetupperExtensions
             .SingleOrDefaultAsync(resume => resume.Id == resumeId, cancellationToken);
     }
 }
+
+

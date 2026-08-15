@@ -2,13 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
-using DomainLibrary.DomainModel;
-using Persistence;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
-using ResumeModulePL.Repositories;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.PL.Repositories;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class UnitOfWorkTests
 {
@@ -154,3 +154,5 @@ public sealed class UnitOfWorkTests
         serviceScope.Received(2).Dispose();
     }
 }
+
+

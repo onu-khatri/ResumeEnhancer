@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ResumeModuleSL;
+namespace ResumeEnhancer.ResumeModule.SL;
 
 public static class DependencyInjection
 {
@@ -9,3 +9,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

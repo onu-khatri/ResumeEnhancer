@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class Address : BusinessRelation
 {
@@ -26,3 +26,4 @@ public class Address : BusinessRelation
     [MaxLength(20)]
     public string? ZipCode { get; set; }
 }
+

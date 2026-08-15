@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IQuerySpecification<T>
     where T : AuditEntity
@@ -18,3 +18,4 @@ public interface IQuerySpecification<T>
 
     IQueryable<T> GetQuery(IQueryable<T> inputQuery);
 }
+

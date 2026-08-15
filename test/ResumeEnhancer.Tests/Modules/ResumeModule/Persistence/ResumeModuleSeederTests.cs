@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Persistence;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
-using ResumeModuleDM.Enums;
-using ResumeModulePL.Seeding;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Enums;
+using ResumeEnhancer.ResumeModule.PL.Seeding;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Persistence;
 
 public sealed class ResumeModuleSeederTests
 {
@@ -88,3 +88,5 @@ public sealed class ResumeModuleSeederTests
         count.ShouldBe(Enum.GetValues<ResumeSectionType>().Length);
     }
 }
+
+

@@ -1,11 +1,11 @@
 using FluentValidation;
 using Mediator;
 using Microsoft.Extensions.DependencyInjection;
-using ResumeModuleSL;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb.Validation.Resumes;
+using ResumeEnhancer.ResumeModule.SL;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web.Validation.Resumes;
 
-namespace ResumeModuleWeb;
+namespace ResumeEnhancer.ResumeModule.Web;
 
 public static class DependencyInjection
 {
@@ -22,3 +22,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class ResumeSearchResponse
 {
@@ -30,3 +30,4 @@ public sealed class ResumeSearchResponse
 
     public bool HasNextPage => PageNumber < TotalPages;
 }
+

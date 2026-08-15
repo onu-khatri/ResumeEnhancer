@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public static class ModelBuilderModuleMappingExtensions
 {
@@ -107,3 +107,4 @@ public static class ModelBuilderModuleMappingExtensions
         return string.Empty;
     }
 }
+

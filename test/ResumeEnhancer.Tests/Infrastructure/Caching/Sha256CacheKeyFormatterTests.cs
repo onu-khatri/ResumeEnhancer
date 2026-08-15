@@ -2,9 +2,9 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class Sha256CacheKeyFormatterTests
 {
@@ -47,3 +47,5 @@ public sealed class Sha256CacheKeyFormatterTests
     private static Sha256CacheKeyFormatter CreateFormatter(string prefix) =>
         new(Options.Create(new CacheOptions { KeyPrefix = prefix }));
 }
+
+

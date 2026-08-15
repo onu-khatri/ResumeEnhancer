@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class LanguageRequest
 {
@@ -17,3 +17,4 @@ public sealed class LanguageRequest
     [MaxLength(500)]
     public string? Description { get; set; }
 }
+

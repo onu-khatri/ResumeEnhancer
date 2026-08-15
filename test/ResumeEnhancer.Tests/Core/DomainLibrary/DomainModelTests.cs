@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Shouldly;
-using DomainLibrary.DomainModel;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.Core.DomainLibrary;
+namespace ResumeEnhancer.Tests.Unit.Core.DomainLibrary;
 
 public sealed class DomainModelTests
 {
@@ -53,3 +53,5 @@ public sealed class DomainModelTests
 
     private sealed class TestSetupData : SetupData;
 }
+
+

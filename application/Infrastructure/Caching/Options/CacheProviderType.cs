@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public enum CacheProviderType
 {
@@ -6,3 +6,4 @@ public enum CacheProviderType
     Redis,
     MemCache
 }
+

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DomainLibrary.DomainModel;
+namespace ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public abstract class AuditEntity : IAuditEntity
 {
@@ -17,3 +17,4 @@ public abstract class AuditEntity : IAuditEntity
 
     public byte[] App_Version { get; set; } = [];
 }
+

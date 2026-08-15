@@ -20,7 +20,7 @@ Use this skill to finish implementation work safely and package it for review wi
 ## ResumeEnhancer Rules
 
 - Mention module boundaries explicitly when they matter.
-- Call out changes to `<ModuleName>ModuleWeb`, `<ModuleName>ModuleSL`, `<ModuleName>ModulePL`, and frontend `features/resume` separately when touched.
+- Call out changes to `ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.SL`, `ResumeEnhancer.<ModuleName>.PL`, and frontend `features/resume` separately when touched.
 - Mention schema or migration impact whenever persistence changes.
 - Mention validation, mapping, and test coverage when relevant.
 

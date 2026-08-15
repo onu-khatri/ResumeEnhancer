@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ResumeEnhancer.Tests.Integration</AssemblyName>
+    <RootNamespace>ResumeEnhancer.Tests.Integration</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.3" />
+    <PackageReference Include="morelinq" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\application\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
+    <ProjectReference Include="..\..\application\Core\WebLibrary\ResumeEnhancer.Core.WebLibrary.csproj" />
+    <ProjectReference Include="..\..\application\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
+    <ProjectReference Include="..\..\application\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleAM\ResumeEnhancer.ResumeModule.AM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleDM\ResumeEnhancer.ResumeModule.DM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
+    <ProjectReference Include="..\..\application\WebSolution\ModulesComposition\ResumeEnhancer.WebSolution.ModulesComposition.csproj" />
+    <ProjectReference Include="..\..\application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj" />
+    <ProjectReference Include="..\TestUtilities\IntegrationSupport\ResumeEnhancer.TestUtilities.IntegrationSupport.csproj" />
+  </ItemGroup>
+</Project>
+

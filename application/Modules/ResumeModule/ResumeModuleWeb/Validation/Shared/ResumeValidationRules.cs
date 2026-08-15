@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ResumeModuleWeb.Validation.Shared;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
 internal static class ResumeValidationRules
 {
@@ -53,3 +53,4 @@ internal static class ResumeValidationRules
             .FirstOrDefault(group => group.Count() > 1)
             ?.Key;
 }
+

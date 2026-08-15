@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class HobbyRequest
 {
@@ -14,3 +14,4 @@ public sealed class HobbyRequest
     [MaxLength(500)]
     public string? Description { get; set; }
 }
+

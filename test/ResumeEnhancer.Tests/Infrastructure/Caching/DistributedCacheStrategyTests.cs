@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Caching.Distributed;
 using NSubstitute;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class DistributedCacheStrategyTests
 {
@@ -69,3 +69,5 @@ public sealed class DistributedCacheStrategyTests
         await distributedCache.Received(1).RemoveAsync("key", cancellationToken);
     }
 }
+
+

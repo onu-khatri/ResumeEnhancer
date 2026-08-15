@@ -1,7 +1,7 @@
-using Persistence;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL.Seeding;
+namespace ResumeEnhancer.ResumeModule.PL.Seeding;
 
 public sealed class ResumeModuleSeeder : IAppDbContextSeeder
 {
@@ -38,3 +38,4 @@ public sealed class ResumeModuleSeeder : IAppDbContextSeeder
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
+

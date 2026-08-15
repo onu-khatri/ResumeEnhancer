@@ -1,10 +1,10 @@
 using Mediator;
 using Microsoft.AspNetCore.Http;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb.Validation.Shared;
-using WebLibrary.Endpoints;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
+using ResumeEnhancer.Core.WebLibrary.Endpoints;
 
-namespace ResumeModuleWeb.MiniApis.Queries;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Queries;
 
 internal static partial class ResumeQueryEndpoints
 {
@@ -28,3 +28,4 @@ internal static partial class ResumeQueryEndpoints
                     : Results.Ok(response);
             });
 }
+

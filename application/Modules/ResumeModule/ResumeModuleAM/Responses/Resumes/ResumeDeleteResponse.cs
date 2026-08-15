@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class ResumeDeleteResponse
 {
@@ -26,3 +26,4 @@ public sealed class ResumeDeleteResponse
 
     public bool HasFailures => NotFoundIds.Count > 0 || ForbiddenIds.Count > 0;
 }
+

@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ModulesComposition;
-using Persistence;
-using ResumeModuleAM.Requests;
-using ResumeModulePL;
-using ResumeModulePL.Repositories;
-using ResumeModuleSL;
-using ResumeModuleSL.Abstractions.Persistence;
-using ResumeModuleWeb;
+using ResumeEnhancer.WebSolution.ModulesComposition;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.PL;
+using ResumeEnhancer.ResumeModule.PL.Repositories;
+using ResumeEnhancer.ResumeModule.SL;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.Web;
 using Shouldly;
 
-namespace ResumeEnhancer.Tests.Composition;
+namespace ResumeEnhancer.Tests.Unit.Composition;
 
 public sealed class DependencyInjectionTests
 {
@@ -67,9 +67,9 @@ public sealed class DependencyInjectionTests
         scope.ServiceProvider.GetRequiredService<AppDbContext>().ShouldNotBeNull();
         scope.ServiceProvider.GetRequiredService<IUnitOfWork<AppDbContext>>().ShouldNotBeNull();
         scope.ServiceProvider.GetRequiredService<IUnitOfWorkFactory<AppDbContext>>().ShouldNotBeNull();
-        scope.ServiceProvider.GetRequiredService<IAuditEntityRepository<ResumeModuleDM.Entities.Resume>>()
+        scope.ServiceProvider.GetRequiredService<IAuditEntityRepository<ResumeEnhancer.ResumeModule.DM.Entities.Resume>>()
             .ShouldNotBeNull();
-        scope.ServiceProvider.GetRequiredService<IModelLoader<ResumeModuleDM.Entities.Resume>>()
+        scope.ServiceProvider.GetRequiredService<IModelLoader<ResumeEnhancer.ResumeModule.DM.Entities.Resume>>()
             .ShouldNotBeNull();
     }
 
@@ -104,3 +104,6 @@ public sealed class DependencyInjectionTests
             ignoreOrder: true);
     }
 }
+
+
+

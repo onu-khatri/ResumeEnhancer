@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class PagedQueryResult<TElement>
 {
@@ -32,3 +32,4 @@ public sealed class PagedQueryResult<TElement>
 
     public bool HasNextPage => PageNumber < TotalPages;
 }
+

@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IUnitOfWorkScope<TDbContext> : IDisposable, IAsyncDisposable
     where TDbContext : AppDbContext
@@ -9,3 +9,4 @@ public interface IUnitOfWorkScope<TDbContext> : IDisposable, IAsyncDisposable
 
     IUnitOfWork<TDbContext> UnitOfWork { get; }
 }
+
