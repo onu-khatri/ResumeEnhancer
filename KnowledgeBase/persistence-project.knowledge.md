@@ -2,31 +2,8 @@
 title: Shared ResumeEnhancer.Infrastructure.Persistence Project Knowledge
 intent: help an AI agent safely understand, extend, and review the shared ResumeEnhancer.Infrastructure.Persistence project without crossing module boundaries
 scope: in scope is application/Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj and its extension seams; out of scope are ResumeEnhancer.ResumeModule.PL and Infrastructure/Migration internals except as examples of how shared ResumeEnhancer.Infrastructure.Persistence is consumed
-audience: combination
+audience: AI agent implementer and reviewer
 last_reviewed: 2026-08-15
-status: stable
-source_plan: KnowledgeBase/persistence-project.kb_plan.md
-validation:
-  gates:
-    A_grounding: PASS
-    B_specificity: PASS
-    C_reproducibility: PASS
-    D_user_interview: PASS
-    E_consistency: PASS
-    F_boundary_discipline: PASS
-    G_currency: PASS
-    H_validation_record: PASS
-  evidence_density:
-    claims: 30
-    evidence_entries: 27
-  cross_examination: clean
-  assumptions:
-    - none
-  known_gaps:
-    - No business requirement or user story appears to target the shared ResumeEnhancer.Infrastructure.Persistence project directly; traceability for this artifact is architectural rather than feature-story driven.
-  verified_this_session:
-    - Re-read shared ResumeEnhancer.Infrastructure.Persistence source files, repo READMEs, module integration examples, and persistence-focused tests on 2026-08-15.
-    - Ran `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore --filter "FullyQualifiedName~Infrastructure.ResumeEnhancer.Infrastructure.Persistence|FullyQualifiedName~Composition.DependencyInjectionTests|FullyQualifiedName~Modules.ResumeModule.ResumeEnhancer.Infrastructure.Persistence.ResumeModuleSeederTests|FullyQualifiedName~Infrastructure.Migration.AppDbContextDesignTimeFactoryTests"` with 75 passing tests.
 ---
 
 ## Intent
@@ -49,7 +26,7 @@ public static IServiceCollection AddAppDbContext(
 }
 ```
 
-Reference: `AddAppDbContext` in [DependencyInjection](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Composition/DependencyInjection.cs).
+Reference: `AddAppDbContext` in [DependencyInjection](../application/Infrastructure/Persistence/Composition/DependencyInjection.cs).
 
 ## When to use this knowledge
 
@@ -64,13 +41,13 @@ Do not use this artifact as the main reference for module-specific EF mappings o
 
 ## Core concepts
 
-- `AppDbContext`: the shared EF Core context that receives module model configurations through DI and executes a common save pipeline. Reference: [AppDbContext](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/AppDbContext.cs).
-- `IAppDbContextModelConfiguration`: the extension contract each module implements so `AppDbContext` can include that module's EF model. Reference: [IAppDbContextModelConfiguration](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/IAppDbContextModelConfiguration.cs).
-- `IUnitOfWork<AppDbContext>`: the scoped persistence boundary that coordinates repository resolution, transactions, saves, and setup-entity preloading. Reference: [IUnitOfWork](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs).
-- `IAuditEntityRepository<TElement>`: the shared audited-entity repository abstraction for common CRUD, existence, query specification, and paging operations. Reference: [IAuditEntityRepository](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Repositories/IAuditEntityRepository.cs).
-- `IModelLoader<TModel>`: a typed include-path builder that lets repositories resolve navigation-only `Include` paths from richer object-member expressions. Reference: [IModelLoader](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Loading/IModelLoader.cs).
-- `IQuerySpecification<T>`: the shared query-shaping contract for criteria, includes, ordering, and optional projection. Reference: [IQuerySpecification](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Querying/IQuerySpecification.cs).
-- `IAppDbContextSeeder`: the shared seeding contract that lets modules register idempotent seeders against `AppDbContext`. Reference: [IAppDbContextSeeder](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Seeding/IAppDbContextSeeder.cs).
+- `AppDbContext`: the shared EF Core context that receives module model configurations through DI and executes a common save pipeline. Reference: [AppDbContext](../application/Infrastructure/Persistence/Context/AppDbContext.cs).
+- `IAppDbContextModelConfiguration`: the extension contract each module implements so `AppDbContext` can include that module's EF model. Reference: [IAppDbContextModelConfiguration](../application/Infrastructure/Persistence/Context/IAppDbContextModelConfiguration.cs).
+- `IUnitOfWork<AppDbContext>`: the scoped persistence boundary that coordinates repository resolution, transactions, saves, and setup-entity preloading. Reference: [IUnitOfWork](../application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs).
+- `IAuditEntityRepository<TElement>`: the shared audited-entity repository abstraction for common CRUD, existence, query specification, and paging operations. Reference: [IAuditEntityRepository](../application/Infrastructure/Persistence/Repositories/IAuditEntityRepository.cs).
+- `IModelLoader<TModel>`: a typed include-path builder that lets repositories resolve navigation-only `Include` paths from richer object-member expressions. Reference: [IModelLoader](../application/Infrastructure/Persistence/Loading/IModelLoader.cs).
+- `IQuerySpecification<T>`: the shared query-shaping contract for criteria, includes, ordering, and optional projection. Reference: [IQuerySpecification](../application/Infrastructure/Persistence/Querying/IQuerySpecification.cs).
+- `IAppDbContextSeeder`: the shared seeding contract that lets modules register idempotent seeders against `AppDbContext`. Reference: [IAppDbContextSeeder](../application/Infrastructure/Persistence/Seeding/IAppDbContextSeeder.cs).
 
 ```csharp
 public AppDbContext(
@@ -123,7 +100,7 @@ The first file to read in code is `application/Infrastructure/Persistence/README
 </ItemGroup>
 ```
 
-Reference: [ResumeEnhancer.Infrastructure.Persistence.csproj](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj).
+Reference: [ResumeEnhancer.Infrastructure.Persistence.csproj](../application/Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj).
 
 ```csharp
 public static IServiceCollection AddApplicationModules(this IServiceCollection services)
@@ -158,7 +135,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 }
 ```
 
-Reference: `AppDbContext` in [AppDbContext](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/AppDbContext.cs).
+Reference: `AppDbContext` in [AppDbContext](../application/Infrastructure/Persistence/Context/AppDbContext.cs).
 
 ```csharp
 public void Configure(ModelBuilder modelBuilder)
@@ -203,7 +180,7 @@ private async Task<int> SaveChangesWithPipelineAsync(
 }
 ```
 
-Reference: `AppDbContext` in [AppDbContext](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/AppDbContext.cs).
+Reference: `AppDbContext` in [AppDbContext](../application/Infrastructure/Persistence/Context/AppDbContext.cs).
 
 ### 3. Resolving repositories and transactions inside a scope
 
@@ -233,7 +210,7 @@ public TIRepo GetRepoLight<TIRepo>()
 }
 ```
 
-Reference: `IUnitOfWork` in [IUnitOfWork](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs) and `UnitOfWork` in [UnitOfWork](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/UnitOfWork/UnitOfWork.cs).
+Reference: `IUnitOfWork` in [IUnitOfWork](../application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs) and `UnitOfWork` in [UnitOfWork](../application/Infrastructure/Persistence/UnitOfWork/UnitOfWork.cs).
 
 ```csharp
 public async Task<IUnitOfWorkTransaction> CreateTransactionAsync(
@@ -283,7 +260,7 @@ if (typeof(AuditEntity).IsAssignableFrom(entityType))
 }
 ```
 
-Reference: `ApplyModuleTableMappings` in [ModelBuilderModuleMappingExtensions](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/ModelBuilderModuleMappingExtensions.cs).
+Reference: `ApplyModuleTableMappings` in [ModelBuilderModuleMappingExtensions](../application/Infrastructure/Persistence/Context/ModelBuilderModuleMappingExtensions.cs).
 
 ```csharp
 private static string GetTablePrefix(Type entityType)
@@ -363,7 +340,7 @@ var hasChanges = ApplySetupData(existingRow, seed);
 hasChanges |= updateFunction(existingRow, seed);
 ```
 
-Reference: `SeedSetupDataAsync` in [SetupDataSeedingExtensions](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Seeding/SetupDataSeedingExtensions.cs).
+Reference: `SeedSetupDataAsync` in [SetupDataSeedingExtensions](../application/Infrastructure/Persistence/Seeding/SetupDataSeedingExtensions.cs).
 
 ```csharp
 public static string FromModule(string moduleSchema) =>
@@ -567,14 +544,15 @@ These examples are safe because they happen in module composition, not in shared
 
 When you need surrounding code, start from these named interfaces and types rather than a general file inventory:
 
-- [IAppDbContextModelConfiguration](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Context/IAppDbContextModelConfiguration.cs)
-- [IUnitOfWork](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs)
-- [IUnitOfWorkFactory](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/UnitOfWork/IUnitOfWorkFactory.cs)
-- [IAuditEntityRepository](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Repositories/IAuditEntityRepository.cs)
-- [IModelLoader](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Loading/IModelLoader.cs)
-- [IModelLoaderNavigator](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Loading/IModelLoaderNavigator.cs)
-- [IQuerySpecification](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Querying/IQuerySpecification.cs)
-- [IAppDbContextSeeder](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Seeding/IAppDbContextSeeder.cs)
+- [IAppDbContextModelConfiguration](../application/Infrastructure/Persistence/Context/IAppDbContextModelConfiguration.cs)
+- [IUnitOfWork](../application/Infrastructure/Persistence/UnitOfWork/IUnitOfWork.cs)
+- [IUnitOfWorkFactory](../application/Infrastructure/Persistence/UnitOfWork/IUnitOfWorkFactory.cs)
+- [IAuditEntityRepository](../application/Infrastructure/Persistence/Repositories/IAuditEntityRepository.cs)
+- [IModelLoader](../application/Infrastructure/Persistence/Loading/IModelLoader.cs)
+- [IModelLoaderNavigator](../application/Infrastructure/Persistence/Loading/IModelLoaderNavigator.cs)
+- [IQuerySpecification](../application/Infrastructure/Persistence/Querying/IQuerySpecification.cs)
+- [IAppDbContextSeeder](../application/Infrastructure/Persistence/Seeding/IAppDbContextSeeder.cs)
+
 
 
 

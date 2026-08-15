@@ -26,7 +26,7 @@ Check: the verification section has runnable commands (`dotnet build`, `dotnet t
 
 ## Gate D — User Interview (do not assume)
 
-PAUSE and interview the **user** with the `question` tool before proceeding. Resolve every:
+PAUSE and interview the **user** before proceeding. Prefer the VS Code question UI tool when it is available in the active mode, and ask questions one by one so the interview feels conversational rather than like a form. Resolve every:
 
 - **Objective** — if the prompt does not explicitly state the artifact's objective, ask for it.
 - **Audience** — if the prompt does not explicitly state the target audience, ask for it.
@@ -41,7 +41,7 @@ PAUSE and interview the **user** with the `question` tool before proceeding. Res
 - **Section density** — confirm whether each included section should be self-sufficient with enough code snippets that the agent does not need to inspect the repo for basic understanding.
 - **Gap** — confirm whether to record a known gap or investigate further.
 
-Ask concrete questions with 2–5 evidence-based options. If `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, or `Applicability` are missing from the prompt, they must be asked before proceeding and must not be assumed. For section selection, use `multiple: true` with the core sections first. If you discovered extra sections that would materially improve the artifact, present them separately with a short rationale and ask for explicit approval before adding them. Record every question, answer, and confirmed `assumption` in the draft's `Clarifications` section. Unanswered items become recorded `assumptions`, never silent guesses.
+Ask concrete questions with 2–5 evidence-based options. Prefer the VS Code question UI tool one question at a time, using multi-select only where it is genuinely needed, such as section selection. If the UI tool is unavailable in the active mode, ask plain chat questions one by one and record that limitation in the draft. If `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, or `Applicability` are missing from the prompt, they must be asked before proceeding and must not be assumed. For section selection, use multi-select with the core sections first. If you discovered extra sections that would materially improve the artifact, present them separately with a short rationale and ask for explicit approval before adding them. Record every question, answer, and confirmed `assumption` in the draft's `Clarifications` section. Unanswered items become recorded `assumptions`, never silent guesses.
 
 Proceed to Gate E only after the user responds.
 
@@ -63,6 +63,6 @@ Check: a `Pitfalls`, `Boundaries`, `Anti-patterns`, or `Do not` section with con
 
 ## Gate H — Validation Record
 
-The `validation` block lists A–H with PASS/FAIL, user-interview outcome, and known gaps. FAIL if missing or not actually run.
+For `*.pre-knowledge.md`, the `validation` block lists A–H with PASS/FAIL, user-interview outcome, and known gaps. FAIL if missing or not actually run. Final `*.knowledge.md` files should not carry the `validation` block; that workflow metadata belongs in the approved draft, not the durable knowledge artifact.
 
 After the final `*.knowledge.md` file is saved, the agent must ask the user whether to delete the intermediate `*.kb_plan.md` and `*.pre-knowledge.md` files. Keeping or deleting those files is a user decision, not an agent assumption.

@@ -14,7 +14,7 @@ KnowledgeBase/<topic-name>.kb_plan.md
 ---
 title: <short title>
 topic_slug: <topic-name>
-audience: <implementer | reviewer | planner | onboarder | combination>
+audience: <explicit named audience such as AI agent implementer, reviewer, and planner>
 status: draft
 plan_date: <YYYY-MM-DD>
 depends_on_interview: true
@@ -32,7 +32,7 @@ approved_to_compose: false
 
 ## Interview Outcome
 - Objective: <answer>
-- Audience: <answer>
+- Audience: <explicit named audience>
 - Depth of knowledge: <answer>
 - Expected structure: <answer>
 - Applicability: <answer>
