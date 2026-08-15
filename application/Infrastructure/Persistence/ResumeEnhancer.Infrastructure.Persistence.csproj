@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -12,11 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DomainLibrary\DomainLibrary.csproj" />
+    <ProjectReference Include="..\..\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests.Unit" />
   </ItemGroup>
 
 </Project>
+

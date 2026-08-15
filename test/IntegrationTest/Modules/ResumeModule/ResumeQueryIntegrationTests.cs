@@ -1,11 +1,11 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 [Collection("Sequential_ResumeModul")]
 public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeModuleIntegrationTestFixture>
@@ -75,3 +75,5 @@ public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeMo
         return await dbContext.Set<Resume>().CountAsync(cancellationToken);
     }
 }
+
+

@@ -21,12 +21,12 @@ Work through each lens. For each unanswered question, decide: fix now, or record
 - "What will break if I get this wrong?" — the artifact must name a concrete failure mode, not a vague warning.
 - "Which existing code can I copy as a reference?" — the artifact must point to a real, existing example.
 - "Can I see the copy shape without hunting through the repo?" — the artifact should embed the most important example snippets instead of only naming files.
-- "Where are the contracts I must not violate?" — the artifact must name the contract type and its owning module (e.g., request/response contracts in `<ModuleName>ModuleAM`).
+- "Where are the contracts I must not violate?" — the artifact must name the contract type and its owning module (e.g., request/response contracts in `ResumeEnhancer.<ModuleName>.AM`).
 
 ## Lens 3 — Review (an agent reviewing a diff)
 
 - "How do I tell a correct change from an incorrect one?" — the artifact must state a verifiable rule, not a preference.
-- "Which layers must this change not cross?" — boundary rules must be explicit (e.g., HTTP stays in `<ModuleName>ModuleWeb`).
+- "Which layers must this change not cross?" — boundary rules must be explicit (e.g., HTTP stays in `ResumeEnhancer.<ModuleName>.Web`).
 - "What tests prove this still works?" — the artifact must name a concrete test project or command.
 
 ## Lens 4 — Planning (an agent sequencing work)
@@ -50,3 +50,4 @@ Count the questions that required a fix or a recorded gap:
 - 3+ unresolved — the artifact is not ready; keep it `draft`, fix the defects, and re-run the cross-examination.
 
 Record the verdict (`clean` / `acceptable-with-gaps` / `not-ready`) in the `validation.cross_examination` field. This verdict is a readiness signal for the draft-approval gate; the final `*.knowledge.md` save still requires explicit user approval.
+

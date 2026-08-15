@@ -30,7 +30,7 @@ Use this skill to widen review coverage with AI without replacing engineering ju
 
 - contract drift between frontend and backend (AM requests/responses vs UI models)
 - validator or mapper mismatches
-- boundary leakage across `<ModuleName>ModuleWeb`, `<ModuleName>ModuleSL`, and `<ModuleName>ModulePL`
+- boundary leakage across `ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.SL`, and `ResumeEnhancer.<ModuleName>.PL`
 - ownership/authorization gaps on resume data (IDOR)
 - missing tests around permissions, error handling, and migrations
 
@@ -53,3 +53,4 @@ Include:
 - Automated checks (build/tests) have run and their results are stated.
 - AI findings are each verified against the code and classified by severity.
 - The final output separates confirmed defects from questions and watch items.
+

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using ResumeModulePL;
-using ResumeModuleWeb;
-using ResumeModuleWeb.MiniApis;
+using ResumeEnhancer.ResumeModule.PL;
+using ResumeEnhancer.ResumeModule.Web;
+using ResumeEnhancer.ResumeModule.Web.MiniApis;
 
-namespace ModulesComposition;
+namespace ResumeEnhancer.WebSolution.ModulesComposition;
 
 public static class DependencyInjection
 {
@@ -23,3 +23,4 @@ public static class DependencyInjection
         return endpoints;
     }
 }
+

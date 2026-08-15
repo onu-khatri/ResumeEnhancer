@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class CreateResumeRequest
 {
@@ -38,3 +38,4 @@ public sealed class CreateResumeRequest
     [Required]
     public List<ProjectRequest> Projects { get; set; } = [];
 }
+

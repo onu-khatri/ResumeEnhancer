@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class ProjectResponse
 {
@@ -18,3 +18,4 @@ public sealed class ProjectResponse
 
     public bool IsCurrent { get; set; }
 }
+

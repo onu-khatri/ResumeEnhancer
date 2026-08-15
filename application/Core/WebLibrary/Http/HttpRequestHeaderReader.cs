@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace WebLibrary.Http;
+namespace ResumeEnhancer.Core.WebLibrary.Http;
 
 public static class HttpRequestHeaderReader
 {
@@ -37,3 +37,4 @@ public static class HttpRequestHeaderReader
             headerName);
     }
 }
+

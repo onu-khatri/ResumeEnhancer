@@ -22,7 +22,7 @@ Use this skill to turn a ResumeEnhancer user story or change request into a revi
 
 1. **Goal** — one or two sentences on the outcome and the story/requirement it serves.
 2. **Current behavior** — the relevant request flow (`endpoint -> validator -> handler -> mapper -> repository`).
-3. **Impacted layers** — frontend features, `<ModuleName>ModuleWeb`, `<ModuleName>ModuleAM`, `<ModuleName>ModuleSL`, `<ModuleName>ModulePL`, `<ModuleName>ModuleDM`, tests.
+3. **Impacted layers** — frontend features, `ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.AM`, `ResumeEnhancer.<ModuleName>.SL`, `ResumeEnhancer.<ModuleName>.PL`, `ResumeEnhancer.<ModuleName>.DM`, tests.
 4. **Phases** — ordered, reviewable steps with the files each step touches.
 5. **Risks and dependencies** — contract changes, migrations, shared files, or rollout concerns.
 6. **Verification** — the exact commands and tests that prove completion.
@@ -40,3 +40,4 @@ Use this skill to turn a ResumeEnhancer user story or change request into a revi
 - The plan is concrete enough that another agent could execute it.
 - Verification commands are explicit (`dotnet build`, `dotnet test`, `npm run check`).
 - Risks and rollout steps are stated up front.
+

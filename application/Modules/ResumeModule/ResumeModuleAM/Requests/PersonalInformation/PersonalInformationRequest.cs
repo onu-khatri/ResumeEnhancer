@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class PersonalInformationRequest
 {
@@ -38,3 +38,4 @@ public sealed class PersonalInformationRequest
 
     public List<SocialMediaLinkRequest>? SocialMediaLinks { get; set; }
 }
+

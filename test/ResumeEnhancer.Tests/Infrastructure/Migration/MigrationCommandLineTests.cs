@@ -1,6 +1,6 @@
 using Shouldly;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Migration;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Migration;
 
 public sealed class MigrationCommandLineTests
 {
@@ -56,3 +56,4 @@ public sealed class MigrationCommandLineTests
         exception.Message.ShouldContain("Unknown argument");
     }
 }
+

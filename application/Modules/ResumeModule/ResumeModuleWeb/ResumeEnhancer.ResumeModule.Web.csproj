@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\WebLibrary\WebLibrary.csproj" />
-    <ProjectReference Include="..\ResumeModuleAM\ResumeModuleAM.csproj" />
-    <ProjectReference Include="..\ResumeModelSL\ResumeModuleSL.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\..\..\Core\WebLibrary\ResumeEnhancer.Core.WebLibrary.csproj" />
+    <ProjectReference Include="..\ResumeModuleAM\ResumeEnhancer.ResumeModule.AM.csproj" />
+    <ProjectReference Include="..\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests.Unit" />
   </ItemGroup>
 
 </Project>
+

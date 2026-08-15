@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class NestedDbTransaction : IUnitOfWorkTransaction
 {
@@ -38,3 +38,4 @@ public sealed class NestedDbTransaction : IUnitOfWorkTransaction
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
+

@@ -1,6 +1,6 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IUnitOfWork<TDbContext> : IDisposable, IAsyncDisposable
     where TDbContext : AppDbContext
@@ -27,3 +27,4 @@ public interface IUnitOfWork<TDbContext> : IDisposable, IAsyncDisposable
 
     void PreloadSetupEntities(IEnumerable<ISetupData> setupEntities);
 }
+

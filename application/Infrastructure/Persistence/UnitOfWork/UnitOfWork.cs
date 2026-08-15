@@ -1,8 +1,8 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
     where TDbContext : AppDbContext
@@ -168,3 +168,4 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
         ObjectDisposedException.ThrowIf(_disposed, this);
     }
 }
+

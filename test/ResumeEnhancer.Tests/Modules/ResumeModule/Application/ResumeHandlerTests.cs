@@ -1,13 +1,13 @@
 using NSubstitute;
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
-using ResumeModuleSL.Abstractions.Persistence;
-using ResumeModuleSL.Contracts;
-using ResumeModuleSL.Handlers;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.SL.Handlers;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Application;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Application;
 
 public sealed class ResumeHandlerTests
 {
@@ -202,3 +202,5 @@ public sealed class ResumeHandlerTests
         exists.ShouldBeTrue();
     }
 }
+
+

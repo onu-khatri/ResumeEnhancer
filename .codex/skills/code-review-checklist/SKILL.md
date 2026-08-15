@@ -24,7 +24,7 @@ Use this skill to make ResumeEnhancer reviews systematic rather than intuitive. 
 
 - [ ] Confirm the user story / requirement being implemented.
 - [ ] Confirm scope: is unrelated work mixed into the diff?
-- [ ] Confirm changed layers: frontend features, `<ModuleName>ModuleWeb`, `<ModuleName>ModuleAM`, `<ModuleName>ModuleSL`, `<ModuleName>ModulePL`, `<ModuleName>ModuleDM`, tests.
+- [ ] Confirm changed layers: frontend features, `ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.AM`, `ResumeEnhancer.<ModuleName>.SL`, `ResumeEnhancer.<ModuleName>.PL`, `ResumeEnhancer.<ModuleName>.DM`, tests.
 
 ### 2. Correctness
 
@@ -63,3 +63,4 @@ Use this skill to make ResumeEnhancer reviews systematic rather than intuitive. 
 - Findings are severity-ordered (blocking / important / minor / question).
 - Each finding has a concrete file reference and one-line rationale.
 - Confirmed defects are separated from watch items.
+

@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class NonRelationalDbTransaction : IUnitOfWorkTransaction
 {
@@ -26,3 +26,4 @@ public sealed class NonRelationalDbTransaction : IUnitOfWorkTransaction
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
+

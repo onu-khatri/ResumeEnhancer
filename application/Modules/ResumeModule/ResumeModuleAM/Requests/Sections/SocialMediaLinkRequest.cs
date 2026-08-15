@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class SocialMediaLinkRequest
 {
@@ -19,3 +19,4 @@ public sealed class SocialMediaLinkRequest
     [MaxLength(100)]
     public string? DisplayName { get; set; }
 }
+

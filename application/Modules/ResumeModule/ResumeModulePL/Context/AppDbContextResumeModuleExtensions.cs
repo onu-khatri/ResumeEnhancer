@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Persistence;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL;
+namespace ResumeEnhancer.ResumeModule.PL;
 
 public static class AppDbContextResumeModuleExtensions
 {
@@ -37,3 +37,4 @@ public static class AppDbContextResumeModuleExtensions
     public static DbSet<ResumeSectionSetup> ResumeSectionSetups(this AppDbContext dbContext) =>
         dbContext.Set<ResumeSectionSetup>();
 }
+

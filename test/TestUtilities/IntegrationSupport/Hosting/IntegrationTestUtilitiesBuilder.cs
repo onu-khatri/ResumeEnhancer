@@ -1,4 +1,4 @@
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -132,3 +132,4 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
         }
     }
 }
+

@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class ApplicationCacheProviderTests
 {
@@ -212,3 +212,5 @@ public sealed class ApplicationCacheProviderTests
 
     private sealed record SetCall(string Key, byte[] Value, TimeSpan? Expiration);
 }
+
+

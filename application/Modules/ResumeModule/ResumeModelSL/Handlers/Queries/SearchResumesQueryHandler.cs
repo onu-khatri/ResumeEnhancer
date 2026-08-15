@@ -1,9 +1,9 @@
 using Mediator;
-using ResumeModuleAM.Responses;
-using ResumeModuleSL.Abstractions.Persistence;
-using ResumeModuleSL.Contracts;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 public sealed class SearchResumesQueryHandler
     : IQueryHandler<SearchResumesQuery, ResumeSearchResponse>
@@ -26,3 +26,4 @@ public sealed class SearchResumesQueryHandler
         return ResumeModelMapper.MapSearch(searchResult);
     }
 }
+

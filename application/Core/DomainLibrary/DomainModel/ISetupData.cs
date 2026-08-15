@@ -1,4 +1,4 @@
-namespace DomainLibrary.DomainModel;
+namespace ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public interface ISetupData : IAuditEntity
 {
@@ -10,3 +10,4 @@ public interface ISetupData : IAuditEntity
 
     bool ObsoleteFlag { get; set; }
 }
+

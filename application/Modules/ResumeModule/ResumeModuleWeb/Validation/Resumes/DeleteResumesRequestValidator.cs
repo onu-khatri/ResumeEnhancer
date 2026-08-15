@@ -1,7 +1,7 @@
 using FluentValidation;
-using ResumeModuleAM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Requests;
 
-namespace ResumeModuleWeb.Validation.Resumes;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.Resumes;
 
 public sealed class DeleteResumesRequestValidator : AbstractValidator<DeleteResumesRequest>
 {
@@ -15,3 +15,4 @@ public sealed class DeleteResumesRequestValidator : AbstractValidator<DeleteResu
             .WithMessage("ResumeIds cannot contain zero or negative ids.");
     }
 }
+

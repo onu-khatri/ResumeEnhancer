@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class RedisCacheOptions
 {
@@ -6,3 +6,4 @@ public sealed class RedisCacheOptions
 
     public string InstanceName { get; set; } = "ResumeEnhancer:";
 }
+

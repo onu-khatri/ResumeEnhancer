@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class ResumeListItemResponse
 {
@@ -28,3 +28,4 @@ public sealed class ResumeListItemResponse
 
     public int ProjectCount { get; set; }
 }
+

@@ -28,7 +28,7 @@ test/
     |       `-- Web/
     |           `-- Validation/
     |-- TestInfrastructure/
-    |-- ResumeEnhancer.Tests.csproj
+    |-- ResumeEnhancer.Tests.Unit.csproj
     `-- xunit.runner.json
 ```
 
@@ -37,13 +37,13 @@ test/
 Fast local test run:
 
 ```powershell
-dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore
+dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore
 ```
 
 Run with coverage:
 
 ```powershell
-dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore --settings test\coverlet.runsettings --collect:"XPlat Code Coverage"
+dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore --settings test\coverlet.runsettings --collect:"XPlat Code Coverage"
 ```
 
 Validate the whole solution:
@@ -108,19 +108,19 @@ Modules/<ModuleName>/
     `-- Validation/
 ```
 
-Add project references in `ResumeEnhancer.Tests.csproj` for each new production project:
+Add project references in `ResumeEnhancer.Tests.Unit.csproj` for each new production project:
 
 ```xml
-<ProjectReference Include="..\..\application\Modules\MyModule\MyModuleSL\MyModuleSL.csproj" />
-<ProjectReference Include="..\..\application\Modules\MyModule\MyModulePL\MyModulePL.csproj" />
-<ProjectReference Include="..\..\application\Modules\MyModule\MyModuleWeb\MyModuleWeb.csproj" />
+<ProjectReference Include="..\..\application\Modules\MyModule\MyModuleSL\ResumeEnhancer.MyModule.SL.csproj" />
+<ProjectReference Include="..\..\application\Modules\MyModule\MyModulePL\ResumeEnhancer.MyModule.PL.csproj" />
+<ProjectReference Include="..\..\application\Modules\MyModule\MyModuleWeb\ResumeEnhancer.MyModule.Web.csproj" />
 ```
 
 If a module has internal behavior that should be tested, add `InternalsVisibleTo` to the production project:
 
 ```xml
 <ItemGroup>
-  <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+  <InternalsVisibleTo Include="ResumeEnhancer.Tests.Unit" />
 </ItemGroup>
 ```
 
@@ -273,3 +273,4 @@ Latest coverage run:
 - Test count: 213 passing
 - Coverage settings: `test/coverlet.runsettings`
 - AM and DM model assemblies: excluded with `[ExcludeFromCodeCoverage]`
+

@@ -1,6 +1,6 @@
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 public sealed class ResumeModuleIntegrationTestFixture : IDisposable
 {
@@ -22,3 +22,4 @@ public sealed class ResumeModuleIntegrationTestFixture : IDisposable
         Utilities.Dispose();
     }
 }
+

@@ -1,4 +1,4 @@
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public static class ModuleSchemaName
 {
@@ -47,3 +47,4 @@ public static class ModuleSchemaName
     private static bool IsValidSchemaCharacter(char character) =>
         char.IsAsciiLetterOrDigit(character) || character == IntegratedSchemaSeparator;
 }
+

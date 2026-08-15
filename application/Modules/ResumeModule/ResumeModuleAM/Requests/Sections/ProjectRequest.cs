@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class ProjectRequest
 {
@@ -26,3 +26,4 @@ public sealed class ProjectRequest
 
     public bool IsCurrent { get; set; }
 }
+

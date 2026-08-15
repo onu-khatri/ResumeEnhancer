@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Persistence;
-using ResumeModulePL.Repositories;
-using ResumeModulePL.Seeding;
-using ResumeModuleSL.Abstractions.Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.PL.Repositories;
+using ResumeEnhancer.ResumeModule.PL.Seeding;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
-namespace ResumeModulePL;
+namespace ResumeEnhancer.ResumeModule.PL;
 
 public static class DependencyInjection
 {
@@ -36,3 +36,4 @@ public static class DependencyInjection
         && (serviceDescriptor.ImplementationType == typeof(ResumeModuleDbContextModelConfiguration)
             || serviceDescriptor.ImplementationInstance is ResumeModuleDbContextModelConfiguration);
 }
+

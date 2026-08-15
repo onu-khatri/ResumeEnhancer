@@ -1,4 +1,4 @@
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -14,3 +14,4 @@ internal static partial class ResumeModelMapper
             : normalizedValue;
     }
 }
+

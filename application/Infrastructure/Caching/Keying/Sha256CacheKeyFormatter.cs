@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class Sha256CacheKeyFormatter(IOptions<CacheOptions> options) : ICacheKeyFormatter
 {
@@ -42,3 +42,4 @@ internal sealed class Sha256CacheKeyFormatter(IOptions<CacheOptions> options) : 
         char.IsAsciiLetterOrDigit(character)
         || character is ':' or '_' or '-' or '.';
 }
+

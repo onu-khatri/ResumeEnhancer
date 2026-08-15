@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public static class AppDbContextSeederExtensions
 {
@@ -18,3 +18,4 @@ public static class AppDbContextSeederExtensions
         }
     }
 }
+

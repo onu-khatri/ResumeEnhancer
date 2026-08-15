@@ -1,9 +1,9 @@
 using FluentValidation;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.PersonalInformation;
-using ResumeModuleWeb.Validation.Sections;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.PersonalInformation;
+using ResumeEnhancer.ResumeModule.Web.Validation.Sections;
 
-namespace ResumeModuleWeb.Validation.Resumes;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.Resumes;
 
 public sealed class CreateResumeRequestValidator : AbstractValidator<CreateResumeRequest>
 {
@@ -58,3 +58,4 @@ public sealed class CreateResumeRequestValidator : AbstractValidator<CreateResum
             .SetValidator(new ProjectRequestValidator(isCreate: true));
     }
 }
+

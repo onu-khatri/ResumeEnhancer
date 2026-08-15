@@ -28,9 +28,9 @@ Use this skill to produce documentation that reflects the real codebase, not gen
 
 ## ResumeEnhancer content map
 
-- Module responsibilities: `<ModuleName>ModuleWeb` (HTTP/validation), `<ModuleName>ModuleAM` (contracts), `<ModuleName>ModuleSL` (handlers/mapping), `<ModuleName>ModulePL` (EF/repositories), `<ModuleName>ModuleDM` (entities).
+- Module responsibilities: `ResumeEnhancer.<ModuleName>.Web` (HTTP/validation), `ResumeEnhancer.<ModuleName>.AM` (contracts), `ResumeEnhancer.<ModuleName>.SL` (handlers/mapping), `ResumeEnhancer.<ModuleName>.PL` (EF/repositories), `ResumeEnhancer.<ModuleName>.DM` (entities).
 - API surface: Minimal API groups under `/api/...` and their command/query endpoints.
-- Persistence: shared `AppDbContext`, unit of work, repository base, seeding, migrations.
+- ResumeEnhancer.Infrastructure.Persistence: shared `AppDbContext`, unit of work, repository base, seeding, migrations.
 - Verification commands: `dotnet build application\ResumeEnhancerApp.slnx`, `dotnet test ...`, `npm run check`.
 
 ## Quality bar
@@ -45,3 +45,4 @@ Use this skill to produce documentation that reflects the real codebase, not gen
 - The doc is grounded in the current codebase.
 - Internal cross-references and file paths are valid.
 - A new reader could follow it without additional context.
+

@@ -1,8 +1,8 @@
 using FluentValidation;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.Shared;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
-namespace ResumeModuleWeb.Validation.PersonalInformation;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.PersonalInformation;
 
 public sealed class AddressRequestValidator : AbstractValidator<AddressRequest>
 {
@@ -26,3 +26,4 @@ public sealed class AddressRequestValidator : AbstractValidator<AddressRequest>
             .MaximumLength(20);
     }
 }
+

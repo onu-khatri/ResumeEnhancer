@@ -5,11 +5,11 @@ Use this playbook for backend stories that span more than a single direct edit. 
 ## Suggested phases
 
 1. **Confirm scope** — read the user story and trace the existing request flow (`endpoint -> validator -> handler -> mapper -> repository`).
-2. **Contracts** — update `<ModuleName>ModuleAM/Requests` and `<ModuleName>ModuleAM/Responses` only when the API shape must change; keep changes backward-compatible.
-3. **Validation** — add or refine `AbstractValidator<TRequest>` in `<ModuleName>ModuleWeb/Validation`.
-4. **Contracts + handlers** — add `ICommand`/`IQuery` records in `<ModuleName>ModuleSL/Contracts` and their handlers in `<ModuleName>ModuleSL/Handlers`.
+2. **Contracts** — update `ResumeEnhancer.<ModuleName>.AM/Requests` and `ResumeEnhancer.<ModuleName>.AM/Responses` only when the API shape must change; keep changes backward-compatible.
+3. **Validation** — add or refine `AbstractValidator<TRequest>` in `ResumeEnhancer.<ModuleName>.Web/Validation`.
+4. **Contracts + handlers** — add `ICommand`/`IQuery` records in `ResumeEnhancer.<ModuleName>.SL/Contracts` and their handlers in `ResumeEnhancer.<ModuleName>.SL/Handlers`.
 5. **Mapping** — extend `ResumeModelMapper` (Mapster) with explicit `.Ignore()` for navigation properties.
-6. **Persistence** — extend the SL abstraction in `Abstractions/Persistence`, then implement in `<ModuleName>ModulePL/Repositories` via `IUnitOfWork<AppDbContext>`.
+6. **ResumeEnhancer.Infrastructure.Persistence** — extend the SL abstraction in `Abstractions/Persistence`, then implement in `ResumeEnhancer.<ModuleName>.PL/Repositories` via `IUnitOfWork<AppDbContext>`.
 7. **Tests** — add unit/integration tests at the narrowest useful boundary, then run the build and test commands.
 
 ## Delivery concerns
@@ -24,5 +24,6 @@ Use this playbook for backend stories that span more than a single direct edit. 
 ## Definition of Done
 
 - `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore` passes.
-- Integration tests pass when contracts or persistence change: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore` passes.
+- Integration tests pass when contracts or persistence change: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
+

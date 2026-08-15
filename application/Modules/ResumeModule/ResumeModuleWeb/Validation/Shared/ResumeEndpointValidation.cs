@@ -1,4 +1,4 @@
-namespace ResumeModuleWeb.Validation.Shared;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
 internal static class ResumeEndpointValidation
 {
@@ -60,3 +60,4 @@ internal static class ResumeEndpointValidation
         }
     }
 }
+

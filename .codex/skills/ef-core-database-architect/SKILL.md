@@ -21,8 +21,8 @@ Use this skill for persistence design in the actual stack this repository uses, 
 ## Design workflow
 
 1. Start from the domain entity and the business behavior it supports.
-2. Keep EF configuration in `<ModuleName>ModulePL` and persistence abstractions in `<ModuleName>ModuleSL`.
-3. Keep domain entities and domain-only concepts in `<ModuleName>ModuleDM`.
+2. Keep EF configuration in `ResumeEnhancer.<ModuleName>.PL` and persistence abstractions in `ResumeEnhancer.<ModuleName>.SL`.
+3. Keep domain entities and domain-only concepts in `ResumeEnhancer.<ModuleName>.DM`.
 4. Prefer existing repository conventions over new abstractions.
 5. Add or update migrations deliberately; never hand-edit generated migration code without review.
 6. Keep setup data and seed behavior separate from request-time business logic.
@@ -38,14 +38,15 @@ Use this skill for persistence design in the actual stack this repository uses, 
 
 ## ResumeEnhancer focus
 
-- `<ModuleName>ModulePL` for EF configuration and repository adapters
-- `<ModuleName>ModuleSL` for persistence abstractions
+- `ResumeEnhancer.<ModuleName>.PL` for EF configuration and repository adapters
+- `ResumeEnhancer.<ModuleName>.SL` for persistence abstractions
 - shared infrastructure under `application/Infrastructure`
-- migration help: `dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help`
+- migration help: `dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help`
 - for detailed persistence conventions, read `dotnet-backend-patterns/references/ef-core-best-practices.md`
 
 ## Definition of Done
 
 - `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- When schema or persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- When schema or persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
 - Migration impact and seed-data changes are stated explicitly for the reviewer.
+

@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ResumeEnhancer.Infrastructure.Migrations.Migrations
+namespace ResumeEnhancer.Infrastructure.Migration.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSchema : Migration
+    public partial class InitialSchema : Microsoft.EntityFrameworkCore.Migrations.Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -567,3 +567,5 @@ namespace ResumeEnhancer.Infrastructure.Migrations.Migrations
         }
     }
 }
+
+

@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using Shouldly;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 public sealed class ResumeEndpointSetup<TRequest>
 {
@@ -83,3 +83,4 @@ internal static class ResumeEndpointAssertions
         return body;
     }
 }
+

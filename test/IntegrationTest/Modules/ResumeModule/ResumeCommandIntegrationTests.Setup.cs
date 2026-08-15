@@ -1,11 +1,11 @@
 using System.Net;
 using MoreLinq;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
-using ResumeModuleAM.Requests;
-using ResumeModuleAM.Responses;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Responses;
 using Shouldly;
 
-namespace ResumeEnhancer.IntegrationTests.Modules.ResumeModule;
+namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 public sealed partial class ResumeCommandIntegrationTests
 {
@@ -333,3 +333,5 @@ public sealed partial class ResumeCommandIntegrationTests
         ];
     }
 }
+
+

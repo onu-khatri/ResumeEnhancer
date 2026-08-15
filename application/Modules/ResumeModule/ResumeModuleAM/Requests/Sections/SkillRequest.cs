@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class SkillRequest
 {
@@ -20,3 +20,4 @@ public sealed class SkillRequest
     [MaxLength(500)]
     public string? Description { get; set; }
 }
+

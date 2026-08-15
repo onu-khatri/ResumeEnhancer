@@ -1,6 +1,6 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -22,3 +22,4 @@ internal sealed class IntegrationTestAppDbContext(
         }
     }
 }
+

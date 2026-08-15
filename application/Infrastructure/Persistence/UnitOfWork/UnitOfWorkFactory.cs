@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class UnitOfWorkFactory<TDbContext> : IUnitOfWorkFactory<TDbContext>
     where TDbContext : AppDbContext
@@ -37,3 +37,4 @@ public sealed class UnitOfWorkFactory<TDbContext> : IUnitOfWorkFactory<TDbContex
         }
     }
 }
+

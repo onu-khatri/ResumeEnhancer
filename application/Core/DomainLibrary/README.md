@@ -1,10 +1,10 @@
-# DomainLibrary Project
+# ResumeEnhancer.Core.DomainLibrary Project
 
 This project contains shared domain model base types used by application modules.
 
 ## Purpose
 
-DomainLibrary owns the common inheritance model:
+ResumeEnhancer.Core.DomainLibrary owns the common inheritance model:
 
 | Type | Purpose | Table Prefix |
 | --- | --- | --- |
@@ -47,4 +47,5 @@ Business data does not include setup GUID or obsolete semantics. It follows the 
 
 ## Dependency Rule
 
-DomainLibrary should stay infrastructure-free. Do not reference EF Core, web frameworks, caching providers, or module persistence projects from this project.
+ResumeEnhancer.Core.DomainLibrary should stay infrastructure-free. Do not reference EF Core, web frameworks, caching providers, or module persistence projects from this project.
+

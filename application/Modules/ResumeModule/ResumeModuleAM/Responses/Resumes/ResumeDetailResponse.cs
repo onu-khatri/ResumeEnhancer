@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class ResumeDetailResponse
 {
@@ -32,3 +32,4 @@ public sealed class ResumeDetailResponse
 
     public IReadOnlyList<ProjectResponse> Projects { get; set; } = [];
 }
+

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IAuditEntityRepository<TElement>
     where TElement : AuditEntity
@@ -49,3 +49,4 @@ public interface IAuditEntityRepository<TElement>
         IModelLoader<TElement>? modelLoader = null,
         CancellationToken cancellationToken = default);
 }
+

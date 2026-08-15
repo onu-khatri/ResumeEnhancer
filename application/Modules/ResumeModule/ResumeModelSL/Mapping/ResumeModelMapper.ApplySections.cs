@@ -1,8 +1,8 @@
 using Mapster;
-using ResumeModuleAM.Requests;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -63,3 +63,4 @@ internal static partial class ResumeModelMapper
         request.Adapt(socialMediaLink, MapsterConfig);
     }
 }
+

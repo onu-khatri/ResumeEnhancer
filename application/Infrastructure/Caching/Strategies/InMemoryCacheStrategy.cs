@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class InMemoryCacheStrategy(IMemoryCache memoryCache) : ICacheStrategy
 {
@@ -47,3 +47,4 @@ internal sealed class InMemoryCacheStrategy(IMemoryCache memoryCache) : ICacheSt
         return Task.CompletedTask;
     }
 }
+

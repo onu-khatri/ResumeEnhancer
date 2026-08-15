@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Persistence;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL;
+namespace ResumeEnhancer.ResumeModule.PL;
 
 public sealed class ResumeModuleDbContextModelConfiguration : IAppDbContextModelConfiguration
 {
@@ -24,3 +24,4 @@ public sealed class ResumeModuleDbContextModelConfiguration : IAppDbContextModel
         modelBuilder.ApplyModuleTableMappings(typeof(Resume).Assembly, _schema);
     }
 }
+

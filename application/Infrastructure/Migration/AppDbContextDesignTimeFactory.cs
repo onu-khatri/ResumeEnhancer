@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Persistence;
-using ResumeModulePL;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ResumeModule.PL;
 
-namespace ResumeEnhancer.Infrastructure.Migrations;
+namespace ResumeEnhancer.Infrastructure.Migration;
 
 public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
@@ -40,3 +40,4 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
         return null;
     }
 }
+

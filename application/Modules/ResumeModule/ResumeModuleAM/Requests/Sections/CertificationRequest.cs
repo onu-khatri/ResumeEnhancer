@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class CertificationRequest
 {
@@ -28,3 +28,4 @@ public sealed class CertificationRequest
     [MaxLength(1000)]
     public string? Description { get; set; }
 }
+

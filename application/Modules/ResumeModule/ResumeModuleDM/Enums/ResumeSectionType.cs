@@ -1,4 +1,4 @@
-namespace ResumeModuleDM.Enums;
+namespace ResumeEnhancer.ResumeModule.DM.Enums;
 
 public enum ResumeSectionType
 {
@@ -12,3 +12,4 @@ public enum ResumeSectionType
     Hobbies = 8,
     SocialMediaLinks = 9
 }
+

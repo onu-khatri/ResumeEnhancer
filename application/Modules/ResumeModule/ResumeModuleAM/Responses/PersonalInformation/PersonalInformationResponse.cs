@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class PersonalInformationResponse
 {
@@ -30,3 +30,4 @@ public sealed class PersonalInformationResponse
 
     public IReadOnlyList<SocialMediaLinkResponse> SocialMediaLinks { get; set; } = [];
 }
+

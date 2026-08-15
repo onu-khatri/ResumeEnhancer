@@ -4,7 +4,7 @@ This playbook describes the house style for backend work in this repository. It 
 
 ## Stack
 
-- .NET 10, `Microsoft.NET.Sdk.Web` host (`WebSolution.Server`)
+- .NET 10, `Microsoft.NET.Sdk.Web` host (`ResumeEnhancer.WebSolution.Server`)
 - **Mediator** (`Mediator.SourceGenerator`, `Mediator.Abstractions`) — not MediatR
 - **Mapster** for object mapping
 - **FluentValidation** for request validation
@@ -25,11 +25,11 @@ application/
 │   └── Persistence/            # AppDbContext, UnitOfWork, repositories, querying, seeding
 ├── Modules/
 │   └── <ModuleName>/
-│       ├── <ModuleName>ModuleAM/     # request/response contracts
-│       ├── <ModuleName>ModuleDM/     # domain entities + enums
-│       ├── <ModuleName>ModuleSL/      # contracts, handlers, mapping, persistence abstractions
-│       ├── <ModuleName>ModulePL/     # EF configurations, repositories, context, seeding
-│       └── <ModuleName>ModuleWeb/    # Minimal APIs + validation
+│       ├── ResumeEnhancer.<ModuleName>.AM/     # request/response contracts
+│       ├── ResumeEnhancer.<ModuleName>.DM/     # domain entities + enums
+│       ├── ResumeEnhancer.<ModuleName>.SL/      # contracts, handlers, mapping, persistence abstractions
+│       ├── ResumeEnhancer.<ModuleName>.PL/     # EF configurations, repositories, context, seeding
+│       └── ResumeEnhancer.<ModuleName>.Web/    # Minimal APIs + validation
 └── WebSolution/
     ├── ModulesComposition/     # host-facing module composition
     └── WebSolution.Server/     # entry point
@@ -37,12 +37,12 @@ application/
 
 ### Dependency direction
 
-- `<ModuleName>ModuleAM` depends on nothing (pure contracts).
-- `<ModuleName>ModuleDM` depends only on `DomainLibrary`.
-- `<ModuleName>ModuleSL` depends on `AM` + `DM` + Mapster + Mediator abstractions.
-- `<ModuleName>ModulePL` depends on `Persistence` + `DM` + `SL` (for the persistence abstractions it implements).
-- `<ModuleName>ModuleWeb` depends on `WebLibrary` + `AM` + `SL` (compile-time only, `PrivateAssets="all"`).
-- `ModulesComposition` wires `PL` + `Web`; the host wires `ModulesComposition`, `Persistence`, and `Caching`.
+- `ResumeEnhancer.<ModuleName>.AM` depends on nothing (pure contracts).
+- `ResumeEnhancer.<ModuleName>.DM` depends only on `ResumeEnhancer.Core.DomainLibrary`.
+- `ResumeEnhancer.<ModuleName>.SL` depends on `AM` + `DM` + Mapster + Mediator abstractions.
+- `ResumeEnhancer.<ModuleName>.PL` depends on `ResumeEnhancer.Infrastructure.Persistence` + `DM` + `SL` (for the persistence abstractions it implements).
+- `ResumeEnhancer.<ModuleName>.Web` depends on `ResumeEnhancer.Core.WebLibrary` + `AM` + `SL` (compile-time only, `PrivateAssets="all"`).
+- `ResumeEnhancer.WebSolution.ModulesComposition` wires `PL` + `Web`; the host wires `ResumeEnhancer.WebSolution.ModulesComposition`, `ResumeEnhancer.Infrastructure.Persistence`, and `ResumeEnhancer.Infrastructure.Caching`.
 
 ## Request flow
 
@@ -50,12 +50,12 @@ application/
 
 Each layer owns one concern and never skips a boundary.
 
-## 1. Contracts (<ModuleName>ModuleAM)
+## 1. Contracts (ResumeEnhancer.<ModuleName>.AM)
 
 Contracts are plain, serialization-safe DTOs with `[Required]`/`[MaxLength]`/`[Range]` annotations. Requests live under `Requests/<Area>`, responses under `Responses/<Area>`.
 
 ```csharp
-namespace <ModuleName>ModuleAM.Requests;
+namespace ResumeEnhancer.<ModuleName>.AM.Requests;
 
 public sealed class CreateResumeRequest
 {
@@ -71,7 +71,7 @@ public sealed class CreateResumeRequest
 }
 ```
 
-## 2. Minimal API endpoints (<ModuleName>ModuleWeb)
+## 2. Minimal API endpoints (ResumeEnhancer.<ModuleName>.Web)
 
 Endpoints are static extension classes grouped under `MiniApis/Commands` and `MiniApis/Queries`. The public surface is one `Map<ModuleName>ModuleApis` extension that maps a route group and delegates to command/query endpoints.
 
@@ -122,7 +122,7 @@ internal static partial class ResumeCommandEndpoints
 }
 ```
 
-## 3. Validation (<ModuleName>ModuleWeb/Validation)
+## 3. Validation (ResumeEnhancer.<ModuleName>.Web/Validation)
 
 Validators are one `AbstractValidator<TRequest>` per request, composed with `SetValidator` for nested objects and `RuleForEach` for collections. Reusable rule helpers live under `Validation/Shared`.
 
@@ -140,7 +140,7 @@ public sealed class CreateResumeRequestValidator : AbstractValidator<CreateResum
 }
 ```
 
-## 4. Mediator contracts and handlers (<ModuleName>ModuleSL)
+## 4. Mediator contracts and handlers (ResumeEnhancer.<ModuleName>.SL)
 
 Contracts are positional records implementing `ICommand<TResponse>` or `IQuery<TResponse>`. Handlers implement `ICommandHandler<T, TResponse>` / `IQueryHandler<T, TResponse>` and return `ValueTask<TResponse>`.
 
@@ -180,7 +180,7 @@ services.AddMediator(options =>
 });
 ```
 
-## 5. Mapping (<ModuleName>ModuleSL/Mapping)
+## 5. Mapping (ResumeEnhancer.<ModuleName>.SL/Mapping)
 
 Mapster is configured in a `static partial class ResumeModelMapper` split across focused files (`Create`, `Update`, `Responses`, `Search`, `Mapster`). A single `TypeAdapterConfig` holds the mappings; navigation/relational properties are always `.Ignore()`d and set explicitly in the `Create`/`Update` methods.
 
@@ -197,7 +197,7 @@ Keep normalization (`NormalizeRequired`/`NormalizeOptional`) and child graph con
 
 ## 6. Repository (SL abstraction + PL implementation)
 
-The abstraction lives in `<ModuleName>ModuleSL/Abstractions/Persistence`; the EF implementation lives in `<ModuleName>ModulePL/Repositories`. The implementation wraps `IUnitOfWork<AppDbContext>` and uses `GetRepo<Resume>()` rather than injecting a `DbSet` directly.
+The abstraction lives in `ResumeEnhancer.<ModuleName>.SL/Abstractions/Persistence`; the EF implementation lives in `ResumeEnhancer.<ModuleName>.PL/Repositories`. The implementation wraps `IUnitOfWork<AppDbContext>` and uses `GetRepo<Resume>()` rather than injecting a `DbSet` directly.
 
 ```csharp
 public interface IResumeRepository
@@ -227,14 +227,14 @@ public sealed class ResumeRepository : IResumeRepository
 
 ## 7. Composition and DI
 
-Each module exposes a `DependencyInjection` static class. `ModulesComposition` is the only place that wires modules together, and the host calls that composition root.
+Each module exposes a `DependencyInjection` static class. `ResumeEnhancer.WebSolution.ModulesComposition` is the only place that wires modules together, and the host calls that composition root.
 
 ```csharp
 // ModulesComposition/DependencyInjection.cs
 public static IServiceCollection AddApplicationModules(this IServiceCollection services)
 {
-    services.Add<ModuleName>ModulePersistence();
-    services.Add<ModuleName>ModuleWeb();
+    services.Add<ModuleName>ModuleResumeEnhancer.Infrastructure.Persistence();
+    services.AddResumeEnhancer.<ModuleName>.Web();
     return services;
 }
 ```
@@ -248,10 +248,12 @@ builder.Services.AddApplicationModules();
 
 ## 8. Testing
 
-Unit tests target `ResumeEnhancer.Tests`; integration tests target `ResumeEnhancer.IntegrationTests`. Modules expose internals via `InternalsVisibleTo("ResumeEnhancer.Tests")`.
+Unit tests target `ResumeEnhancer.Tests.Unit`; integration tests target `ResumeEnhancer.Tests.Integration`. Modules expose internals via `InternalsVisibleTo("ResumeEnhancer.Tests.Unit")`.
 
 ## Definition of Done
 
 - `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- Unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore`.
-- Integration tests pass when contracts/persistence change: `dotnet test test\IntegrationTest\ResumeEnhancer.IntegrationTests.csproj --no-restore`.
+- Unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`.
+- Integration tests pass when contracts/persistence change: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
+
+

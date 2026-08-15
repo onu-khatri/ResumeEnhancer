@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class ModelLoaderNavigator<TModel> : IModelLoaderNavigator<TModel>
 {
@@ -67,3 +67,4 @@ public sealed class ModelLoaderNavigator<TModel> : IModelLoaderNavigator<TModel>
 
     internal List<IncludablePath> GetPaths() => _paths;
 }
+

@@ -1,4 +1,4 @@
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class CacheOptions
 {
@@ -14,3 +14,4 @@ public sealed class CacheOptions
 
     public MemCacheOptions MemCache { get; set; } = new();
 }
+

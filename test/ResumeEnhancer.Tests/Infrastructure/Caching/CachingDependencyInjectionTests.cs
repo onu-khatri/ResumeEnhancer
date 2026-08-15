@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class CachingDependencyInjectionTests
 {
@@ -61,3 +61,5 @@ public sealed class CachingDependencyInjectionTests
             .AddInMemoryCollection(values.ToDictionary(pair => pair.Key, pair => pair.Value)!)
             .Build();
 }
+
+

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 public static class DependencyInjection
 {
@@ -52,3 +52,4 @@ public static class DependencyInjection
         }
     }
 }
+

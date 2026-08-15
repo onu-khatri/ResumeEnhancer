@@ -1,4 +1,4 @@
-namespace DomainLibrary.DomainModel;
+namespace ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public interface IAuditEntity
 {
@@ -14,3 +14,4 @@ public interface IAuditEntity
 
     byte[] App_Version { get; set; }
 }
+

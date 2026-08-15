@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Persistence;
+namespace ResumeEnhancer.Infrastructure.Persistence;
 
 public interface IModelLoaderNavigator<TModel>
 {
@@ -15,3 +15,4 @@ public interface IModelLoaderNavigator<TModel>
     IModelLoaderNavigator<TNavigation> NavigateCollection<TNavigation>(
         Expression<Func<TModel, IEnumerable<TNavigation>>> selector);
 }
+

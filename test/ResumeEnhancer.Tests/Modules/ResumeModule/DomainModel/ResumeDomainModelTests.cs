@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Shouldly;
-using ResumeModuleDM.Entities;
-using ResumeModuleDM.Enums;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Enums;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.DomainModel;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.DomainModel;
 
 public sealed class ResumeDomainModelTests
 {
@@ -64,3 +64,5 @@ public sealed class ResumeDomainModelTests
         validationResults.ShouldContain(result => result.MemberNames.Contains(nameof(Resume.Title)));
     }
 }
+
+

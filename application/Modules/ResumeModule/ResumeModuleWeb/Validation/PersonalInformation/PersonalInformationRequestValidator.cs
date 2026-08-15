@@ -1,9 +1,9 @@
 using FluentValidation;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.Sections;
-using ResumeModuleWeb.Validation.Shared;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.Sections;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 
-namespace ResumeModuleWeb.Validation.PersonalInformation;
+namespace ResumeEnhancer.ResumeModule.Web.Validation.PersonalInformation;
 
 public sealed class PersonalInformationRequestValidator : AbstractValidator<PersonalInformationRequest>
 {
@@ -63,3 +63,4 @@ public sealed class PersonalInformationRequestValidator : AbstractValidator<Pers
             .SetValidator(new SocialMediaLinkRequestValidator(isCreate));
     }
 }
+

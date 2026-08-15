@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class EducationResponse
 {
@@ -22,3 +22,4 @@ public sealed class EducationResponse
 
     public bool IsCurrent { get; set; }
 }
+

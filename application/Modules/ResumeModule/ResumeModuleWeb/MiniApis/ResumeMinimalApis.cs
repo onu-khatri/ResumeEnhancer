@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using ResumeModuleWeb.MiniApis.Commands;
-using ResumeModuleWeb.MiniApis.Queries;
+using ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
+using ResumeEnhancer.ResumeModule.Web.MiniApis.Queries;
 
-namespace ResumeModuleWeb.MiniApis;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis;
 
 public static class ResumeMinimalApis
 {
@@ -20,3 +20,4 @@ public static class ResumeMinimalApis
         return endpoints;
     }
 }
+

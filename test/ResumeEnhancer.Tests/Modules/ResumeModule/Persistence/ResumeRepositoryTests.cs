@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
-using ResumeModulePL.Repositories;
-using ResumeModuleSL.Abstractions.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.PL.Repositories;
+using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Persistence;
 
 public sealed class ResumeRepositoryTests
 {
@@ -406,3 +406,5 @@ public sealed class ResumeRepositoryTests
         result.Items.Select(resume => resume.Id).ShouldBe(expectedIds);
     }
 }
+
+

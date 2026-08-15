@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class AddressResponse
 {
@@ -14,3 +14,4 @@ public sealed class AddressResponse
 
     public string? ZipCode { get; set; }
 }
+

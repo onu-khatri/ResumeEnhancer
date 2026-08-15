@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Responses;
+namespace ResumeEnhancer.ResumeModule.AM.Responses;
 
 public sealed class AwardResponse
 {
@@ -12,3 +12,4 @@ public sealed class AwardResponse
 
     public string? Description { get; set; }
 }
+

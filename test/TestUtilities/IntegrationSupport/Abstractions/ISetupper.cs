@@ -1,4 +1,4 @@
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
@@ -21,3 +21,4 @@ public interface ISetupper : IDataMocker, IDisposable
 
     void ClearDbContext();
 }
+

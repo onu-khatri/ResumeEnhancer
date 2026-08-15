@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class SystemTextJsonCacheSerializer : ICacheSerializer
 {
@@ -12,3 +12,4 @@ internal sealed class SystemTextJsonCacheSerializer : ICacheSerializer
     public T? Deserialize<T>(byte[] value) =>
         JsonSerializer.Deserialize<T>(value, SerializerOptions);
 }
+

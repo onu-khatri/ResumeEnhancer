@@ -4,14 +4,14 @@ using Mediator;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleAM.Requests;
-using ResumeModuleAM.Responses;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb.MiniApis.Commands;
-using ResumeModuleWeb.MiniApis.Queries;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
+using ResumeEnhancer.ResumeModule.Web.MiniApis.Queries;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Web;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Web;
 
 public sealed class ResumeEndpointDelegateTests
 {
@@ -421,3 +421,5 @@ public sealed class ResumeEndpointDelegateTests
         && existsQuery.ResumeId == resumeId
         && existsQuery.UserId == userId;
 }
+
+

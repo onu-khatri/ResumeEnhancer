@@ -3,9 +3,9 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Persistence;
-using ResumeEnhancer.Infrastructure.Migrations;
-using ResumeModulePL;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Infrastructure.Migration;
+using ResumeEnhancer.ResumeModule.PL;
 
 return await MigrationConsole.RunAsync(args);
 
@@ -271,7 +271,7 @@ internal static class MigrationConsole
         if (BranchesThatRequireExplicitMigrationName.Contains(branchName))
         {
             throw new InvalidOperationException(
-                $"A migration name is required on the '{branchName}' branch. Example: dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c AddResumeFields");
+                $"A migration name is required on the '{branchName}' branch. Example: dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields");
         }
 
         return branchName;
@@ -423,7 +423,7 @@ internal static class MigrationConsole
 
             while (directory is not null)
             {
-                var directProject = Path.Combine(directory.FullName, "Migration.csproj");
+                var directProject = Path.Combine(directory.FullName, "ResumeEnhancer.Infrastructure.Migration.csproj");
 
                 if (File.Exists(directProject))
                 {
@@ -434,7 +434,7 @@ internal static class MigrationConsole
                     directory.FullName,
                     "Infrastructure",
                     "Migration",
-                    "Migration.csproj");
+                    "ResumeEnhancer.Infrastructure.Migration.csproj");
 
                 if (File.Exists(infrastructureProject))
                 {
@@ -446,7 +446,7 @@ internal static class MigrationConsole
                     "application",
                     "Infrastructure",
                     "Migration",
-                    "Migration.csproj");
+                    "ResumeEnhancer.Infrastructure.Migration.csproj");
 
                 if (File.Exists(applicationProject))
                 {
@@ -457,7 +457,7 @@ internal static class MigrationConsole
             }
         }
 
-        throw new InvalidOperationException("Unable to locate Infrastructure/Migration/Migration.csproj.");
+        throw new InvalidOperationException("Unable to locate Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj.");
     }
 
     private static void WriteLineIfPresent(TextWriter writer, string? value)
@@ -633,9 +633,9 @@ internal sealed class MigrationCommandLine
           -h, --help                Show this help.
 
         Examples:
-          dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c AddResumeFields
-          dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -c
-          dotnet run --project <path-to>/Infrastructure/Migration/Migration.csproj -- -a -s
+          dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields
+          dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -c
+          dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -a -s
         """;
 
     public bool ShowHelp { get; private set; }
@@ -785,3 +785,5 @@ internal sealed class MigrationCommandLine
         return false;
     }
 }
+
+

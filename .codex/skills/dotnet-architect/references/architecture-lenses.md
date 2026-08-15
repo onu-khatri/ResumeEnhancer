@@ -4,10 +4,10 @@ Use these lenses when reviewing or designing .NET changes for ResumeEnhancer. Th
 
 ## Layering and dependency direction
 
-- Do `<ModuleName>ModuleWeb` -> `<ModuleName>ModuleSL` -> `<ModuleName>ModuleAM`/`<ModuleName>ModuleDM` -> `DomainLibrary` arrows stay intact?
-- Is `<ModuleName>ModuleWeb`'s reference to SL compile-time only (`PrivateAssets="all"`)?
-- Does `<ModuleName>ModulePL` depend on `Persistence` + `DM` + `SL` abstractions, never on `Web`?
-- Do host concerns stay in `WebSolution.Server` and cross-module wiring stay in `ModulesComposition`?
+- Do `ResumeEnhancer.<ModuleName>.Web` -> `ResumeEnhancer.<ModuleName>.SL` -> `ResumeEnhancer.<ModuleName>.AM`/`ResumeEnhancer.<ModuleName>.DM` -> `ResumeEnhancer.Core.DomainLibrary` arrows stay intact?
+- Is `ResumeEnhancer.<ModuleName>.Web`'s reference to SL compile-time only (`PrivateAssets="all"`)?
+- Does `ResumeEnhancer.<ModuleName>.PL` depend on `ResumeEnhancer.Infrastructure.Persistence` + `DM` + `SL` abstractions, never on `Web`?
+- Do host concerns stay in `ResumeEnhancer.WebSolution.Server` and cross-module wiring stay in `ResumeEnhancer.WebSolution.ModulesComposition`?
 
 ## Composition and registration
 
@@ -28,7 +28,7 @@ Use these lenses when reviewing or designing .NET changes for ResumeEnhancer. Th
 - Is mapping kept in `ResumeModelMapper` with explicit navigation `.Ignore()`?
 - Are persistence abstractions declared in SL and implemented in PL?
 
-## Persistence integration
+## ResumeEnhancer.Infrastructure.Persistence integration
 
 - Do repositories go through `IUnitOfWork<AppDbContext>` and `IAuditEntityRepository<>`?
 - Is the audit pipeline (`SaveChangesAsync(IAudit, ...)`) used rather than bypassed?
@@ -39,4 +39,5 @@ Use these lenses when reviewing or designing .NET changes for ResumeEnhancer. Th
 
 - Migration safety: are migrations in the dedicated `Migration` project with a design-time factory?
 - Seeding: is setup data idempotent via `IAppDbContextSeeder` + `SeedSetupDataAsync`?
-- Test seams: do `InternalsVisibleTo("ResumeEnhancer.Tests")` and the `WebApplicationFactory` integration host exist?
+- Test seams: do `InternalsVisibleTo("ResumeEnhancer.Tests.Unit")` and the `WebApplicationFactory` integration host exist?
+

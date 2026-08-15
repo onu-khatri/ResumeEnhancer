@@ -1,6 +1,6 @@
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModuleSL.Abstractions.Persistence;
+namespace ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
 public sealed class ResumeSearchResult
 {
@@ -24,3 +24,4 @@ public sealed class ResumeSearchResult
 
     public int TotalCount { get; }
 }
+

@@ -1,6 +1,6 @@
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
-namespace ResumeModulePL;
+namespace ResumeEnhancer.ResumeModule.PL;
 
 public static class ResumeModuleDatabase
 {
@@ -11,3 +11,4 @@ public static class ResumeModuleDatabase
             ? ModuleSchemaName.FromModule(Schema)
             : ModuleSchemaName.FromRootAndSupportingModule(rootEntitySchema, Schema);
 }
+

@@ -1,9 +1,10 @@
 using Mediator;
-using ResumeModuleAM.Responses;
+using ResumeEnhancer.ResumeModule.AM.Responses;
 
-namespace ResumeModuleSL.Contracts;
+namespace ResumeEnhancer.ResumeModule.SL.Contracts;
 
 public sealed record DeleteResumeCommand(
     int ResumeId,
     int? AuditUserId,
     string? UserId = null) : ICommand<ResumeDeleteResponse>;
+

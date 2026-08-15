@@ -3,9 +3,9 @@ using System.Net.Sockets;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Shouldly;
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Caching;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Caching;
 
 public sealed class MemCacheStrategyTests
 {
@@ -260,3 +260,5 @@ public sealed class MemCacheStrategyTests
     private static Task WriteAsciiAsync(NetworkStream stream, string value) =>
         stream.WriteAsync(Encoding.ASCII.GetBytes(value)).AsTask();
 }
+
+

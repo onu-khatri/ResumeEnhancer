@@ -34,10 +34,10 @@ Use this skill to produce high-quality README files grounded in the actual codeb
 
 ## ResumeEnhancer specifics
 
-- Backend: .NET 10, `dotnet build application\ResumeEnhancerApp.slnx`, `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore`, `dotnet run --project application\WebSolution\WebSolution.Server\WebSolution.Server.csproj`.
+- Backend: .NET 10, `dotnet build application\ResumeEnhancerApp.slnx`, `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`, `dotnet run --project application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj`.
 - Frontend: `npm run check`, `npm run build`, `npm run dev`.
-- Migrations: `dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help`.
-- Use `<ModuleName>ModuleWeb` / `<ModuleName>ModuleAM` / `<ModuleName>ModuleSL` / `<ModuleName>ModulePL` / `<ModuleName>ModuleDM` placeholders when describing module layering.
+- Migrations: `dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help`.
+- Use `ResumeEnhancer.<ModuleName>.Web` / `ResumeEnhancer.<ModuleName>.AM` / `ResumeEnhancer.<ModuleName>.SL` / `ResumeEnhancer.<ModuleName>.PL` / `ResumeEnhancer.<ModuleName>.DM` placeholders when describing module layering.
 
 ## Quality bar
 
@@ -45,3 +45,5 @@ Use this skill to produce high-quality README files grounded in the actual codeb
 - Add a table of contents for READMEs over ~200 lines.
 - Prefer tables for reference data (scripts, environment variables, endpoints).
 - Keep the tone informative and specific.
+
+

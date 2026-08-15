@@ -1,12 +1,12 @@
 using FluentValidation;
 using Mediator;
 using Microsoft.AspNetCore.Http;
-using ResumeModuleAM.Requests;
-using ResumeModuleSL.Contracts;
-using ResumeModuleWeb.Validation.Shared;
-using WebLibrary.Endpoints;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.SL.Contracts;
+using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
+using ResumeEnhancer.Core.WebLibrary.Endpoints;
 
-namespace ResumeModuleWeb.MiniApis.Commands;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
 
 internal static partial class ResumeCommandEndpoints
 {
@@ -44,3 +44,4 @@ internal static partial class ResumeCommandEndpoints
         }
     }
 }
+

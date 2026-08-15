@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -17,12 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Persistence\Persistence.csproj" />
-    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeModulePL.csproj" />
+    <ProjectReference Include="..\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests.Unit" />
   </ItemGroup>
 
 </Project>
+

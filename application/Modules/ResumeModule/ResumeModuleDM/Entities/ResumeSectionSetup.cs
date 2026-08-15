@@ -1,7 +1,7 @@
-using DomainLibrary.DomainModel;
-using ResumeModuleDM.Enums;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.ResumeModule.DM.Enums;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class ResumeSectionSetup : SetupEntity
 {
@@ -11,3 +11,4 @@ public class ResumeSectionSetup : SetupEntity
 
     public bool IsVisible { get; set; } = true;
 }
+

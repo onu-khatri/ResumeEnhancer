@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class PersonalInformation : BusinessRelation
 {
@@ -39,3 +39,4 @@ public class PersonalInformation : BusinessRelation
 
     public ICollection<SocialMediaLink> SocialMediaLinks { get; set; } = new List<SocialMediaLink>();
 }
+

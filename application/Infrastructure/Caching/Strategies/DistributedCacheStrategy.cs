@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace Caching;
+namespace ResumeEnhancer.Infrastructure.Caching;
 
 internal sealed class DistributedCacheStrategy(IDistributedCache distributedCache) : ICacheStrategy
 {
@@ -32,3 +32,4 @@ internal sealed class DistributedCacheStrategy(IDistributedCache distributedCach
         CancellationToken cancellationToken = default) =>
         distributedCache.RemoveAsync(key, cancellationToken);
 }
+

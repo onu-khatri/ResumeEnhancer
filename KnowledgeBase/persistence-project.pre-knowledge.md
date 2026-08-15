@@ -1,7 +1,7 @@
 ---
-title: Shared Persistence Project Knowledge
-intent: help an AI agent safely understand, extend, and review the shared Persistence project without crossing module boundaries
-scope: in scope is application/Infrastructure/Persistence/Persistence.csproj and its extension seams; out of scope are ResumeModulePL and Infrastructure/Migration internals except as examples of how shared Persistence is consumed
+title: Shared ResumeEnhancer.Infrastructure.Persistence Project Knowledge
+intent: help an AI agent safely understand, extend, and review the shared ResumeEnhancer.Infrastructure.Persistence project without crossing module boundaries
+scope: in scope is application/Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj and its extension seams; out of scope are ResumeEnhancer.ResumeModule.PL and Infrastructure/Migration internals except as examples of how shared ResumeEnhancer.Infrastructure.Persistence is consumed
 audience: combination
 last_reviewed: 2026-08-15
 status: draft
@@ -23,15 +23,15 @@ validation:
   assumptions:
     - none
   known_gaps:
-    - No business requirement or user story appears to target the shared Persistence project directly; traceability for this artifact is architectural rather than feature-story driven.
+    - No business requirement or user story appears to target the shared ResumeEnhancer.Infrastructure.Persistence project directly; traceability for this artifact is architectural rather than feature-story driven.
   verified_this_session:
-    - Re-read shared Persistence source files, repo READMEs, module integration examples, and persistence-focused tests on 2026-08-15.
-    - Ran `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore --filter "FullyQualifiedName~Infrastructure.Persistence|FullyQualifiedName~Composition.DependencyInjectionTests|FullyQualifiedName~Modules.ResumeModule.Persistence.ResumeModuleSeederTests|FullyQualifiedName~Infrastructure.Migration.AppDbContextDesignTimeFactoryTests"` with 75 passing tests.
+    - Re-read shared ResumeEnhancer.Infrastructure.Persistence source files, repo READMEs, module integration examples, and persistence-focused tests on 2026-08-15.
+    - Ran `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore --filter "FullyQualifiedName~Infrastructure.ResumeEnhancer.Infrastructure.Persistence|FullyQualifiedName~Composition.DependencyInjectionTests|FullyQualifiedName~Modules.ResumeModule.ResumeEnhancer.Infrastructure.Persistence.ResumeModuleSeederTests|FullyQualifiedName~Infrastructure.Migration.AppDbContextDesignTimeFactoryTests"` with 75 passing tests.
 ---
 
 ## Intent
 
-This artifact helps an agent work inside the shared Persistence project at `application/Infrastructure/Persistence` with enough context to extend EF Core infrastructure safely, review persistence changes, and route module-specific work back to the correct project. `Observed`: the project owns `AppDbContext`, unit of work, common repositories, model loading, query specification helpers, seeding contracts, and persistence DI registration.
+This artifact helps an agent work inside the shared ResumeEnhancer.Infrastructure.Persistence project at `application/Infrastructure/Persistence` with enough context to extend EF Core infrastructure safely, review persistence changes, and route module-specific work back to the correct project. `Observed`: the project owns `AppDbContext`, unit of work, common repositories, model loading, query specification helpers, seeding contracts, and persistence DI registration.
 
 ```csharp
 public static IServiceCollection AddAppDbContext(
@@ -57,7 +57,7 @@ Use this artifact when an agent needs to:
 
 1. understand how `AppDbContext` is built from module-provided model configurations
 2. add or review shared persistence infrastructure such as `IUnitOfWork<AppDbContext>`, `IAuditEntityRepository<T>`, `IModelLoader<T>`, or seeding helpers
-3. verify whether a change belongs in shared Persistence versus a module persistence adapter such as `ResumeModulePL`
+3. verify whether a change belongs in shared ResumeEnhancer.Infrastructure.Persistence versus a module persistence adapter such as `ResumeEnhancer.ResumeModule.PL`
 4. prepare or review the persistence side of adding a new entity, repository, seeder, or migration
 
 Do not use this artifact as the main reference for module-specific EF mappings or business repository logic. `Observed`: repo guidance keeps schema-specific persistence behavior in module `*PL` projects and shared infrastructure behavior in `application/Infrastructure`.
@@ -104,14 +104,14 @@ These snippets are the shortest mental model for the project: the shared context
 
 ## Architectural placement
 
-The shared Persistence project is infrastructure, not a feature module. `Observed`: `Persistence.csproj` references `DomainLibrary` but not any module project, which keeps it generic and reusable.
+The shared ResumeEnhancer.Infrastructure.Persistence project is infrastructure, not a feature module. `Observed`: `ResumeEnhancer.Infrastructure.Persistence.csproj` references `ResumeEnhancer.Core.DomainLibrary` but not any module project, which keeps it generic and reusable.
 
 `Inferred`: the intended dependency direction is:
 
-1. module domain entities live outside Persistence
+1. module domain entities live outside ResumeEnhancer.Infrastructure.Persistence
 2. module `*PL` projects implement module-specific model configurations and repositories
 3. the application host registers those module persistence services
-4. shared Persistence supplies the common EF and unit-of-work runtime they plug into
+4. shared ResumeEnhancer.Infrastructure.Persistence supplies the common EF and unit-of-work runtime they plug into
 
 Evidence combined from repo architecture guidance, host composition, and module persistence registration.
 
@@ -119,11 +119,11 @@ The first file to read in code is `application/Infrastructure/Persistence/README
 
 ```xml
 <ItemGroup>
-  <ProjectReference Include="..\..\Core\DomainLibrary\DomainLibrary.csproj" />
+  <ProjectReference Include="..\..\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
 </ItemGroup>
 ```
 
-Reference: [Persistence.csproj](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Persistence.csproj).
+Reference: [ResumeEnhancer.Infrastructure.Persistence.csproj](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj).
 
 ```csharp
 public static IServiceCollection AddApplicationModules(this IServiceCollection services)
@@ -168,7 +168,7 @@ public void Configure(ModelBuilder modelBuilder)
 }
 ```
 
-This module example is the key extension seam: modules contribute entity configurations and then hand final schema/table convention work back to shared Persistence.
+This module example is the key extension seam: modules contribute entity configurations and then hand final schema/table convention work back to shared ResumeEnhancer.Infrastructure.Persistence.
 
 ### 2. Saving changes through the shared pipeline
 
@@ -344,9 +344,9 @@ These are the core shared behaviors agents most often extend: naming conventions
 
 ## Rules and invariants
 
-1. Do not put module-specific entities in shared Persistence. `Observed`.
+1. Do not put module-specific entities in shared ResumeEnhancer.Infrastructure.Persistence. `Observed`.
 2. Do not hardcode per-entity schema or table mapping in module `IEntityTypeConfiguration<T>` classes when the shared convention should own it. `Observed`.
-3. Shared Persistence owns reusable EF infrastructure; schema-specific repository implementations belong in module `*PL` projects. `Observed`.
+3. Shared ResumeEnhancer.Infrastructure.Persistence owns reusable EF infrastructure; schema-specific repository implementations belong in module `*PL` projects. `Observed`.
 4. `ModuleSchemaName` accepts only letters, digits, and underscores, and the first character must be a letter or underscore. `Observed`.
 5. `AuditEntityRepository<TElement>.FindAsync(...)` enforces `pageNumber >= 1`, `pageSize >= 1`, and `pageSize <= 500`. `Observed`.
 6. Seeders must be idempotent and setup data must use stable `Guid` and `Code` identity. `Observed`.
@@ -389,7 +389,7 @@ These validation snippets are the invariants that most often break during extens
 
 ### Add a new entity
 
-1. Create the entity in the owning module domain-model project, not in shared Persistence. `Observed`.
+1. Create the entity in the owning module domain-model project, not in shared ResumeEnhancer.Infrastructure.Persistence. `Observed`.
 2. Add a module `IEntityTypeConfiguration<T>` in that module's `*PL` project. `Observed`.
 3. Ensure the module has an `IAppDbContextModelConfiguration` that calls `ApplyConfigurationsFromAssembly(...)` and `ApplyModuleTableMappings(...)`. `Observed`.
 4. Register the module persistence service so the shared `AppDbContext` can see the model configuration. `Observed`.
@@ -412,9 +412,9 @@ Use this as the copy shape. The shared project expects modules to contribute con
 
 ### Add a new repository
 
-1. Decide whether the repository belongs in shared Persistence or in a module adapter. `Observed`: shared Persistence already covers generic `AuditEntity` behavior; `ResumeRepository` lives in module PL because it implements a module port.
+1. Decide whether the repository belongs in shared ResumeEnhancer.Infrastructure.Persistence or in a module adapter. `Observed`: shared ResumeEnhancer.Infrastructure.Persistence already covers generic `AuditEntity` behavior; `ResumeRepository` lives in module PL because it implements a module port.
 2. If generic audited-entity behavior is enough, use `IAuditEntityRepository<TElement>` through `IUnitOfWork<AppDbContext>.GetRepo<TElement>()`. `Observed`.
-3. If module-specific queries are required, define the port outside Persistence and implement it in the module `*PL` project. `Observed`.
+3. If module-specific queries are required, define the port outside ResumeEnhancer.Infrastructure.Persistence and implement it in the module `*PL` project. `Observed`.
 4. Register the implementation in module persistence DI and consume it through `GetRepo<TIRepo, TElement>()` or normal DI. `Observed`.
 
 ```csharp
@@ -469,7 +469,7 @@ This example shows the preferred seeder shape: call the shared setup helper, app
 
 1. Finish the entity and module mapping change first; migration generation reflects the current `AppDbContext` model. `Observed`.
 2. Make sure the migration project references the relevant module persistence project and registers its persistence service in `Program.cs`. `Observed`.
-3. Run `dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c <MigrationName>` and review the generated migration before applying it. `Observed`.
+3. Run `dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c <MigrationName>` and review the generated migration before applying it. `Observed`.
 4. Apply with `-a` and seed with `-s` as needed. `Observed`.
 
 ```csharp
@@ -498,7 +498,7 @@ These two snippets explain almost the whole migration story: the console builds 
 This session re-verified shared persistence behavior with:
 
 ```powershell
-dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore --filter "FullyQualifiedName~Infrastructure.Persistence|FullyQualifiedName~Composition.DependencyInjectionTests|FullyQualifiedName~Modules.ResumeModule.Persistence.ResumeModuleSeederTests|FullyQualifiedName~Infrastructure.Migration.AppDbContextDesignTimeFactoryTests"
+dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore --filter "FullyQualifiedName~Infrastructure.ResumeEnhancer.Infrastructure.Persistence|FullyQualifiedName~Composition.DependencyInjectionTests|FullyQualifiedName~Modules.ResumeModule.ResumeEnhancer.Infrastructure.Persistence.ResumeModuleSeederTests|FullyQualifiedName~Infrastructure.Migration.AppDbContextDesignTimeFactoryTests"
 ```
 
 Result this session: 75 passed, 0 failed, 0 skipped on 2026-08-15. `Observed`.
@@ -507,9 +507,9 @@ Result this session: 75 passed, 0 failed, 0 skipped on 2026-08-15. `Observed`.
 scope.ServiceProvider.GetRequiredService<AppDbContext>().ShouldNotBeNull();
 scope.ServiceProvider.GetRequiredService<IUnitOfWork<AppDbContext>>().ShouldNotBeNull();
 scope.ServiceProvider.GetRequiredService<IUnitOfWorkFactory<AppDbContext>>().ShouldNotBeNull();
-scope.ServiceProvider.GetRequiredService<IAuditEntityRepository<ResumeModuleDM.Entities.Resume>>()
+scope.ServiceProvider.GetRequiredService<IAuditEntityRepository<ResumeEnhancer.ResumeModule.DM.Entities.Resume>>()
     .ShouldNotBeNull();
-scope.ServiceProvider.GetRequiredService<IModelLoader<ResumeModuleDM.Entities.Resume>>()
+scope.ServiceProvider.GetRequiredService<IModelLoader<ResumeEnhancer.ResumeModule.DM.Entities.Resume>>()
     .ShouldNotBeNull();
 ```
 
@@ -534,11 +534,11 @@ The most relevant test files for future review are:
 
 ## Pitfalls and boundaries
 
-- Do not move module business rules into shared Persistence just because the code touches EF Core. The shared project is infrastructure-only. `Observed`.
+- Do not move module business rules into shared ResumeEnhancer.Infrastructure.Persistence just because the code touches EF Core. The shared project is infrastructure-only. `Observed`.
 - Do not register the same module model configuration multiple times with different schemas in one `AppDbContext`. `Observed`.
 - Do not use `[Table(Schema = ...)]` or per-entity `ToTable(..., schema)` as the primary schema convention path for module entities. `Observed`.
 - Do not use EF `HasData` for setup tables that depend on runtime GUID/code matching and obsolete handling. `Observed`.
-- If you put a module-specific repository contract in shared Persistence, you create a layering leak between infrastructure and service-layer abstractions. `Inferred`.
+- If you put a module-specific repository contract in shared ResumeEnhancer.Infrastructure.Persistence, you create a layering leak between infrastructure and service-layer abstractions. `Inferred`.
 
 ```csharp
 services.AddSingleton<IAppDbContextModelConfiguration>(
@@ -550,12 +550,12 @@ services.TryAddEnumerable(
     ServiceDescriptor.Scoped<IAppDbContextSeeder, ResumeModuleSeeder>());
 ```
 
-These examples are safe because they happen in module composition, not in shared Persistence. If you find yourself editing shared Persistence to register a module-specific repository or schema, you are probably crossing the boundary in the wrong place.
+These examples are safe because they happen in module composition, not in shared ResumeEnhancer.Infrastructure.Persistence. If you find yourself editing shared ResumeEnhancer.Infrastructure.Persistence to register a module-specific repository or schema, you are probably crossing the boundary in the wrong place.
 
 ## Clarifications
 
-- Q: Does “Persistence project” mean only the shared Persistence project or also module and migration projects as first-class scope?
-  - A: only `Persistence.csproj`; other projects may appear only as examples or evidence.
+- Q: Does “ResumeEnhancer.Infrastructure.Persistence project” mean only the shared ResumeEnhancer.Infrastructure.Persistence project or also module and migration projects as first-class scope?
+  - A: only `ResumeEnhancer.Infrastructure.Persistence.csproj`; other projects may appear only as examples or evidence.
 - Q: Should the artifact optimize for implementation guidance, architectural understanding, or both?
   - A: both.
 - Q: Should the artifact include concrete extension recipes?
@@ -575,3 +575,6 @@ When you need surrounding code, start from these named interfaces and types rath
 - [IModelLoaderNavigator](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Loading/IModelLoaderNavigator.cs)
 - [IQuerySpecification](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Querying/IQuerySpecification.cs)
 - [IAppDbContextSeeder](D:/RND/ResumeEnhancer/application/Infrastructure/Persistence/Seeding/IAppDbContextSeeder.cs)
+
+
+

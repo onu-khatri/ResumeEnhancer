@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeModulePL.Configurations;
+namespace ResumeEnhancer.ResumeModule.PL.Configurations;
 
 public sealed class LanguageConfiguration : IEntityTypeConfiguration<Language>
 {
@@ -20,3 +20,4 @@ public sealed class LanguageConfiguration : IEntityTypeConfiguration<Language>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+

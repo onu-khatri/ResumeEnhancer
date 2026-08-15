@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
-namespace ResumeModuleDM.Entities;
+namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
 public class Resume : BusinessEntity
 {
@@ -32,3 +32,4 @@ public class Resume : BusinessEntity
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
 }
+

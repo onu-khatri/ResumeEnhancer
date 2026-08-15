@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Persistence;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleDM.Entities;
-using ResumeModuleDM.Enums;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.ResumeModule.DM.Enums;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Persistence;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
 public sealed class SetupDataSeedingExtensionsTests
 {
@@ -148,3 +148,5 @@ public sealed class SetupDataSeedingExtensionsTests
             App_UpdateUserId = updateUserId
         };
 }
+
+

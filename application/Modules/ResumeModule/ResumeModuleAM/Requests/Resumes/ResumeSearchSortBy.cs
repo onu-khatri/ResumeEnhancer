@@ -1,4 +1,4 @@
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public enum ResumeSearchSortBy
 {
@@ -8,3 +8,4 @@ public enum ResumeSearchSortBy
     UpdatedDate = 3,
     ResumeTemplate = 4
 }
+

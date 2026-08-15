@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
-using Persistence;
-using ResumeEnhancer.Infrastructure.Migrations;
-using ResumeModuleDM.Entities;
+using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.Infrastructure.Migration;
+using ResumeEnhancer.ResumeModule.DM.Entities;
 
-namespace ResumeEnhancer.Tests.Infrastructure.Migration;
+namespace ResumeEnhancer.Tests.Unit.Infrastructure.Migration;
 
 public sealed class AppDbContextDesignTimeFactoryTests
 {
@@ -24,6 +24,9 @@ public sealed class AppDbContextDesignTimeFactoryTests
     [Fact]
     public void MigrationAssembly_AssemblyName_ReturnsMigrationAssemblyName()
     {
-        MigrationAssembly.AssemblyName.ShouldBe("Migration");
+        MigrationAssembly.AssemblyName.ShouldBe("ResumeEnhancer.Infrastructure.Migration");
     }
 }
+
+
+

@@ -1,4 +1,4 @@
-# Migration Project
+# ResumeEnhancer.Infrastructure.Migration Project
 
 This project owns Entity Framework Core migrations for the application.
 
@@ -11,21 +11,21 @@ The web application should not run database migrations every time it starts. Sta
 - Runs registered seeders.
 - Keeps migration code in `Infrastructure/Migration/Migrations`.
 - Uses the same `AppDbContext` and module model configuration as the application.
-- Uses Persistence project conventions for table names, schemas, domain category prefixes, rowversion columns, and module mappings.
+- Uses ResumeEnhancer.Infrastructure.Persistence project conventions for table names, schemas, domain category prefixes, rowversion columns, and module mappings.
 
 ## Important Files
 
 | File | Purpose |
 | --- | --- |
-| `Migration.csproj` | Console project for migration commands. |
+| `ResumeEnhancer.Infrastructure.Migration.csproj` | Console project for migration commands. |
 | `Program.cs` | Command-line entry point for create, apply, and seed operations. |
 | `AppDbContextDesignTimeFactory.cs` | Creates `AppDbContext` for EF Core design-time tooling. |
 | `MigrationAssembly.cs` | Exposes this assembly name so EF stores migrations here. |
 | `Migrations/` | Folder where EF migration classes and snapshots are stored. |
 
-## How This Project Fits With Persistence
+## How This Project Fits With ResumeEnhancer.Infrastructure.Persistence
 
-The Migration project does not define entities or entity rules directly. It uses the Persistence project and each module persistence layer to build the EF Core model.
+This project does not define entities or entity rules directly. It uses `ResumeEnhancer.Infrastructure.Persistence` and each module persistence layer to build the EF Core model.
 
 The flow is:
 
@@ -53,7 +53,7 @@ public static class ResumeModuleDatabase
 }
 ```
 
-Table names are decided by the Persistence helper `ApplyModuleTableMappings`:
+Table names are decided by the ResumeEnhancer.Infrastructure.Persistence helper `ApplyModuleTableMappings`:
 
 1. If the entity has `[Table("CustomTableName")]`, EF uses `CustomTableName`.
 2. If the entity does not have a `[Table]` name, EF uses the entity class name.
@@ -70,7 +70,7 @@ Table names are decided by the Persistence helper `ApplyModuleTableMappings`:
 Example entity with default table name:
 
 ```csharp
-using DomainLibrary.DomainModel;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public class Resume : BusinessEntity
 {
@@ -145,7 +145,7 @@ Use this pattern when two modules integrate and one module's data belongs under 
 Run commands from the repository root:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- <migration-options>
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- <migration-options>
 ```
 
 The `--` is important. Everything before `--` is for `dotnet run`; everything after `--` is passed to the migration console.
@@ -174,25 +174,25 @@ The migration console is verbose by default. It prints the active action, EF CLI
 Show help:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help
 ```
 
 Create a migration:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c AddResumeFields
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields
 ```
 
 You can also pass the migration name with `-n`:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c -n AddResumeFields
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c -n AddResumeFields
 ```
 
 Create a migration using the current branch name:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c
 ```
 
 This only works when the current Git branch is not `main`, `dev`, or `test`. On those shared branches, pass an explicit migration name.
@@ -208,31 +208,31 @@ AddResumeFields_3
 Apply pending migrations:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a
 ```
 
 Run seed data only:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -s
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -s
 ```
 
 Apply migrations and then seed data:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a -s
 ```
 
 Create, apply, and seed in one command:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c AddResumeFields -a -s
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields -a -s
 ```
 
 Use a custom connection string:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s --connection "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer"
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a -s --connection "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer"
 ```
 
 ## Connection String Resolution
@@ -251,7 +251,7 @@ Example using the environment variable in PowerShell:
 
 ```powershell
 $env:RESUME_ENHANCER_CONNECTION_STRING = "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer"
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a -s
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a -s
 ```
 
 ## How Creating A Migration Works
@@ -259,7 +259,7 @@ dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
 When you run `-c`, the console internally runs:
 
 ```powershell
-dotnet ef --verbose migrations add <MigrationName> --project <MigrationProject> --startup-project <MigrationProject> --context Persistence.AppDbContext --output-dir Migrations
+dotnet ef --verbose migrations add <MigrationName> --project <MigrationProject> --startup-project <MigrationProject> --context ResumeEnhancer.Infrastructure.Persistence.AppDbContext --output-dir Migrations
 ```
 
 This means:
@@ -363,7 +363,7 @@ When a new module has entities that must be included in `AppDbContext`, follow t
 3. Define the module schema in one common class.
 4. Apply module table mappings from the model configuration.
 5. Register that implementation in the module dependency injection method.
-6. Reference the module persistence project from `Migration.csproj`.
+6. Reference the module persistence project from `ResumeEnhancer.Infrastructure.Migration.csproj`.
 7. Add the module registration in `Program.cs` inside `CreateServiceProvider`.
 8. Create a new migration with `-c`.
 9. Apply it with `-a`.
@@ -379,7 +379,7 @@ Example model configuration:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 using MyModuleDM.Entities;
 
 public sealed class MyModuleDbContextModelConfiguration : IAppDbContextModelConfiguration
@@ -432,7 +432,7 @@ Create a seeder by implementing `IAppDbContextSeeder`:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 public sealed class MyModuleSeeder : IAppDbContextSeeder
 {
@@ -456,7 +456,7 @@ Register it in the module persistence dependency injection:
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Persistence;
+using ResumeEnhancer.Infrastructure.Persistence;
 
 services.TryAddEnumerable(
     ServiceDescriptor.Scoped<IAppDbContextSeeder, MyModuleSeeder>());
@@ -472,20 +472,20 @@ For normal local development:
 2. Create a migration.
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -c AddNewEntity
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddNewEntity
 ```
 
 3. Review the generated migration files.
 4. Apply the migration.
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -a
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a
 ```
 
 5. Run seed data if needed.
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- -s
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -s
 ```
 
 ## Current Initial Migration
@@ -529,3 +529,6 @@ If migrations do not include your new entity, confirm the module has an `IAppDbC
 If a table name is not what you expected, check whether the entity has a `[Table("...")]` attribute. If it does not, the table name will be the entity class name.
 
 If a table is created in the wrong schema, check the module schema class and the module persistence registration. For integrated modules, confirm the root schema value passed to the module registration.
+
+
+

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResumeModuleAM.Requests;
+namespace ResumeEnhancer.ResumeModule.AM.Requests;
 
 public sealed class AddressRequest
 {
@@ -22,3 +22,4 @@ public sealed class AddressRequest
     [MaxLength(20)]
     public string? ZipCode { get; set; }
 }
+

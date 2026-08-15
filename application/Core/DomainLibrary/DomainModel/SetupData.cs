@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DomainLibrary.DomainModel;
+namespace ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 public abstract class SetupData : AuditEntity, ISetupData
 {
@@ -14,3 +14,4 @@ public abstract class SetupData : AuditEntity, ISetupData
 
     public bool ObsoleteFlag { get; set; }
 }
+

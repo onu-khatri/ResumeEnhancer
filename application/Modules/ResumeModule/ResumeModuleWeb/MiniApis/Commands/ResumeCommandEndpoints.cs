@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-namespace ResumeModuleWeb.MiniApis.Commands;
+namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
 
 internal static partial class ResumeCommandEndpoints
 {
@@ -21,3 +21,4 @@ internal static partial class ResumeCommandEndpoints
         return group;
     }
 }
+

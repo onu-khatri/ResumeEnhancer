@@ -1,11 +1,11 @@
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.PersonalInformation;
-using ResumeModuleWeb.Validation.Resumes;
-using RequestSortDirection = ResumeModuleAM.Requests.SortDirection;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.PersonalInformation;
+using ResumeEnhancer.ResumeModule.Web.Validation.Resumes;
+using RequestSortDirection = ResumeEnhancer.ResumeModule.AM.Requests.SortDirection;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Web.Validation;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Web.Validation;
 
 public sealed class ResumeValidatorTests
 {
@@ -163,3 +163,6 @@ public sealed class ResumeValidatorTests
         invalidResult.ShouldHaveErrorFor("ResumeIds[1]");
     }
 }
+
+
+

@@ -1,4 +1,4 @@
-# Caching Project
+# ResumeEnhancer.Infrastructure.Caching Project
 
 This project provides a provider-neutral cache interface for the application.
 
@@ -67,13 +67,13 @@ This is the strategy pattern. The business layer uses one interface, while infra
 Add the caching project reference to the application project:
 
 ```xml
-<ProjectReference Include="..\..\Infrastructure\Caching\Caching.csproj" />
+<ProjectReference Include="..\..\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
 ```
 
 Register caching during application startup:
 
 ```csharp
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -163,7 +163,7 @@ Use MemCache:
 Inject `ICacheProvider` into your service:
 
 ```csharp
-using Caching;
+using ResumeEnhancer.Infrastructure.Caching;
 
 public sealed class ResumeQueryService(ICacheProvider cacheProvider)
 {
@@ -429,3 +429,6 @@ Do not use different keys for reading and writing the same data.
 Do not cache data that changes frequently unless you remove or refresh the cache when the data changes.
 
 Do not cache user-specific or permission-specific data with a shared key. Include the user id, tenant id, role, or permission context in the key.
+
+
+

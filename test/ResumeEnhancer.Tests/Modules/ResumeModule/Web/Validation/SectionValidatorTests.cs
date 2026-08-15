@@ -1,10 +1,10 @@
 using Shouldly;
-using ResumeEnhancer.Tests.TestInfrastructure;
-using ResumeModuleAM.Requests;
-using ResumeModuleWeb.Validation.PersonalInformation;
-using ResumeModuleWeb.Validation.Sections;
+using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.ResumeModule.AM.Requests;
+using ResumeEnhancer.ResumeModule.Web.Validation.PersonalInformation;
+using ResumeEnhancer.ResumeModule.Web.Validation.Sections;
 
-namespace ResumeEnhancer.Tests.Modules.ResumeModule.Web.Validation;
+namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.Web.Validation;
 
 public sealed class SectionValidatorTests
 {
@@ -143,3 +143,5 @@ public sealed class SectionValidatorTests
         result.ShouldHaveErrorFor(nameof(AddressRequest.ZipCode));
     }
 }
+
+

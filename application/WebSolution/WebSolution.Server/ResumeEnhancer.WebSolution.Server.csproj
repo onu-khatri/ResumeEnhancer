@@ -24,12 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Infrastructure\Caching\Caching.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
-    <ProjectReference Include="..\ModulesComposition\ModulesComposition.csproj" />
-    <ProjectReference Include="..\websolution.client\websolution.client.esproj">
+    <ProjectReference Include="..\..\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\ModulesComposition\ResumeEnhancer.WebSolution.ModulesComposition.csproj" />
+    <ProjectReference Include="..\websolution.client\ResumeEnhancer.WebSolution.Client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
 
 </Project>
+

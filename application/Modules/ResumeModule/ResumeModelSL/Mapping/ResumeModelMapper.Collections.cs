@@ -1,7 +1,7 @@
-using DomainLibrary.DomainModel;
-using ResumeModuleAM.Requests;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.ResumeModule.AM.Requests;
 
-namespace ResumeModuleSL.Handlers;
+namespace ResumeEnhancer.ResumeModule.SL.Handlers;
 
 internal static partial class ResumeModelMapper
 {
@@ -91,3 +91,4 @@ internal static partial class ResumeModelMapper
         }
     }
 }
+

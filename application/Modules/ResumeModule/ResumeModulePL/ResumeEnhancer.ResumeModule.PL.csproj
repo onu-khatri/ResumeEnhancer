@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Infrastructure\Persistence\Persistence.csproj" />
-    <ProjectReference Include="..\ResumeModuleDM\ResumeModuleDM.csproj" />
-    <ProjectReference Include="..\ResumeModelSL\ResumeModuleSL.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\ResumeModuleDM\ResumeEnhancer.ResumeModule.DM.csproj" />
+    <ProjectReference Include="..\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ResumeEnhancer.Tests" />
+    <InternalsVisibleTo Include="ResumeEnhancer.Tests.Unit" />
   </ItemGroup>
 
 </Project>
+

@@ -61,5 +61,5 @@ Distinguish confirmed defects from watch items; never present speculative warnin
 
 ## Verification
 
-- Run the smallest meaningful tests for the touched area before reporting: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.csproj --no-restore` for backend, and `npm run check` for frontend.
+- Run the smallest meaningful tests for the touched area before reporting: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore` for backend, and `npm run check` for frontend.
 - Only claim a defect after confirming it against the real code; otherwise mark it as a question or watch item.

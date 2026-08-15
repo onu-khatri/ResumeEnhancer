@@ -1,4 +1,4 @@
-# EF Core & Persistence Patterns (ResumeEnhancer)
+# EF Core & ResumeEnhancer.Infrastructure.Persistence Patterns (ResumeEnhancer)
 
 This reference describes the persistence conventions actually used in this repository, so schema and data-access changes stay consistent and migration-safe.
 
@@ -11,7 +11,7 @@ All persistent entities derive from a shared base that carries auditing fields:
 - `BusinessEntity : BusinessData` — base for aggregate/business entities (`Resume`).
 - `SetupData : AuditEntity, ISetupData` — base for setup/lookup data (`Code`, `Description`, `Guid`, `ObsoleteFlag`).
 
-Keep domain entities (`<ModuleName>ModuleDM/Entities`) dependent only on `DomainLibrary`, and use `[MaxLength]` annotations for column hints.
+Keep domain entities (`ResumeEnhancer.<ModuleName>.DM/Entities`) dependent only on `ResumeEnhancer.Core.DomainLibrary`, and use `[MaxLength]` annotations for column hints.
 
 ```csharp
 public class Resume : BusinessEntity
@@ -42,7 +42,7 @@ public async Task<int> SaveChangesAsync(IAudit auditUser, CancellationToken ct =
 Each module declares its own schema and a model configuration that is registered into the shared context.
 
 ```csharp
-// <ModuleName>ModulePL/Context/<ModuleName>ModuleDatabase.cs
+// ResumeEnhancer.<ModuleName>.PL/Context/<ModuleName>ModuleDatabase.cs
 public static class <ModuleName>ModuleDatabase
 {
     public const string Schema = "resume";
@@ -60,9 +60,9 @@ services.TryAddEnumerable(ServiceDescriptor.Scoped<IAppDbContextSeeder, <ModuleN
 services.TryAddScoped<IResumeRepository, ResumeRepository>();
 ```
 
-## Entity configuration (`<ModuleName>ModulePL/Configurations`)
+## Entity configuration (`ResumeEnhancer.<ModuleName>.PL/Configurations`)
 
-One `IEntityTypeConfiguration<T>` per entity, kept in `<ModuleName>ModulePL/Configurations`. Prefer this over `OnModelCreating` sprawl.
+One `IEntityTypeConfiguration<T>` per entity, kept in `ResumeEnhancer.<ModuleName>.PL/Configurations`. Prefer this over `OnModelCreating` sprawl.
 
 ```csharp
 public sealed class ResumeConfiguration : IEntityTypeConfiguration<Resume>
@@ -116,10 +116,10 @@ For reusable query shapes, `IQuerySpecification<T>` / `QuerySpecification<T>` bu
 
 ## Migrations (`Infrastructure/Migration`)
 
-Migrations live in a dedicated `Migration` project that references `Persistence` and `<ModuleName>ModulePL`. It uses `AppDbContextDesignTimeFactory` for design-time configuration and exposes a CLI entry point:
+Migrations live in a dedicated `Migration` project that references `ResumeEnhancer.Infrastructure.Persistence` and `ResumeEnhancer.<ModuleName>.PL`. It uses `AppDbContextDesignTimeFactory` for design-time configuration and exposes a CLI entry point:
 
 ```
-dotnet run --project application\Infrastructure\Migration\Migration.csproj -- --help
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help
 ```
 
 Add migrations deliberately; never hand-edit generated migration code without review, and state schema impact in the PR.
@@ -141,3 +141,4 @@ public sealed class <ModuleName>ModuleSeeder : IAppDbContextSeeder
     }
 }
 ```
+
