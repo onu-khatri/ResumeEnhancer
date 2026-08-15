@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Orchestration Improver"
+  short_description: "Help with Agent Orchestration Improver tasks"
+  default_prompt: "Use $agent-orchestration-improver to strengthen how Codex decomposes and coordinates multi-agent work for ResumeEnhancer."

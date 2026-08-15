@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review Checklist"
+  short_description: "Help with Code Review Checklist tasks"
+  default_prompt: "Use $code-review-checklist to review the ResumeEnhancer change systematically."

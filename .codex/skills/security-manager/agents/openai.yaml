@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Manager"
+  short_description: "Help with Security Manager tasks"
+  default_prompt: "Use $security-manager to apply OWASP-oriented security guidance to the ResumeEnhancer change."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production UI Generator"
+  short_description: "Help with Production UI Generator tasks"
+  default_prompt: "Use $production-ui-generator to generate launch-ready UI for ResumeEnhancer."

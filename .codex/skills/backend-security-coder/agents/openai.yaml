@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Security Coder"
+  short_description: "Help with Backend Security Coder tasks"
+  default_prompt: "Use $backend-security-coder to implement and review the secure backend change for ResumeEnhancer."

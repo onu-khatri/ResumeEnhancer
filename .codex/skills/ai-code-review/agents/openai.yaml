@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ai Code Review"
+  short_description: "Help with Ai Code Review tasks"
+  default_prompt: "Use $ai-code-review to review the ResumeEnhancer change with AI assistance."

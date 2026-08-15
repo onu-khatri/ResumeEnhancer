@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ef Core Database Architect"
+  short_description: "Help with Ef Core Database Architect tasks"
+  default_prompt: "Use $ef-core-database-architect to design and review ResumeEnhancer persistence changes."

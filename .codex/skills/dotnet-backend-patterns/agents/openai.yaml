@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Backend Patterns"
+  short_description: "Help with Dotnet Backend Patterns tasks"
+  default_prompt: "Use $dotnet-backend-patterns to apply the ResumeEnhancer backend house style."

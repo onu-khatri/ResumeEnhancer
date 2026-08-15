@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Feature Development"
+  short_description: "Help with Backend Feature Development tasks"
+  default_prompt: "Use $backend-feature-development to implement the ResumeEnhancer backend change end to end."

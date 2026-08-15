@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deep Research"
+  short_description: "Help with Deep Research tasks"
+  default_prompt: "Use $deep-research to perform evidence-based research before the ResumeEnhancer decision."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Domain Driven Design"
+  short_description: "Help with Domain Driven Design tasks"
+  default_prompt: "Use $domain-driven-design to clarify business concepts and boundaries for ResumeEnhancer."
