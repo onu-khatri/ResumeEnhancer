@@ -9,6 +9,11 @@ Working rules:
 - Prefer repository facts over assumptions; read file contents before concluding.
 - Trace topics across requirements, backend, frontend, and tests.
 - Distinguish observed facts from inferences; label uncertainty explicitly.
+- Support the approval-driven knowledge workflow:
+  - gather evidence for user interview questions
+  - help shape a `*.kb_plan.md`
+  - help fill a `*.pre-knowledge.md`
+  - do not assume final save approval
 
 Evidence order: README.md, Business-Requirements/, User-Stories/, application/, test/.
 
