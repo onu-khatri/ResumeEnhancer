@@ -1,177 +1,84 @@
 ---
 name: project-knowledge-builder
-description: Build reusable, repo-specific knowledge for ResumeEnhancer by investigating code, product documents, and tests, then saving structured guidance another Codex agent can apply later. Use when Codex needs to understand architecture, feature flows, conventions, responsibilities, or requirement-to-implementation traceability before coding, reviewing, debugging, onboarding, or planning changes in this project.
+description: Build durable, evidence-grounded knowledge artifacts for ResumeEnhancer through an approval-driven workflow with sequential quality gates A–H, including a mandatory user-interview gate. Use when an agent needs reusable knowledge about architecture, feature flows, conventions, responsibilities, or requirement-to-implementation traceability.
 ---
 
 # Project Knowledge Builder
 
-## Overview
+Turns ResumeEnhancer investigation into reusable `KnowledgeBase/` artifacts. Two rules drive everything:
 
-Use this skill to turn ResumeEnhancer investigation into durable knowledge artifacts that future Codex sessions can reuse. Focus on evidence gathering, architecture comprehension, implementation patterns, and practical guidance rather than code changes.
+1. **Evidence first** — every claim is `Observed` or `Inferred` from real files; generic framework advice is never presented as repo fact.
+2. **Approval + no assumptions** — the user approves the plan and the draft, and the agent must interview the user (Gate D) instead of guessing.
 
-Read `references/repository-topography.md` when the topic spans multiple areas or you need a quick map of where to gather evidence.
+Default authoring preferences for this repository's knowledge artifacts:
 
-## Working Rules
+- Prefer **short code snippets** as the primary evidence style for important claims.
+- Keep **every included section self-sufficient**: an agent should understand the section's main behavior without reopening the code for first-pass comprehension.
+- Use raw file-path references sparingly. When references are needed, prefer **interface or type names linked to their files** over general file inventories.
+- If a section cannot be explained clearly with a snippet, either add the snippet or narrow the section; do not leave the agent dependent on "go read the code" as the main path.
+- Keep the artifact template lightweight by default: start from a small core set of sections, then add extra sections only when the topic genuinely needs them and the user approves them.
 
-- Read file contents before drawing conclusions.
-- Distinguish clearly between observed facts, inferences, and recommendations.
-- Do not modify application code, tests, package references, migrations, or runtime configuration while using this skill.
-- Save knowledge artifacts under `KnowledgeBase/` unless the user explicitly chooses another location.
-- Write the final knowledge in terms of symbols, responsibilities, workflows, and constraints rather than file-tour narration.
-- If evidence is incomplete, say so instead of filling gaps from generic framework knowledge.
+## Use when
 
-## Best-Fit Requests
+"Build knowledge for X flow", "document how validation works", "capture conventions for adding an endpoint", onboarding/review/planning knowledge.
 
-Use this skill for requests such as:
+## Don't use when
 
-- "Build project knowledge for the resume builder flow."
-- "Document how backend validation works in this repo."
-- "Explain how a <ModuleName> feature moves from user story to implementation."
-- "Create onboarding knowledge for new agents working on persistence."
-- "Capture the conventions for adding a new Minimal API endpoint."
+A one-off answer is enough and no saved artifact is needed.
 
-Do not use this skill when the user only wants a quick one-off answer and does not need a saved knowledge artifact.
+## Workflow (do in order)
 
-## Workflow
+| # | Step | Gate |
+|---|------|------|
+| 1 | Check `KnowledgeBase/` for an existing artifact; extend it or start fresh | — |
+| 2 | Frame the topic and investigate, keeping an evidence map | A |
+| 3 | Interview the user (framing: objective, audience, depth of knowledge, expected structure, applicability, scope, core-section selection, evidence style, extra-section approval) via the `question` tool | — |
+| 4 | Write `KnowledgeBase/<topic-name>.kb_plan.md`; **wait for approval** | — |
+| 5 | Compose `KnowledgeBase/<topic-name>.pre-knowledge.md` with snippet-first, self-sufficient sections | B–C |
+| 6 | **Interview the user again** (resolve ambiguities, preferences, options; confirm core sections and any discovered extra sections) | D |
+| 7 | Validate: consistency, boundary, currency, record | E–H |
+| 8 | Cross-examine the artifact; fix defects; **wait for draft approval** | — |
+| 9 | Save `KnowledgeBase/<topic-name>.knowledge.md`, report, and ask whether to delete `*.kb_plan.md` and `*.pre-knowledge.md` | H |
 
-### 1. Check for existing knowledge
+Gates A–H (defined in `references/knowledge-quality-gates.md`):
 
-Look in `KnowledgeBase/` for related artifacts before creating a new one.
+- **A Grounding** — evidence-backed, not generic.
+- **B Specificity** — names this repo's modules, symbols, paths.
+- **C Reproducibility** — a cold-start agent can follow every step.
+- **D User interview** — ask the user, don't assume; confirm core sections and get approval for any extra sections you discovered.
+- **E Consistency** — frontmatter, refs, body, clarifications agree.
+- **F Boundary** — limits and anti-patterns stated.
+- **G Currency** — dated; high-risk claims re-checked this session.
+- **H Record** — `validation` block lists A–H results.
 
-If relevant knowledge exists:
+## Non-negotiables
 
-- summarize what overlaps
-- decide whether to extend it or create a new artifact
+- Read files before concluding; label claims `Observed` (file-cited) / `Inferred` (combined evidence) / `Recommended` (fit, not yet fact).
+- Never touch app code, tests, packages, migrations, or runtime config.
+- Never save `*.knowledge.md` until the user approves `*.pre-knowledge.md`.
+- After saving `*.knowledge.md`, explicitly ask the user whether the intermediate `*.kb_plan.md` and `*.pre-knowledge.md` files should be deleted. Do not delete them without approval.
+- State evidence gaps explicitly instead of filling them from generic knowledge.
+- Save artifacts under `KnowledgeBase/`.
+- Do not skip the user interview just because the initial prompt already contains some scope details; confirm unresolved preferences explicitly.
+- If the prompt does not explicitly provide `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, or `Applicability`, ask for them and do not assume them.
+- Do not rely on path-only evidence where a short snippet would better ground the claim.
+- Do not leave a kept section too thin; every included section should contain enough concrete snippet material that a cold-start agent can reason from the artifact itself.
 
-If nothing relevant exists, proceed from scratch.
+## Artifact status
 
-### 2. Frame the topic
+- `draft` — plan, or a draft that failed a gate.
+- `reviewed` — passed A–H + cross-examination, user-approved.
+- `stable` — `reviewed` + re-verified against current code this session.
 
-Read enough repository evidence to identify the distinct topic clusters behind the user's request.
+## Evidence sources (in order)
 
-Examples in this repository include:
+`README.md` → `Business-Requirements/` → `User-Stories/` → `application/` → `test/`.
 
-- module composition and dependency direction
-- Minimal API endpoint patterns
-- FluentValidation request rules
-- service-layer command and query handling
-- Mapster mapping conventions
-- persistence and unit-of-work behavior
-- frontend resume-builder state and forms
-- testing and integration-host setup
-- requirement-to-implementation traceability
+## References
 
-If the request is broad, present the clusters and narrow the scope before deep investigation.
-
-### 3. Clarify output expectations
-
-Determine:
-
-- intended audience
-- desired depth
-- whether the artifact should optimize for onboarding, implementation, review, or planning
-- whether code examples, edge cases, and verification steps are expected
-
-Base these questions on what you already found in the codebase.
-
-### 4. Investigate deeply
-
-Perform focused reconnaissance guided by the chosen topic.
-
-Collect evidence for:
-
-- core symbols and contracts
-- request and data flow
-- responsibilities across layers
-- invariants and validation rules
-- extension points
-- test coverage and verification patterns
-- links between product documents and implementation when relevant
-
-Use subagents only for evidence gathering when the topic spans many areas. Keep prompts neutral and task-focused.
-
-### 5. Draft the structure
-
-When the topic is broad or the output will be reused heavily, create a structural draft first:
-
-- `KnowledgeBase/<topic-name>.draft.md`
-
-Use sections that fit the topic. Common sections include:
-
-- Title
-- Intent
-- When to use this knowledge
-- Core concepts
-- Architectural placement
-- Main workflows
-- Key symbols and responsibilities
-- Rules and invariants
-- Extension pattern
-- Verification and testing
-- Pitfalls and boundaries
-
-### 6. Write the final knowledge
-
-Save the completed artifact as:
-
-- `KnowledgeBase/<topic-name>.knowledge.md`
-
-Use this frontmatter:
-
-```yaml
----
-title: <short title>
-intent: <what this knowledge helps with>
-scope: <topic boundaries>
-audience: <intended agent or contributor>
-last_reviewed: <YYYY-MM-DD>
-status: draft
----
-```
-
-The body should:
-
-- explain the topic using repository concepts and symbols
-- connect business intent to implementation where that connection matters
-- capture reusable patterns
-- name important boundaries and anti-patterns
-- include practical examples or checklists when helpful
-- include verification guidance
-
-## Evidence Labels
-
-Use these labels where they improve clarity:
-
-- `Observed` for statements directly supported by repository contents
-- `Inferred` for conclusions drawn from multiple pieces of evidence
-- `Recommended` for practices that fit the current architecture but are not yet repository facts
-
-## ResumeEnhancer-Specific Guidance
-
-Prefer these evidence sources in order:
-
-1. `README.md`
-2. `Business-Requirements/`
-3. `User-Stories/`
-4. `application/`
-5. `test/`
-
-When tracing implementation across layers, expect to move through patterns like:
-
-- frontend page or hook
-- API client call
-- Minimal API endpoint
-- request validator
-- service-layer contract and handler
-- persistence abstraction and repository
-- mapping and response shaping
-- unit or integration tests
-
-## Final Checks
-
-Before finishing:
-
-- confirm the artifact is grounded in repository evidence
-- confirm it is specific to ResumeEnhancer rather than generic .NET or React advice
-- confirm another agent could use it without this conversation
-- confirm saved locations and file names are explicit
+- `references/repository-topography.md` — where to find evidence.
+- `references/knowledge-quality-gates.md` — gates A–H in full.
+- `references/knowledge-plan-template.md` — `*.kb_plan.md` shape.
+- `references/knowledge-artifact-template.md` — `*.pre-knowledge.md` / `*.knowledge.md` shape.
+- `references/artifact-validator-checklist.md` — granular companion checks.
+- `references/artifact-cross-examination.md` — self-adversarial review.
