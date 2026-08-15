@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Writing"
+  short_description: "Help with Plan Writing tasks"
+  default_prompt: "Use $plan-writing to create a phased implementation plan for the ResumeEnhancer change."

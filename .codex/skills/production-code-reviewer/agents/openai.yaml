@@ -1,0 +1,4 @@
+interface:
+  display_name: "Production Code Reviewer"
+  short_description: "Help with Production Code Reviewer tasks"
+  default_prompt: "Use $production-code-reviewer to review the ResumeEnhancer change before merge."

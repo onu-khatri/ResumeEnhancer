@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Security Coder"
+  short_description: "Help with Frontend Security Coder tasks"
+  default_prompt: "Use $frontend-security-coder to secure the ResumeEnhancer client-side change."

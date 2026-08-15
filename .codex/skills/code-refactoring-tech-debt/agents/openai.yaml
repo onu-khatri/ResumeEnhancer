@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Refactoring Tech Debt"
+  short_description: "Help with Code Refactoring Tech Debt tasks"
+  default_prompt: "Use $code-refactoring-tech-debt to reduce technical debt in ResumeEnhancer through scoped refactoring."

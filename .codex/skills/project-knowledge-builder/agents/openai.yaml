@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Knowledge Builder"
+  short_description: "Build reusable knowledge for this project"
+  default_prompt: "Use $project-knowledge-builder to investigate ResumeEnhancer and create reusable project knowledge."

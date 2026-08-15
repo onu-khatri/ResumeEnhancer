@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Creator"
+  short_description: "Help with PR Creator tasks"
+  default_prompt: "Use $pr-creator to prepare a reviewer-ready ResumeEnhancer pull request."

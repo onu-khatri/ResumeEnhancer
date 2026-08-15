@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Design"
+  short_description: "Help with Frontend Design tasks"
+  default_prompt: "Use $frontend-design to shape polished, intentional interfaces for ResumeEnhancer."

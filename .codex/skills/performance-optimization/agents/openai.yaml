@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance Optimization"
+  short_description: "Help with Performance Optimization tasks"
+  default_prompt: "Use $performance-optimization to find and fix performance issues in ResumeEnhancer."

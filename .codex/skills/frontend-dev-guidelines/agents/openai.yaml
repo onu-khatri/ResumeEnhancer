@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Dev Guidelines"
+  short_description: "Help with Frontend Dev Guidelines tasks"
+  default_prompt: "Use $frontend-dev-guidelines to apply project-consistent frontend standards in ResumeEnhancer."

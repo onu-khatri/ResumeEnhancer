@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Worktrees"
+  short_description: "Help with Git Worktrees tasks"
+  default_prompt: "Use $git-worktrees to create isolated workspaces for parallel ResumeEnhancer story delivery."

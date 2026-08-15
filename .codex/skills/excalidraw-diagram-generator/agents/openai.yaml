@@ -1,0 +1,4 @@
+interface:
+  display_name: "Excalidraw Diagram Generator"
+  short_description: "Help with Excalidraw Diagram Generator tasks"
+  default_prompt: "Use $excalidraw-diagram-generator to turn ResumeEnhancer architecture into diagram-ready structure."

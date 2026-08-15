@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Patterns"
+  short_description: "Help with React Patterns tasks"
+  default_prompt: "Use $react-patterns to apply production-grade React/TypeScript patterns in the ResumeEnhancer client."

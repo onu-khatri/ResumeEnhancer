@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architect Review"
+  short_description: "Help with Architect Review tasks"
+  default_prompt: "Use $architect-review to review the ResumeEnhancer change from an architecture perspective."

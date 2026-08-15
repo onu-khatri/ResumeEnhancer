@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readme Generator"
+  short_description: "Help with Readme Generator tasks"
+  default_prompt: "Use $readme-generator to create a thorough README grounded in the ResumeEnhancer codebase."

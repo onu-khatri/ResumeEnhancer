@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Decision Records"
+  short_description: "Help with Architecture Decision Records tasks"
+  default_prompt: "Use $architecture-decision-records to document a ResumeEnhancer technical decision as a durable ADR."

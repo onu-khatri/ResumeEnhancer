@@ -1,0 +1,4 @@
+interface:
+  display_name: "Full Stack Feature Orchestrator"
+  short_description: "Help with Full Stack Feature Orchestrator tasks"
+  default_prompt: "Use $full-stack-feature-orchestrator to drive the ResumeEnhancer feature end to end."

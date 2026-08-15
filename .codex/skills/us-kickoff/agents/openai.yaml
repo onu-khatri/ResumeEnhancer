@@ -1,0 +1,4 @@
+interface:
+  display_name: "Us Kickoff"
+  short_description: "Help with Us Kickoff tasks"
+  default_prompt: "Use $us-kickoff to kick off ready ResumeEnhancer user stories into implementation work."
