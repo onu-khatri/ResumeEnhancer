@@ -11,14 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mediator.Abstractions" Version="3.0.2" />
-    <PackageReference Include="Mediator.SourceGenerator" Version="3.0.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Modules\BillingModule\BillingModulePL\ResumeEnhancer.BillingModule.PL.csproj" />
     <ProjectReference Include="..\..\Modules\BillingModule\BillingModuleWeb\ResumeEnhancer.BillingModule.Web.csproj" />
     <ProjectReference Include="..\..\Modules\ProfilingModule\ProfilingModulePL\ResumeEnhancer.ProfilingModule.PL.csproj" />
@@ -27,6 +19,7 @@
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModulePL\ResumeEnhancer.TemplateModule.PL.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModuleWeb\ResumeEnhancer.TemplateModule.Web.csproj" />
+    <ProjectReference Include="..\MediatorComposition\ResumeEnhancer.WebSolution.MediatorComposition.csproj" />
   </ItemGroup>
 
 </Project>

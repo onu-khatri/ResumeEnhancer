@@ -1,4 +1,3 @@
-using Mediator;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ResumeEnhancer.BillingModule.PL;
@@ -13,6 +12,7 @@ using ResumeEnhancer.ResumeModule.Web.MiniApis;
 using ResumeEnhancer.TemplateModule.PL;
 using ResumeEnhancer.TemplateModule.Web;
 using ResumeEnhancer.TemplateModule.Web.MiniApis;
+using ResumeEnhancer.WebSolution.MediatorComposition;
 
 namespace ResumeEnhancer.WebSolution.ModulesComposition;
 
@@ -20,18 +20,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationModules(this IServiceCollection services)
     {
-        var mediatorAssemblies = ProfilingModule.Web.DependencyInjection.GetProfilingModuleMediatorAssemblies()
-            .Concat(BillingModule.Web.DependencyInjection.GetBillingModuleMediatorAssemblies())
-            .Concat(TemplateModule.Web.DependencyInjection.GetTemplateModuleMediatorAssemblies())
-            .Concat(ResumeModule.Web.DependencyInjection.GetResumeModuleMediatorAssemblies())
-            .Distinct()
-            .ToArray();
-
-        services.AddMediator(options =>
-        {
-            options.ServiceLifetime = ServiceLifetime.Scoped;
-            options.Assemblies = [.. mediatorAssemblies];
-        });
+        services.AddApplicationMediator();
 
         services.AddProfilingModulePersistence();
         services.AddProfilingModuleWeb();
