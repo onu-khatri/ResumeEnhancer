@@ -6,14 +6,15 @@ public sealed class ResumeSearchRequest
 {
     public List<int>? Ids { get; set; }
 
-    [MaxLength(450)]
-    public string? UserId { get; set; }
+    public int? UserId { get; set; }
 
     [MaxLength(200)]
     public string? SearchText { get; set; }
 
     [MaxLength(100)]
     public string? ResumeTemplate { get; set; }
+
+    public int? TemplateId { get; set; }
 
     public bool? HasPhoto { get; set; }
 

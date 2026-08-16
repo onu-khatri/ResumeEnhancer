@@ -6,5 +6,5 @@ namespace ResumeEnhancer.ResumeModule.SL.Contracts;
 public sealed record DeleteResumeCommand(
     int ResumeId,
     int? AuditUserId,
-    string? UserId = null) : ICommand<ResumeDeleteResponse>;
+    int? UserId = null) : ICommand<ResumeDeleteResponse>;
 

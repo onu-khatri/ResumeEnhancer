@@ -20,7 +20,12 @@ internal static partial class ResumeModelMapper
 
         if (request.UserId is not null)
         {
-            resume.UserId = NormalizeRequired(request.UserId);
+            resume.UserId = request.UserId.Value;
+        }
+
+        if (request.TemplateId is not null)
+        {
+            resume.TemplateId = request.TemplateId.Value;
         }
 
         if (request.RemovePersonalInformation)

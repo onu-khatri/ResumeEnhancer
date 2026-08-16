@@ -22,9 +22,13 @@ public sealed class CreateResumeRequestValidator : AbstractValidator<CreateResum
         RuleFor(request => request.ResumeTemplate)
             .MaximumLength(100);
 
+        RuleFor(request => request.TemplateId)
+            .GreaterThan(0)
+            .When(request => request.TemplateId.HasValue);
+
         RuleFor(request => request.UserId)
             .NotEmpty()
-            .MaximumLength(450);
+            .GreaterThan(0);
 
         When(request => request.PersonalInformation is not null, () =>
         {

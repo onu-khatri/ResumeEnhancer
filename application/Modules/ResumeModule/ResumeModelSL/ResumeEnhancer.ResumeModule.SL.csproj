@@ -9,6 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ResumeModuleAM\ResumeEnhancer.ResumeModule.AM.csproj" />
     <ProjectReference Include="..\ResumeModuleDM\ResumeEnhancer.ResumeModule.DM.csproj" />
+    <ProjectReference Include="..\..\ProfilingModule\ProfilingModelSL\ResumeEnhancer.ProfilingModule.SL.csproj" />
+    <ProjectReference Include="..\..\TemplateModule\TemplateModelSL\ResumeEnhancer.TemplateModule.SL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

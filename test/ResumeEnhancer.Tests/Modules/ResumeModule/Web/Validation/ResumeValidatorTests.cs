@@ -27,7 +27,7 @@ public sealed class ResumeValidatorTests
         var request = new CreateResumeRequest
         {
             Title = "Title",
-            UserId = "user",
+            UserId = 1,
             Education = null!,
             Certifications = null!,
             Skills = null!,

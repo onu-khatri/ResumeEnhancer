@@ -1,11 +1,14 @@
 using System.Diagnostics;
 using System.Text;
+using ResumeEnhancer.BillingModule.PL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.Infrastructure.Migration;
+using ResumeEnhancer.ProfilingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
+using ResumeEnhancer.TemplateModule.PL;
 
 return await MigrationConsole.RunAsync(args);
 
@@ -89,6 +92,9 @@ internal static class MigrationConsole
 
         var services = new ServiceCollection();
 
+        services.AddProfilingModulePersistence();
+        services.AddBillingModulePersistence();
+        services.AddTemplateModulePersistence();
         services.AddResumeModulePersistence();
         services.AddAppDbContext((_, options) =>
         {

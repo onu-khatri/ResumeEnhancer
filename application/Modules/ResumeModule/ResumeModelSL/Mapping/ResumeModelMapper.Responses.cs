@@ -13,14 +13,12 @@ internal static partial class ResumeModelMapper
         return resume.Adapt<ResumeDetailResponse>(MapsterConfig);
     }
 
-    public static void EnsureUserAccess(Resume resume, string? userId)
+    public static void EnsureUserAccess(Resume resume, int? userId)
     {
-        var normalizedUserId = NormalizeOptional(userId);
-
-        if (normalizedUserId is not null && resume.UserId != normalizedUserId)
+        if (userId is not null && resume.UserId != userId.Value)
         {
             throw new UnauthorizedAccessException(
-                $"Resume '{resume.Id}' does not belong to user '{normalizedUserId}'.");
+                $"Resume '{resume.Id}' does not belong to user '{userId.Value}'.");
         }
     }
 

@@ -4,18 +4,51 @@
     <Project Path="Core/DomainLibrary/ResumeEnhancer.Core.DomainLibrary.csproj" Id="4dc49a4f-0e25-48bb-bc72-9f5ed6fb08ad" />
     <Project Path="Core/WebLibrary/ResumeEnhancer.Core.WebLibrary.csproj" Id="9e1ffca5-8773-47a8-8ea1-602d61e1d377" />
   </Folder>
+  <Folder Name="/Core/DomainLibrary/" />
+  <Folder Name="/Core/WebLibrary/" />
   <Folder Name="/Infrastructure/">
     <Project Path="Infrastructure/Caching/ResumeEnhancer.Infrastructure.Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />
     <Project Path="Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj" Id="4a241c97-7f35-4104-bbf7-63c19f8f6e3e" />
     <Project Path="Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj" Id="65e64fdb-d687-414b-8c51-3f564d536c08" />
   </Folder>
+  <Folder Name="/Infrastructure/Persistence/" />
   <Folder Name="/Modules/" />
+  <Folder Name="/Modules/BillingModule/">
+    <Project Path="Modules/BillingModule/BillingModelSL/ResumeEnhancer.BillingModule.SL.csproj" Id="77eb747f-5d3a-40cc-a99f-9a3f4050487b" />
+    <Project Path="Modules/BillingModule/BillingModuleAM/ResumeEnhancer.BillingModule.AM.csproj" Id="34d7994a-c625-4638-b094-6c37445dd4ba" />
+    <Project Path="Modules/BillingModule/BillingModuleDM/ResumeEnhancer.BillingModule.DM.csproj" Id="0e3c66d2-b75e-47df-9a51-f4ac896f2f72" />
+    <Project Path="Modules/BillingModule/BillingModulePL/ResumeEnhancer.BillingModule.PL.csproj" Id="e8a0c1ee-c4be-4346-b74e-4c9540ea7af2" />
+    <Project Path="Modules/BillingModule/BillingModuleWeb/ResumeEnhancer.BillingModule.Web.csproj" Id="ea70a9ea-0881-4cb8-ad2c-8e6e8bf32f1e" />
+  </Folder>
+  <Folder Name="/Modules/ProfilingModule/">
+    <Project Path="Modules/ProfilingModule/ProfilingModelSL/ResumeEnhancer.ProfilingModule.SL.csproj" Id="dd46585f-6348-4e16-abd3-eef5f1302dc3" />
+    <Project Path="Modules/ProfilingModule/ProfilingModuleAM/ResumeEnhancer.ProfilingModule.AM.csproj" Id="db01a829-2609-48bb-b22b-b6fe80d7cb49" />
+    <Project Path="Modules/ProfilingModule/ProfilingModuleDM/ResumeEnhancer.ProfilingModule.DM.csproj" Id="52b008b5-ec82-4f93-b7cb-c7f7d96af173" />
+    <Project Path="Modules/ProfilingModule/ProfilingModulePL/ResumeEnhancer.ProfilingModule.PL.csproj" Id="7f41f85e-7646-4715-bd82-227ea7be4d66" />
+    <Project Path="Modules/ProfilingModule/ProfilingModuleWeb/ResumeEnhancer.ProfilingModule.Web.csproj" Id="d64bdb89-c9fd-49e4-80e6-3e4ca4db60b3" />
+  </Folder>
   <Folder Name="/Modules/ResumeModule/">
     <Project Path="Modules/ResumeModule/ResumeModelSL/ResumeEnhancer.ResumeModule.SL.csproj" Id="5fe300a2-a6df-4b86-97bb-c600d9689738" />
     <Project Path="Modules/ResumeModule/ResumeModuleAM/ResumeEnhancer.ResumeModule.AM.csproj" Id="daaa3f13-474b-4859-96da-cb5b7691c51c" />
     <Project Path="Modules/ResumeModule/ResumeModuleDM/ResumeEnhancer.ResumeModule.DM.csproj" Id="dbde9041-e2d0-4a4a-9b82-b45722835d70" />
     <Project Path="Modules/ResumeModule/ResumeModulePL/ResumeEnhancer.ResumeModule.PL.csproj" Id="f93a1041-6d7f-4867-bfaa-9901b851e363" />
     <Project Path="Modules/ResumeModule/ResumeModuleWeb/ResumeEnhancer.ResumeModule.Web.csproj" Id="be2902f1-7647-4804-8541-5d8f8bc07e7c" />
+  </Folder>
+  <Folder Name="/Modules/TemplateModule/" />
+  <Folder Name="/Modules/TemplateModule/TemplateModelSL/">
+    <Project Path="Modules/TemplateModule/TemplateModelSL/ResumeEnhancer.TemplateModule.SL.csproj" />
+  </Folder>
+  <Folder Name="/Modules/TemplateModule/TemplateModuleAM/">
+    <Project Path="Modules/TemplateModule/TemplateModuleAM/ResumeEnhancer.TemplateModule.AM.csproj" />
+  </Folder>
+  <Folder Name="/Modules/TemplateModule/TemplateModuleDM/">
+    <Project Path="Modules/TemplateModule/TemplateModuleDM/ResumeEnhancer.TemplateModule.DM.csproj" />
+  </Folder>
+  <Folder Name="/Modules/TemplateModule/TemplateModulePL/">
+    <Project Path="Modules/TemplateModule/TemplateModulePL/ResumeEnhancer.TemplateModule.PL.csproj" />
+  </Folder>
+  <Folder Name="/Modules/TemplateModule/TemplateModuleWeb/">
+    <Project Path="Modules/TemplateModule/TemplateModuleWeb/ResumeEnhancer.TemplateModule.Web.csproj" />
   </Folder>
   <Folder Name="/Solutions/">
     <Project Path="WebSolution/ModulesComposition/ResumeEnhancer.WebSolution.ModulesComposition.csproj" Id="4b9de104-b791-4e50-b920-a0076d47fa60" />

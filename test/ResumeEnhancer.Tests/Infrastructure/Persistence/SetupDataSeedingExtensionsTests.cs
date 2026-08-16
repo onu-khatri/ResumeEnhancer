@@ -3,7 +3,6 @@ using Shouldly;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 using ResumeEnhancer.ResumeModule.DM.Entities;
-using ResumeEnhancer.ResumeModule.DM.Enums;
 
 namespace ResumeEnhancer.Tests.Unit.Infrastructure.Persistence;
 
@@ -77,7 +76,7 @@ public sealed class SetupDataSeedingExtensionsTests
             [Seed("New", "New", guid, displayOrder: 7)],
             (existing, seed) =>
             {
-                existing.DisplayOrder = seed.DisplayOrder;
+                existing.Order = seed.Order;
                 return true;
             },
             TestContext.Current.CancellationToken);
@@ -86,7 +85,7 @@ public sealed class SetupDataSeedingExtensionsTests
         var saved = await scope.DbContext.Set<ResumeSectionSetup>().SingleAsync(TestContext.Current.CancellationToken);
         saved.Code.ShouldBe("New");
         saved.Description.ShouldBe("New");
-        saved.DisplayOrder.ShouldBe(7);
+        saved.Order.ShouldBe(7);
         saved.App_UpdateUserId.ShouldBe(SeedingUser.UserId);
     }
 
@@ -142,9 +141,8 @@ public sealed class SetupDataSeedingExtensionsTests
             Code = code,
             Description = description,
             Guid = guid ?? Guid.NewGuid(),
-            DisplayOrder = displayOrder,
+            Order = displayOrder,
             IsVisible = true,
-            SectionType = (ResumeSectionType)displayOrder,
             App_UpdateUserId = updateUserId
         };
 }

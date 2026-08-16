@@ -19,7 +19,10 @@ internal static partial class ResumeModelMapper
             .Map(dest => dest.Summary, src => NormalizeOptional(src.Summary))
             .Map(dest => dest.Photo, src => NormalizeOptional(src.Photo))
             .Map(dest => dest.ResumeTemplate, src => NormalizeOptional(src.ResumeTemplate))
-            .Map(dest => dest.UserId, src => NormalizeRequired(src.UserId))
+            .Map(dest => dest.TemplateId, src => src.TemplateId)
+            .Map(dest => dest.UserId, src => src.UserId)
+            .Ignore(dest => dest.Template)
+            .Ignore(dest => dest.User)
             .Ignore(dest => dest.PersonalInformation)
             .Ignore(dest => dest.Education)
             .Ignore(dest => dest.Certifications)
@@ -32,7 +35,10 @@ internal static partial class ResumeModelMapper
             .Map(dest => dest.Summary, src => NormalizeOptional(src.Summary))
             .Map(dest => dest.Photo, src => NormalizeOptional(src.Photo))
             .Map(dest => dest.ResumeTemplate, src => NormalizeOptional(src.ResumeTemplate))
+            .Ignore(dest => dest.TemplateId)
+            .Ignore(dest => dest.Template)
             .Ignore(dest => dest.UserId)
+            .Ignore(dest => dest.User)
             .Ignore(dest => dest.PersonalInformation)
             .Ignore(dest => dest.Education)
             .Ignore(dest => dest.Certifications)
@@ -141,9 +147,10 @@ internal static partial class ResumeModelMapper
             .Ignore(dest => dest.PersonalInformation);
 
         config.NewConfig<ResumeSearchRequest, ResumeSearchCriteria>()
-            .Map(dest => dest.UserId, src => NormalizeOptional(src.UserId))
+            .Map(dest => dest.UserId, src => src.UserId)
             .Map(dest => dest.SearchText, src => NormalizeOptional(src.SearchText))
             .Map(dest => dest.ResumeTemplate, src => NormalizeOptional(src.ResumeTemplate))
+            .Map(dest => dest.TemplateId, src => src.TemplateId)
             .Map(dest => dest.SortBy, src => ToResumeSortBy(src.SortBy))
             .Map(dest => dest.SortDirection, src => ToResumeSortDirection(src.SortDirection));
 

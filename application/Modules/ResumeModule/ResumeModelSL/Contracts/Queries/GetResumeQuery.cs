@@ -5,5 +5,5 @@ namespace ResumeEnhancer.ResumeModule.SL.Contracts;
 
 public sealed record GetResumeQuery(
     int ResumeId,
-    string? UserId = null) : IQuery<ResumeDetailResponse?>;
+    int? UserId = null) : IQuery<ResumeDetailResponse?>;
 

@@ -1,5 +1,7 @@
 using NSubstitute;
 using Shouldly;
+using ResumeEnhancer.ProfilingModule.SL.Integrations;
+using ResumeEnhancer.TemplateModule.SL.Integrations;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
@@ -16,9 +18,12 @@ public sealed class ResumeHandlerTests
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IResumeRepository>();
+        var userLookupService = Substitute.For<IUserLookupService>();
+        var templateLookupService = Substitute.For<ITemplateLookupService>();
+        userLookupService.UserExistsAsync(ResumeTestData.UserId, cancellationToken).Returns(true);
         repository.AddAsync(Arg.Any<Resume>(), 42, cancellationToken)
             .Returns(call => Task.FromResult<Resume>(call.Arg<Resume>()!));
-        var handler = new CreateResumeCommandHandler(repository);
+        var handler = new CreateResumeCommandHandler(repository, userLookupService, templateLookupService);
 
         var response = await handler.Handle(
             new CreateResumeCommand(ResumeTestData.CreateResumeRequest(), 42),
@@ -26,6 +31,7 @@ public sealed class ResumeHandlerTests
 
         response.Title.ShouldBe("Senior Engineer");
         response.UserId.ShouldBe(ResumeTestData.UserId);
+        await userLookupService.Received(1).UserExistsAsync(ResumeTestData.UserId, cancellationToken);
         await repository.Received(1).AddAsync(
             Arg.Is<Resume>(resume => resume != null && resume.Title == "Senior Engineer"),
             42,
@@ -37,8 +43,10 @@ public sealed class ResumeHandlerTests
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IResumeRepository>();
+        var userLookupService = Substitute.For<IUserLookupService>();
+        var templateLookupService = Substitute.For<ITemplateLookupService>();
         repository.GetAsync(10, null, true, cancellationToken).Returns((Resume?)null);
-        var handler = new UpdateResumeCommandHandler(repository);
+        var handler = new UpdateResumeCommandHandler(repository, userLookupService, templateLookupService);
 
         await Should.ThrowAsync<KeyNotFoundException>(
             () => handler.Handle(
@@ -51,9 +59,11 @@ public sealed class ResumeHandlerTests
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IResumeRepository>();
+        var userLookupService = Substitute.For<IUserLookupService>();
+        var templateLookupService = Substitute.For<ITemplateLookupService>();
         repository.GetAsync(1, null, true, cancellationToken)
-            .Returns(ResumeTestData.ResumeGraph(userId: "owner"));
-        var handler = new UpdateResumeCommandHandler(repository);
+            .Returns(ResumeTestData.ResumeGraph(userId: ResumeTestData.UserId));
+        var handler = new UpdateResumeCommandHandler(repository, userLookupService, templateLookupService);
 
         await Should.ThrowAsync<UnauthorizedAccessException>(
             () => handler.Handle(
@@ -61,7 +71,7 @@ public sealed class ResumeHandlerTests
                     1,
                     new UpdateResumeRequest { Title = "Updated" },
                     5,
-                    "other"),
+                    ResumeTestData.OtherUserId),
                 cancellationToken).AsTask());
 
         await repository.DidNotReceive().SaveAsync(Arg.Any<int?>(), Arg.Any<CancellationToken>());
@@ -72,9 +82,12 @@ public sealed class ResumeHandlerTests
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IResumeRepository>();
+        var userLookupService = Substitute.For<IUserLookupService>();
+        var templateLookupService = Substitute.For<ITemplateLookupService>();
         var resume = ResumeTestData.ResumeGraph();
         repository.GetAsync(1, null, true, cancellationToken).Returns(resume);
-        var handler = new UpdateResumeCommandHandler(repository);
+        userLookupService.UserExistsAsync(ResumeTestData.UserId, cancellationToken).Returns(true);
+        var handler = new UpdateResumeCommandHandler(repository, userLookupService, templateLookupService);
 
         var response = await handler.Handle(
             new UpdateResumeCommand(
@@ -85,6 +98,7 @@ public sealed class ResumeHandlerTests
             cancellationToken);
 
         response.Title.ShouldBe("Updated");
+        await userLookupService.Received(1).UserExistsAsync(ResumeTestData.UserId, cancellationToken);
         await repository.Received(1).SaveAsync(7, cancellationToken);
     }
 
@@ -178,12 +192,12 @@ public sealed class ResumeHandlerTests
         var handler = new SearchResumesQueryHandler(repository);
 
         var response = await handler.Handle(
-            new SearchResumesQuery(new ResumeSearchRequest { UserId = " user " }),
+            new SearchResumesQuery(new ResumeSearchRequest { UserId = ResumeTestData.UserId }),
             cancellationToken);
 
         response.Items.ShouldHaveSingleItem();
         await repository.Received(1).SearchAsync(
-            Arg.Is<ResumeSearchCriteria>(criteria => criteria != null && criteria.UserId == "user"),
+            Arg.Is<ResumeSearchCriteria>(criteria => criteria != null && criteria.UserId == ResumeTestData.UserId),
             cancellationToken);
     }
 

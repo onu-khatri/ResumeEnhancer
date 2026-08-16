@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
+    <ProjectReference Include="..\..\ProfilingModule\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />
+    <ProjectReference Include="..\..\ResumeModule\ResumeModuleDM\ResumeEnhancer.ResumeModule.DM.csproj" />
+  </ItemGroup>
+
+</Project>

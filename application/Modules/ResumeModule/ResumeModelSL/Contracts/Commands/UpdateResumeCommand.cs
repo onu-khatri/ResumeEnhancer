@@ -8,5 +8,5 @@ public sealed record UpdateResumeCommand(
     int ResumeId,
     UpdateResumeRequest Request,
     int? AuditUserId,
-    string? UserId = null) : ICommand<ResumeDetailResponse>;
+    int? UserId = null) : ICommand<ResumeDetailResponse>;
 

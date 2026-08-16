@@ -5,8 +5,8 @@ namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal static class ResumeTestData
 {
-    public const string UserId = "user-1";
-    public const string OtherUserId = "user-2";
+    public const int UserId = 1;
+    public const int OtherUserId = 2;
 
     public static CreateResumeRequest CreateResumeRequest() =>
         new()
@@ -15,7 +15,7 @@ internal static class ResumeTestData
             Summary = " Builds things ",
             Photo = " ",
             ResumeTemplate = " Modern ",
-            UserId = $" {UserId} ",
+            UserId = UserId,
             PersonalInformation = new PersonalInformationRequest
             {
                 Email = " person@example.com ",
@@ -110,7 +110,7 @@ internal static class ResumeTestData
     public static Resume ResumeGraph(
         int id = 1,
         string title = "Senior Engineer",
-        string userId = UserId,
+        int userId = UserId,
         string? template = "Modern",
         string? photo = "photo.png",
         DateTime? created = null,
@@ -132,7 +132,7 @@ internal static class ResumeTestData
         {
             Id = id * 10,
             Resume = resume,
-            Email = $"{userId}@example.com",
+            Email = $"user-{userId}@example.com",
             PhoneNumber = "1234567890",
             Address = new Address
             {

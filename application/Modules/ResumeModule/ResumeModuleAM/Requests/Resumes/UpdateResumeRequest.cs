@@ -17,8 +17,9 @@ public sealed class UpdateResumeRequest
     [MaxLength(100)]
     public string? ResumeTemplate { get; set; }
 
-    [MaxLength(450)]
-    public string? UserId { get; set; }
+    public int? TemplateId { get; set; }
+
+    public int? UserId { get; set; }
 
     public bool RemovePersonalInformation { get; set; }
 

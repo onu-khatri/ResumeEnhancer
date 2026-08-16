@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BillingModuleAM\ResumeEnhancer.BillingModule.AM.csproj" />
+    <ProjectReference Include="..\BillingModuleDM\ResumeEnhancer.BillingModule.DM.csproj" />
+    <ProjectReference Include="..\..\ProfilingModule\ProfilingModelSL\ResumeEnhancer.ProfilingModule.SL.csproj" />
+    <ProjectReference Include="..\..\ResumeModule\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mediator.Abstractions" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
+  </ItemGroup>
+
+</Project>

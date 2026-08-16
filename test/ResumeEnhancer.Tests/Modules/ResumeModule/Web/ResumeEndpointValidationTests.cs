@@ -73,10 +73,10 @@ public sealed class ResumeEndpointValidationTests
     {
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers["X-Audit-UserId"] = "42";
-        httpContext.Request.Headers["X-User-Id"] = " user-1 ";
+        httpContext.Request.Headers["X-User-Id"] = "7";
 
         ResumeEndpointHeaders.ReadAuditUserId(httpContext).ShouldBe(42);
-        ResumeEndpointHeaders.ReadUserId(httpContext).ShouldBe("user-1");
+        ResumeEndpointHeaders.ReadUserId(httpContext).ShouldBe(7);
     }
 }
 

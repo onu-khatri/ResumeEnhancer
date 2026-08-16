@@ -12,7 +12,9 @@ public sealed class ResumeListItemResponse
 
     public string? ResumeTemplate { get; set; }
 
-    public string UserId { get; set; } = string.Empty;
+    public int? TemplateId { get; set; }
+
+    public int UserId { get; set; }
 
     public DateTime App_CreateDate { get; set; }
 

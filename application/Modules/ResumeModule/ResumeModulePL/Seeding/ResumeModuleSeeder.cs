@@ -13,15 +13,9 @@ public sealed class ResumeModuleSeeder : IAppDbContextSeeder
             {
                 var hasChanges = false;
 
-                if (existingSection.SectionType != seed.SectionType)
+                if (existingSection.Order != seed.Order)
                 {
-                    existingSection.SectionType = seed.SectionType;
-                    hasChanges = true;
-                }
-
-                if (existingSection.DisplayOrder != seed.DisplayOrder)
-                {
-                    existingSection.DisplayOrder = seed.DisplayOrder;
+                    existingSection.Order = seed.Order;
                     hasChanges = true;
                 }
 

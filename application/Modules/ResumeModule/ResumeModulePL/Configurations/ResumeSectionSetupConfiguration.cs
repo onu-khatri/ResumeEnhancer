@@ -10,10 +10,7 @@ public sealed class ResumeSectionSetupConfiguration : IEntityTypeConfiguration<R
     {
         builder.HasKey(sectionSetup => sectionSetup.Id);
 
-        builder.Property(sectionSetup => sectionSetup.SectionType).HasConversion<int>();
-
-        builder.HasIndex(sectionSetup => sectionSetup.SectionType).IsUnique();
-        builder.HasIndex(sectionSetup => sectionSetup.DisplayOrder).IsUnique();
+        builder.HasIndex(sectionSetup => sectionSetup.Order).IsUnique();
     }
 }
 
