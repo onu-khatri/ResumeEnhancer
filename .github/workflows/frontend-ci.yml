@@ -7,6 +7,7 @@ on:
       - ".github/workflows/frontend-ci.yml"
       - ".editorconfig"
       - "application/WebSolution/websolution.client/**"
+      - "application/WebSolution/websolution.client.esproj"
   push:
     branches:
       - main
@@ -14,6 +15,7 @@ on:
       - ".github/workflows/frontend-ci.yml"
       - ".editorconfig"
       - "application/WebSolution/websolution.client/**"
+      - "application/WebSolution/websolution.client.esproj"
 
 concurrency:
   group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
