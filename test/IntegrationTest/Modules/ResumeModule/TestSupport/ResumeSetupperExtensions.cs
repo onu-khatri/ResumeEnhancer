@@ -9,7 +9,7 @@ internal static class ResumeSetupperExtensions
 {
     public static async Task<Resume> GenerateResumeAsync(
         this ISetupper setupper,
-        string userId = ResumeApiTestData.OwnerUserId,
+        int userId = ResumeApiTestData.OwnerUserId,
         string title = "Integration API Resume",
         string? template = "Modern",
         string? photo = "https://example.com/photo.png",

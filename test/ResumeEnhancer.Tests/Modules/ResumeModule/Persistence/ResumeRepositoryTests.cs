@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
+using NSubstitute;
+using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 using ResumeEnhancer.ResumeModule.DM.Entities;
 using ResumeEnhancer.ResumeModule.PL.Repositories;
@@ -39,7 +41,7 @@ public sealed class ResumeRepositoryTests
         await SeedAsync(scope, cancellationToken, ResumeTestData.ResumeGraph(id: 1));
         var repository = CreateRepository(scope);
 
-        var untracked = await repository.GetAsync(1, $" {ResumeTestData.UserId} ", track: false, cancellationToken);
+        var untracked = await repository.GetAsync(1, ResumeTestData.UserId, track: false, cancellationToken);
         var tracked = await repository.GetAsync(1, ResumeTestData.UserId, track: true, cancellationToken);
         var missingForUser = await repository.GetAsync(1, ResumeTestData.OtherUserId, cancellationToken: cancellationToken);
 
@@ -61,7 +63,7 @@ public sealed class ResumeRepositoryTests
         var repository = CreateRepository(scope);
 
         (await repository.ExistsAsync(1, cancellationToken: cancellationToken)).ShouldBeTrue();
-        (await repository.ExistsAsync(1, $" {ResumeTestData.UserId} ", cancellationToken)).ShouldBeTrue();
+        (await repository.ExistsAsync(1, ResumeTestData.UserId, cancellationToken)).ShouldBeTrue();
         (await repository.ExistsAsync(1, ResumeTestData.OtherUserId, cancellationToken)).ShouldBeFalse();
         (await repository.ExistsAsync(999, cancellationToken: cancellationToken)).ShouldBeFalse();
     }
@@ -100,7 +102,7 @@ public sealed class ResumeRepositoryTests
             new ResumeSearchCriteria
             {
                 Ids = [1, 1, 2, 3],
-                UserId = $" {ResumeTestData.UserId} ",
+                UserId = ResumeTestData.UserId,
                 ResumeTemplate = " Modern ",
                 HasPhoto = true,
                 CreatedFromUtc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
@@ -282,7 +284,7 @@ public sealed class ResumeRepositoryTests
         var result = await repository.DeleteAsync(
             [1, 2, 999, 1],
             auditUserId: 88,
-            userId: $" {ResumeTestData.UserId} ",
+            userId: ResumeTestData.UserId,
             cancellationToken);
 
         result.RequestedIds.ShouldBe([1, 2, 999]);
@@ -364,7 +366,15 @@ public sealed class ResumeRepositoryTests
     }
 
     private static ResumeRepository CreateRepository(SqliteAppDbContextScope scope) =>
-        new(scope.UnitOfWork);
+        new(scope.UnitOfWork, CreateCacheProvider());
+
+    private static ICacheProvider CreateCacheProvider()
+    {
+        var cacheProvider = Substitute.For<ICacheProvider>();
+        cacheProvider.RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        return cacheProvider;
+    }
 
     private static async Task SeedAsync(
         SqliteAppDbContextScope scope,

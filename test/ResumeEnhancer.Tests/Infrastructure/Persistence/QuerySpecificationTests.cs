@@ -11,12 +11,12 @@ public sealed class QuerySpecificationTests
     {
         var resumes = new[]
         {
-            new Resume { Id = 1, Title = "B", UserId = "u" },
-            new Resume { Id = 2, Title = "A", UserId = "u" },
-            new Resume { Id = 3, Title = "C", UserId = "other" }
+            new Resume { Id = 1, Title = "B", UserId = 1 },
+            new Resume { Id = 2, Title = "A", UserId = 1 },
+            new Resume { Id = 3, Title = "C", UserId = 2 }
         }.AsQueryable();
         var specification = new TestResumeSpecification();
-        specification.Criteria = resume => resume.UserId == "u";
+        specification.Criteria = resume => resume.UserId == 1;
         specification.Select = resume => new Resume { Id = resume.Id, Title = resume.Title };
         specification.OrderByTitle();
 

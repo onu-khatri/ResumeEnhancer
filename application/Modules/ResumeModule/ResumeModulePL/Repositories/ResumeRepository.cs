@@ -1,5 +1,6 @@
 using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
+using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ResumeModule.DM.Entities;
 using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
@@ -9,12 +10,18 @@ namespace ResumeEnhancer.ResumeModule.PL.Repositories;
 public sealed class ResumeRepository : IResumeRepository
 {
     private const int MaxPageSize = 100;
+    private static readonly string[] SetupCacheKeys =
+    [
+        ResumeSetupDataRepository.ResumeSectionsCacheKey
+    ];
 
     private readonly IUnitOfWork<AppDbContext> _unitOfWork;
+    private readonly ICacheProvider _cacheProvider;
 
-    public ResumeRepository(IUnitOfWork<AppDbContext> unitOfWork)
+    public ResumeRepository(IUnitOfWork<AppDbContext> unitOfWork, ICacheProvider cacheProvider)
     {
         _unitOfWork = unitOfWork;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task<Resume> AddAsync(
@@ -32,7 +39,7 @@ public sealed class ResumeRepository : IResumeRepository
 
     public async Task<Resume?> GetAsync(
         int resumeId,
-        string? userId = null,
+        int? userId = null,
         bool track = false,
         CancellationToken cancellationToken = default)
     {
@@ -47,9 +54,9 @@ public sealed class ResumeRepository : IResumeRepository
 
         query = query.Where(resume => resume.Id == resumeId);
 
-        if (!string.IsNullOrWhiteSpace(userId))
+        if (userId is not null)
         {
-            query = query.Where(resume => resume.UserId == userId.Trim());
+            query = query.Where(resume => resume.UserId == userId.Value);
         }
 
         return await query.SingleOrDefaultAsync(cancellationToken);
@@ -81,16 +88,20 @@ public sealed class ResumeRepository : IResumeRepository
             query = query.Where(resume => ids.Contains(resume.Id));
         }
 
-        if (!string.IsNullOrWhiteSpace(criteria.UserId))
+        if (criteria.UserId is not null)
         {
-            var userId = criteria.UserId.Trim();
-            query = query.Where(resume => resume.UserId == userId);
+            query = query.Where(resume => resume.UserId == criteria.UserId.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(criteria.ResumeTemplate))
         {
             var template = criteria.ResumeTemplate.Trim();
             query = query.Where(resume => resume.ResumeTemplate == template);
+        }
+
+        if (criteria.TemplateId is int templateId)
+        {
+            query = query.Where(resume => resume.TemplateId == templateId);
         }
 
         if (criteria.HasPhoto is true)
@@ -155,13 +166,17 @@ public sealed class ResumeRepository : IResumeRepository
 
     public async Task<int> SaveAsync(
         int? auditUserId,
-        CancellationToken cancellationToken = default) =>
-        await _unitOfWork.SaveAsync(new RepositoryAudit(auditUserId), cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        var affectedCount = await _unitOfWork.SaveAsync(new RepositoryAudit(auditUserId), cancellationToken);
+        await InvalidateSetupCacheAsync(cancellationToken);
+        return affectedCount;
+    }
 
     public async Task<ResumeDeleteResult> DeleteAsync(
         IReadOnlyList<int> resumeIds,
         int? auditUserId,
-        string? userId = null,
+        int? userId = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(resumeIds);
@@ -179,12 +194,11 @@ public sealed class ResumeRepository : IResumeRepository
 
         var loadedIds = resumes.Select(resume => resume.Id).ToHashSet();
         var notFoundIds = requestedIds.Where(id => !loadedIds.Contains(id)).ToArray();
-        var normalizedUserId = string.IsNullOrWhiteSpace(userId) ? null : userId.Trim();
-        var allowedResumes = normalizedUserId is null
+        var allowedResumes = userId is null
             ? resumes
-            : resumes.Where(resume => resume.UserId == normalizedUserId).ToList();
+            : resumes.Where(resume => resume.UserId == userId.Value).ToList();
         var allowedIds = allowedResumes.Select(resume => resume.Id).ToHashSet();
-        var forbiddenIds = normalizedUserId is null
+        var forbiddenIds = userId is null
             ? []
             : resumes
                 .Where(resume => !allowedIds.Contains(resume.Id))
@@ -206,17 +220,15 @@ public sealed class ResumeRepository : IResumeRepository
 
     public async Task<bool> ExistsAsync(
         int resumeId,
-        string? userId = null,
+        int? userId = null,
         CancellationToken cancellationToken = default)
     {
         EnsurePositiveId(resumeId, nameof(resumeId));
 
-        var normalizedUserId = string.IsNullOrWhiteSpace(userId) ? null : userId.Trim();
-
-        return normalizedUserId is null
+        return userId is null
             ? await _unitOfWork.GetRepo<Resume>().ExistsAsync(resumeId, cancellationToken)
             : await _unitOfWork.GetRepo<Resume>().ExistsAsync(
-                resume => resume.Id == resumeId && resume.UserId == normalizedUserId,
+                resume => resume.Id == resumeId && resume.UserId == userId.Value,
                 cancellationToken);
     }
 
@@ -360,6 +372,14 @@ public sealed class ResumeRepository : IResumeRepository
         }
 
         public int? UserId { get; }
+    }
+
+    private async Task InvalidateSetupCacheAsync(CancellationToken cancellationToken)
+    {
+        foreach (var cacheKey in SetupCacheKeys)
+        {
+            await _cacheProvider.RemoveAsync(cacheKey, cancellationToken);
+        }
     }
 }
 

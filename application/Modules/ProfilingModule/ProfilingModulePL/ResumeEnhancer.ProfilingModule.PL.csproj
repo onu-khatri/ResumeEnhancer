@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />
+    <ProjectReference Include="..\ProfilingModelSL\ResumeEnhancer.ProfilingModule.SL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
+  </ItemGroup>
+
+</Project>

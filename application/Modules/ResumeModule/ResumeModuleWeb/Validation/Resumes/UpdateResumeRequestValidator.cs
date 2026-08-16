@@ -23,8 +23,13 @@ public sealed class UpdateResumeRequestValidator : AbstractValidator<UpdateResum
         RuleFor(request => request.ResumeTemplate)
             .MaximumLength(100);
 
+        RuleFor(request => request.TemplateId)
+            .GreaterThan(0)
+            .When(request => request.TemplateId.HasValue);
+
         RuleFor(request => request.UserId)
-            .MaximumLength(450);
+            .GreaterThan(0)
+            .When(request => request.UserId.HasValue);
 
         RuleFor(request => request.PersonalInformation)
             .Null()

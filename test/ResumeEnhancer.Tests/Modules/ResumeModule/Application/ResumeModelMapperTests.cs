@@ -69,7 +69,7 @@ public sealed class ResumeModelMapperTests
         var request = new UpdateResumeRequest
         {
             Title = "Updated",
-            UserId = " updated-user ",
+            UserId = ResumeTestData.OtherUserId,
             Education =
             [
                 new EducationRequest
@@ -88,7 +88,7 @@ public sealed class ResumeModelMapperTests
 
         ResumeModelMapper.ApplyResumeUpdate(resume, request, removed.Add);
 
-        resume.UserId.ShouldBe("updated-user");
+        resume.UserId.ShouldBe(ResumeTestData.OtherUserId);
         resume.Education.Count.ShouldBe(2);
         resume.Education.Single(education => education.Id == existingEducationId).Degree.ShouldBe("MS");
         resume.Education.Single(education => education.Id == 0).Resume.ShouldBeSameAs(resume);
@@ -190,7 +190,7 @@ public sealed class ResumeModelMapperTests
     {
         var request = new ResumeSearchRequest
         {
-            UserId = " user ",
+            UserId = ResumeTestData.UserId,
             SearchText = " engineer ",
             ResumeTemplate = " modern ",
             SortBy = ResumeSearchSortBy.Title,
@@ -199,7 +199,7 @@ public sealed class ResumeModelMapperTests
 
         var criteria = ResumeModelMapper.ToCriteria(request);
 
-        criteria.UserId.ShouldBe("user");
+        criteria.UserId.ShouldBe(ResumeTestData.UserId);
         criteria.SearchText.ShouldBe("engineer");
         criteria.ResumeTemplate.ShouldBe("modern");
         criteria.SortBy.ShouldBe(ResumeSortBy.Title);
@@ -256,20 +256,19 @@ public sealed class ResumeModelMapperTests
     [Fact]
     public void EnsureUserAccess_UserMissingOrMatches_DoesNotThrow()
     {
-        var resume = ResumeTestData.ResumeGraph(userId: "user");
+        var resume = ResumeTestData.ResumeGraph(userId: ResumeTestData.UserId);
 
         Should.NotThrow(() => ResumeModelMapper.EnsureUserAccess(resume, null));
-        Should.NotThrow(() => ResumeModelMapper.EnsureUserAccess(resume, " "));
-        Should.NotThrow(() => ResumeModelMapper.EnsureUserAccess(resume, " user "));
+        Should.NotThrow(() => ResumeModelMapper.EnsureUserAccess(resume, ResumeTestData.UserId));
     }
 
     [Fact]
     public void EnsureUserAccess_UserMismatch_ThrowsUnauthorizedAccessException()
     {
-        var resume = ResumeTestData.ResumeGraph(userId: "owner");
+        var resume = ResumeTestData.ResumeGraph(userId: ResumeTestData.UserId);
 
         var exception = Should.Throw<UnauthorizedAccessException>(
-            () => ResumeModelMapper.EnsureUserAccess(resume, "other"));
+            () => ResumeModelMapper.EnsureUserAccess(resume, ResumeTestData.OtherUserId));
 
         exception.Message.ShouldContain("does not belong");
     }

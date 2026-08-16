@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ResumeEnhancer.Core.DomainLibrary.DomainModel;
+using ResumeEnhancer.ProfilingModule.DM.Entities;
+using ResumeEnhancer.TemplateModule.DM.Entities;
 
 namespace ResumeEnhancer.ResumeModule.DM.Entities;
 
@@ -17,8 +19,13 @@ public class Resume : BusinessEntity
     [MaxLength(100)]
     public string? ResumeTemplate { get; set; }
 
-    [MaxLength(450)]
-    public string UserId { get; set; } = string.Empty;
+    public int? TemplateId { get; set; }
+
+    public Template? Template { get; set; }
+
+    public int UserId { get; set; }
+
+    public User? User { get; set; }
 
     public PersonalInformation? PersonalInformation { get; set; }
 

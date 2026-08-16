@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Shouldly;
 using ResumeEnhancer.ResumeModule.DM.Entities;
-using ResumeEnhancer.ResumeModule.DM.Enums;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.ResumeModule.DomainModel;
 
@@ -37,11 +36,11 @@ public sealed class ResumeDomainModelTests
     {
         var setup = new ResumeSectionSetup
         {
-            SectionType = ResumeSectionType.Education
+            Id = 1
         };
 
         setup.IsVisible.ShouldBeTrue();
-        ((int)setup.SectionType).ShouldBe(1);
+        setup.Id.ShouldBe(1);
     }
 
     [Fact]
@@ -50,7 +49,7 @@ public sealed class ResumeDomainModelTests
         var resume = new Resume
         {
             Title = new string('T', 201),
-            UserId = "user"
+            UserId = 1
         };
         var validationResults = new List<ValidationResult>();
 

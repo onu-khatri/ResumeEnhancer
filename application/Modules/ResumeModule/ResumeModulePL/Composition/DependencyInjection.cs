@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.TryAddEnumerable(
             ServiceDescriptor.Scoped<IAppDbContextSeeder, ResumeModuleSeeder>());
         services.TryAddScoped<IResumeRepository, ResumeRepository>();
+        services.TryAddScoped<IResumeSetupDataRepository, ResumeSetupDataRepository>();
 
         return services;
     }

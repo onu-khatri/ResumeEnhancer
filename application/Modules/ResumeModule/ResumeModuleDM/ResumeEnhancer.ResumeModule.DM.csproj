@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
+    <ProjectReference Include="..\..\ProfilingModule\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />
+    <ProjectReference Include="..\..\TemplateModule\TemplateModuleDM\ResumeEnhancer.TemplateModule.DM.csproj" />
   </ItemGroup>
 
 </Project>

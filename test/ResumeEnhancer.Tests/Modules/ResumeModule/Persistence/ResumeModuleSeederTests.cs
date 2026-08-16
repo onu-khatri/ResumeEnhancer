@@ -18,8 +18,7 @@ public sealed class ResumeModuleSeederTests
         seeds.Length.ShouldBe(Enum.GetValues<ResumeSectionType>().Length);
         seeds.Select(seed => seed.Code).Distinct(StringComparer.Ordinal).Count().ShouldBe(seeds.Length);
         seeds.Select(seed => seed.Guid).Distinct().Count().ShouldBe(seeds.Length);
-        seeds.Select(seed => seed.DisplayOrder).Distinct().Count().ShouldBe(seeds.Length);
-        seeds.Select(seed => seed.SectionType).Distinct().Count().ShouldBe(seeds.Length);
+        seeds.Select(seed => seed.Order).Distinct().Count().ShouldBe(seeds.Length);
         seeds.All(seed => seed.IsVisible).ShouldBeTrue();
         seeds.All(seed => !seed.ObsoleteFlag).ShouldBeTrue();
     }
@@ -34,7 +33,7 @@ public sealed class ResumeModuleSeederTests
         await seeder.SeedAsync(scope.DbContext, cancellationToken);
 
         var sections = await scope.DbContext.Set<ResumeSectionSetup>()
-            .OrderBy(section => section.DisplayOrder)
+            .OrderBy(section => section.Order)
             .ToArrayAsync(cancellationToken);
         sections.Length.ShouldBe(Enum.GetValues<ResumeSectionType>().Length);
         sections.First().Code.ShouldBe(nameof(ResumeSectionType.Education));
@@ -49,14 +48,13 @@ public sealed class ResumeModuleSeederTests
         using var scope = new SqliteAppDbContextScope();
         var cancellationToken = TestContext.Current.CancellationToken;
         var educationSeed = ResumeSectionSetupSeedData.Create()
-            .Single(seed => seed.SectionType == ResumeSectionType.Education);
+            .Single(seed => seed.Code == nameof(ResumeSectionType.Education));
         scope.DbContext.Add(new ResumeSectionSetup
         {
             Code = "Old Education",
             Description = "Old Description",
             Guid = educationSeed.Guid,
-            SectionType = ResumeSectionType.Skills,
-            DisplayOrder = 99,
+            Order = 99,
             IsVisible = false,
             App_UpdateUserId = SeedingUser.UserId
         });
@@ -70,8 +68,7 @@ public sealed class ResumeModuleSeederTests
             .SingleAsync(section => section.Guid == educationSeed.Guid, cancellationToken);
         education.Code.ShouldBe(nameof(ResumeSectionType.Education));
         education.Description.ShouldBe("Education");
-        education.SectionType.ShouldBe(ResumeSectionType.Education);
-        education.DisplayOrder.ShouldBe(1);
+        education.Order.ShouldBe(1);
         education.IsVisible.ShouldBeTrue();
         education.App_UpdateUserId.ShouldBe(SeedingUser.UserId);
     }

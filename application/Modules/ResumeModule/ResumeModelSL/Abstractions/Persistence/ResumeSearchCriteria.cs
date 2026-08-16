@@ -4,11 +4,13 @@ public sealed class ResumeSearchCriteria
 {
     public IReadOnlyList<int>? Ids { get; set; }
 
-    public string? UserId { get; set; }
+    public int? UserId { get; set; }
 
     public string? SearchText { get; set; }
 
     public string? ResumeTemplate { get; set; }
+
+    public int? TemplateId { get; set; }
 
     public bool? HasPhoto { get; set; }
 

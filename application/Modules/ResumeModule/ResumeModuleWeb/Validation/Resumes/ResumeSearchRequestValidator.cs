@@ -12,13 +12,18 @@ public sealed class ResumeSearchRequestValidator : AbstractValidator<ResumeSearc
             .WithMessage("Ids cannot contain zero or negative ids.");
 
         RuleFor(request => request.UserId)
-            .MaximumLength(450);
+            .GreaterThan(0)
+            .When(request => request.UserId.HasValue);
 
         RuleFor(request => request.SearchText)
             .MaximumLength(200);
 
         RuleFor(request => request.ResumeTemplate)
             .MaximumLength(100);
+
+        RuleFor(request => request.TemplateId)
+            .GreaterThan(0)
+            .When(request => request.TemplateId.HasValue);
 
         RuleFor(request => request.CreatedToUtc)
             .GreaterThanOrEqualTo(request => request.CreatedFromUtc)

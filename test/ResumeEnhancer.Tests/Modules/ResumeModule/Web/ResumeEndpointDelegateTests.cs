@@ -93,7 +93,7 @@ public sealed class ResumeEndpointDelegateTests
                 Id = 7,
                 Title = "Updated"
             }));
-        var httpContext = HttpContextWithHeaders(auditUserId: "9", userId: " owner ");
+        var httpContext = HttpContextWithHeaders(auditUserId: "9", userId: "7");
 
         var result = await InvokeCommandAsync(
             "UpdateResumeAsync",
@@ -108,7 +108,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("title").GetString().ShouldBe("Updated");
         await mediator.Received(1).Send(
-            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsUpdateCommand(command, 7, 9, "owner")),
+            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsUpdateCommand(command, 7, 9, 7)),
             cancellationToken);
     }
 
@@ -137,7 +137,7 @@ public sealed class ResumeEndpointDelegateTests
         mediator.Send(Arg.Any<ICommand<ResumeDeleteResponse>>(), cancellationToken)
             .Returns(new ValueTask<ResumeDeleteResponse>(
                 new ResumeDeleteResponse([5], [5], [], [])));
-        var httpContext = HttpContextWithHeaders(auditUserId: "11", userId: "owner");
+        var httpContext = HttpContextWithHeaders(auditUserId: "11", userId: "7");
 
         var result = await InvokeCommandAsync(
             "DeleteResumeAsync",
@@ -150,7 +150,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("deletedCount").GetInt32().ShouldBe(1);
         await mediator.Received(1).Send(
-            Arg.Is<ICommand<ResumeDeleteResponse>>(command => IsDeleteCommand(command, 5, 11, "owner")),
+            Arg.Is<ICommand<ResumeDeleteResponse>>(command => IsDeleteCommand(command, 5, 11, 7)),
             cancellationToken);
     }
 
@@ -180,7 +180,7 @@ public sealed class ResumeEndpointDelegateTests
         mediator.Send(Arg.Any<ICommand<ResumeDeleteResponse>>(), cancellationToken)
             .Returns(new ValueTask<ResumeDeleteResponse>(
                 new ResumeDeleteResponse([1, 2], [1], [2], [])));
-        var httpContext = HttpContextWithHeaders(auditUserId: "13", userId: "owner");
+        var httpContext = HttpContextWithHeaders(auditUserId: "13", userId: "7");
 
         var result = await InvokeCommandAsync(
             "DeleteResumesAsync",
@@ -195,7 +195,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.ReadJson().GetProperty("hasFailures").GetBoolean().ShouldBeTrue();
         await mediator.Received(1).Send(
             Arg.Is<ICommand<ResumeDeleteResponse>>(command =>
-                IsDeleteResumesCommand(command, new[] { 1, 2 }, 13, "owner")),
+                IsDeleteResumesCommand(command, new[] { 1, 2 }, 13, 7)),
             cancellationToken);
     }
 
@@ -229,7 +229,7 @@ public sealed class ResumeEndpointDelegateTests
                 Id = 3,
                 Title = "Found"
             }));
-        var httpContext = HttpContextWithHeaders(userId: " owner ");
+        var httpContext = HttpContextWithHeaders(userId: "7");
 
         var result = await InvokeQueryAsync(
             "GetResumeAsync",
@@ -242,7 +242,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("title").GetString().ShouldBe("Found");
         await mediator.Received(1).Send(
-            Arg.Is<IQuery<ResumeDetailResponse?>>(query => IsGetResumeQuery(query, 3, "owner")),
+            Arg.Is<IQuery<ResumeDetailResponse?>>(query => IsGetResumeQuery(query, 3, 7)),
             cancellationToken);
     }
 
@@ -292,7 +292,7 @@ public sealed class ResumeEndpointDelegateTests
 
         var result = await InvokeQueryAsync(
             "SearchResumesAsync",
-            new ResumeSearchRequest { UserId = " user " },
+            new ResumeSearchRequest { UserId = 7 },
             new InlineValidator<ResumeSearchRequest>(),
             mediator,
             cancellationToken);
@@ -301,7 +301,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("items")[0].GetProperty("id").GetInt32().ShouldBe(1);
         await mediator.Received(1).Send(
-            Arg.Is<IQuery<ResumeSearchResponse>>(query => IsSearchResumesQuery(query, " user ")),
+            Arg.Is<IQuery<ResumeSearchResponse>>(query => IsSearchResumesQuery(query, 7)),
             cancellationToken);
     }
 
@@ -312,7 +312,7 @@ public sealed class ResumeEndpointDelegateTests
         var mediator = Substitute.For<IMediator>();
         mediator.Send(Arg.Any<IQuery<bool>>(), cancellationToken)
             .Returns(new ValueTask<bool>(true));
-        var httpContext = HttpContextWithHeaders(userId: " owner ");
+        var httpContext = HttpContextWithHeaders(userId: "7");
 
         var result = await InvokeQueryAsync(
             "ResumeExistsAsync",
@@ -325,7 +325,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetBoolean().ShouldBeTrue();
         await mediator.Received(1).Send(
-            Arg.Is<IQuery<bool>>(query => IsResumeExistsQuery(query, 4, "owner")),
+            Arg.Is<IQuery<bool>>(query => IsResumeExistsQuery(query, 4, 7)),
             cancellationToken);
     }
 
@@ -373,7 +373,7 @@ public sealed class ResumeEndpointDelegateTests
         ICommand<ResumeDetailResponse>? command,
         int resumeId,
         int auditUserId,
-        string userId) =>
+        int userId) =>
         command is UpdateResumeCommand updateCommand
         && updateCommand.ResumeId == resumeId
         && updateCommand.AuditUserId == auditUserId
@@ -383,7 +383,7 @@ public sealed class ResumeEndpointDelegateTests
         ICommand<ResumeDeleteResponse>? command,
         int resumeId,
         int auditUserId,
-        string userId) =>
+        int userId) =>
         command is DeleteResumeCommand deleteCommand
         && deleteCommand.ResumeId == resumeId
         && deleteCommand.AuditUserId == auditUserId
@@ -393,7 +393,7 @@ public sealed class ResumeEndpointDelegateTests
         ICommand<ResumeDeleteResponse>? command,
         int[] resumeIds,
         int auditUserId,
-        string userId) =>
+        int userId) =>
         command is DeleteResumesCommand deleteCommand
         && deleteCommand.ResumeIds.SequenceEqual(resumeIds)
         && deleteCommand.AuditUserId == auditUserId
@@ -402,21 +402,21 @@ public sealed class ResumeEndpointDelegateTests
     private static bool IsGetResumeQuery(
         IQuery<ResumeDetailResponse?>? query,
         int resumeId,
-        string userId) =>
+        int userId) =>
         query is GetResumeQuery getQuery
         && getQuery.ResumeId == resumeId
         && getQuery.UserId == userId;
 
     private static bool IsSearchResumesQuery(
         IQuery<ResumeSearchResponse>? query,
-        string userId) =>
+        int userId) =>
         query is SearchResumesQuery searchQuery
         && searchQuery.Request.UserId == userId;
 
     private static bool IsResumeExistsQuery(
         IQuery<bool>? query,
         int resumeId,
-        string userId) =>
+        int userId) =>
         query is ResumeExistsQuery existsQuery
         && existsQuery.ResumeId == resumeId
         && existsQuery.UserId == userId;

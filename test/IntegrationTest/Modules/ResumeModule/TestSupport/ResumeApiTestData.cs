@@ -7,12 +7,12 @@ namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
 internal static class ResumeApiTestData
 {
-    public const string OwnerUserId = "integration-owner";
-    public const string OtherUserId = "integration-other";
-    public const string IntruderUserId = "integration-intruder";
+    public const int OwnerUserId = 1001;
+    public const int OtherUserId = 1002;
+    public const int IntruderUserId = 1003;
 
     public static CreateResumeRequest CreateResumeRequest(
-        string userId = OwnerUserId,
+        int userId = OwnerUserId,
         bool includeFullGraph = true,
         int seed = 100)
     {
@@ -23,7 +23,7 @@ internal static class ResumeApiTestData
             Summary = $" {faker.Lorem.Sentence()} ",
             Photo = includeFullGraph ? $" https://example.com/photos/{seed}.png " : null,
             ResumeTemplate = " Modern ",
-            UserId = $" {userId} ",
+            UserId = userId,
             PersonalInformation = includeFullGraph ? PersonalInformationRequest(seed) : null,
             Education = includeFullGraph ? [EducationRequest(seed)] : [],
             Certifications = includeFullGraph ? [CertificationRequest(seed)] : [],
@@ -70,7 +70,7 @@ internal static class ResumeApiTestData
         };
 
     public static ResumeSearchRequest SearchRequest(
-        string userId = OwnerUserId,
+        int userId = OwnerUserId,
         string? searchText = null,
         string? template = null,
         bool? hasPhoto = null) =>
@@ -87,7 +87,7 @@ internal static class ResumeApiTestData
         };
 
     public static Resume ResumeGraph(
-        string userId = OwnerUserId,
+        int userId = OwnerUserId,
         string title = "Integration API Resume",
         string? template = "Modern",
         string? photo = "https://example.com/photo.png",
@@ -106,7 +106,7 @@ internal static class ResumeApiTestData
         resume.PersonalInformation = new PersonalInformation
         {
             Resume = resume,
-            Email = $"{userId}@example.com",
+            Email = $"user-{userId}@example.com",
             PhoneNumber = "5550001111",
             Address = new Address
             {

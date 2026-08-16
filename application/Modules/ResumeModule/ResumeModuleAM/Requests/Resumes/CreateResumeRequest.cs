@@ -17,9 +17,10 @@ public sealed class CreateResumeRequest
     [MaxLength(100)]
     public string? ResumeTemplate { get; set; }
 
+    public int? TemplateId { get; set; }
+
     [Required]
-    [MaxLength(450)]
-    public string UserId { get; set; } = string.Empty;
+    public int UserId { get; set; }
 
     public PersonalInformationRequest? PersonalInformation { get; set; }
 

@@ -4,7 +4,7 @@ public static class SetupperAccessExtensions
 {
     public static async Task<TestAuthenticatedAccess> SetupAccessAsync(
         this ISetupper setupper,
-        string userId,
+        int userId,
         int auditUserId = 101,
         int accessProfileId = 501,
         params string[] privileges)
@@ -14,7 +14,7 @@ public static class SetupperAccessExtensions
         var user = new TestAuthenticatedEntity
         {
             Id = auditUserId,
-            ExternalUserId = userId
+            ExternalUserId = userId.ToString()
         };
         var accessProfile = new TestAuthenticatedEntity
         {
@@ -24,6 +24,6 @@ public static class SetupperAccessExtensions
 
         await setupper.SetAuthenticatedUserDataAsync(user, accessProfile);
 
-        return new TestAuthenticatedAccess(userId, auditUserId, accessProfileId, privileges);
+        return new TestAuthenticatedAccess(userId.ToString(), auditUserId, accessProfileId, privileges);
     }
 }

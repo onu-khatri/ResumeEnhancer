@@ -12,7 +12,7 @@ public interface IResumeRepository
 
     Task<Resume?> GetAsync(
         int resumeId,
-        string? userId = null,
+        int? userId = null,
         bool track = false,
         CancellationToken cancellationToken = default);
 
@@ -29,12 +29,12 @@ public interface IResumeRepository
     Task<ResumeDeleteResult> DeleteAsync(
         IReadOnlyList<int> resumeIds,
         int? auditUserId,
-        string? userId = null,
+        int? userId = null,
         CancellationToken cancellationToken = default);
 
     Task<bool> ExistsAsync(
         int resumeId,
-        string? userId = null,
+        int? userId = null,
         CancellationToken cancellationToken = default);
 }
 

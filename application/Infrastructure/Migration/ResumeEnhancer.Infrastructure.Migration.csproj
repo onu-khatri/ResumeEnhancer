@@ -18,7 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\Modules\BillingModule\BillingModulePL\ResumeEnhancer.BillingModule.PL.csproj" />
+    <ProjectReference Include="..\..\Modules\ProfilingModule\ProfilingModulePL\ResumeEnhancer.ProfilingModule.PL.csproj" />
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
+    <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModulePL\ResumeEnhancer.TemplateModule.PL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
