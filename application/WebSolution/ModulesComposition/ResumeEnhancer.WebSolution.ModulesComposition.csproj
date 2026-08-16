@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModulePL\ResumeEnhancer.TemplateModule.PL.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModuleWeb\ResumeEnhancer.TemplateModule.Web.csproj" />
+    <ProjectReference Include="..\MediatorComposition\ResumeEnhancer.WebSolution.MediatorComposition.csproj" />
   </ItemGroup>
 
 </Project>

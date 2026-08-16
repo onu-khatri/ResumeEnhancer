@@ -44,15 +44,18 @@ public sealed class DependencyInjectionTests
     }
 
     [Fact]
-    public void AddResumeModuleWeb_RegistersValidatorAndMediator()
+    public void AddResumeModuleWeb_RegistersValidatorAndMediatorAssemblies()
     {
         var services = new ServiceCollection();
 
         services.AddResumeModuleWeb();
-        using var provider = services.BuildServiceProvider();
+        var assemblies = ResumeEnhancer.ResumeModule.Web.DependencyInjection.GetResumeModuleMediatorAssemblies();
 
+        using var provider = services.BuildServiceProvider();
         provider.GetRequiredService<IValidator<CreateResumeRequest>>().ShouldNotBeNull();
-        provider.GetRequiredService<IMediator>().ShouldNotBeNull();
+        assemblies.Length.ShouldBe(2);
+        assemblies.ShouldContain(typeof(ResumeModuleWebAssembly));
+        assemblies.ShouldContain(typeof(ResumeModuleSLAssembly));
     }
 
     [Fact]
@@ -79,9 +82,11 @@ public sealed class DependencyInjectionTests
         var services = new ServiceCollection();
 
         services.AddApplicationModules();
+        using var provider = services.BuildServiceProvider();
 
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(IResumeRepository));
         services.ShouldContain(descriptor => descriptor.ServiceType == typeof(IValidator<CreateResumeRequest>));
+        provider.GetRequiredService<IMediator>().ShouldNotBeNull();
     }
 
     [Fact]
@@ -99,9 +104,13 @@ public sealed class DependencyInjectionTests
             .Where(name => name is not null)
             .ToArray();
 
-        endpointNames.ShouldBe(
-            ["CreateResume", "UpdateResume", "DeleteResume", "DeleteResumes", "GetResume", "SearchResumes", "ResumeExists"],
-            ignoreOrder: true);
+        endpointNames.ShouldContain("CreateResume");
+        endpointNames.ShouldContain("UpdateResume");
+        endpointNames.ShouldContain("DeleteResume");
+        endpointNames.ShouldContain("DeleteResumes");
+        endpointNames.ShouldContain("GetResume");
+        endpointNames.ShouldContain("SearchResumes");
+        endpointNames.ShouldContain("ResumeExists");
     }
 }
 

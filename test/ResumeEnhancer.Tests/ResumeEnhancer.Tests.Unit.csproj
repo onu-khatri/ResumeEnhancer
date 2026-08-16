@@ -10,16 +10,31 @@
 
   <ItemGroup>
     <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModuleAM\ResumeEnhancer.BillingModule.AM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModuleDM\ResumeEnhancer.BillingModule.DM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModulePL\ResumeEnhancer.BillingModule.PL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModelSL\ResumeEnhancer.BillingModule.SL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModuleWeb\ResumeEnhancer.BillingModule.Web.csproj" />
     <ProjectReference Include="..\..\application\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
     <ProjectReference Include="..\..\application\Core\WebLibrary\ResumeEnhancer.Core.WebLibrary.csproj" />
     <ProjectReference Include="..\..\application\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
     <ProjectReference Include="..\..\application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj" />
     <ProjectReference Include="..\..\application\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModuleAM\ResumeEnhancer.ProfilingModule.AM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModulePL\ResumeEnhancer.ProfilingModule.PL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModelSL\ResumeEnhancer.ProfilingModule.SL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModuleWeb\ResumeEnhancer.ProfilingModule.Web.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleAM\ResumeEnhancer.ResumeModule.AM.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleDM\ResumeEnhancer.ResumeModule.DM.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
+    <ProjectReference Include="..\..\application\Modules\TemplateModule\TemplateModuleAM\ResumeEnhancer.TemplateModule.AM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\TemplateModule\TemplateModuleDM\ResumeEnhancer.TemplateModule.DM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\TemplateModule\TemplateModulePL\ResumeEnhancer.TemplateModule.PL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\TemplateModule\TemplateModelSL\ResumeEnhancer.TemplateModule.SL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\TemplateModule\TemplateModuleWeb\ResumeEnhancer.TemplateModule.Web.csproj" />
     <ProjectReference Include="..\..\application\WebSolution\ModulesComposition\ResumeEnhancer.WebSolution.ModulesComposition.csproj" />
   </ItemGroup>
 </Project>

@@ -51,6 +51,7 @@
     <Project Path="Modules/TemplateModule/TemplateModuleWeb/ResumeEnhancer.TemplateModule.Web.csproj" />
   </Folder>
   <Folder Name="/Solutions/">
+    <Project Path="WebSolution/MediatorComposition/ResumeEnhancer.WebSolution.MediatorComposition.csproj" Id="c7b1518b-cd76-4c51-b42e-a9974f483078" />
     <Project Path="WebSolution/ModulesComposition/ResumeEnhancer.WebSolution.ModulesComposition.csproj" Id="4b9de104-b791-4e50-b920-a0076d47fa60" />
     <Project Path="WebSolution/websolution.client/ResumeEnhancer.WebSolution.Client.esproj">
       <Build />

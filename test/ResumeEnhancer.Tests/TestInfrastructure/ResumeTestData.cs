@@ -1,5 +1,10 @@
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.BillingModule.DM.Entities;
+using ResumeEnhancer.ProfilingModule.DM.Entities;
+using ResumeEnhancer.ProfilingModule.DM.Enums;
+using ResumeEnhancer.TemplateModule.DM.Entities;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
 namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
@@ -7,6 +12,14 @@ internal static class ResumeTestData
 {
     public const int UserId = 1;
     public const int OtherUserId = 2;
+    public const int BillingPlanId = 1;
+    public const int TemplateId = 1;
+    public const int TemplateCategoryId = 1;
+    public const int TemplateRenderTypeId = 1;
+    public const int BillingAddressTypeId = 1;
+    public const int CommunicationAddressTypeId = 2;
+    public const int RoleId = 1;
+    public const int AccessProfileId = 1;
 
     public static CreateResumeRequest CreateResumeRequest() =>
         new()
@@ -121,6 +134,7 @@ internal static class ResumeTestData
             Id = id,
             Title = title,
             UserId = userId,
+            TemplateId = template is null ? null : TemplateId,
             Summary = "Summary",
             ResumeTemplate = template,
             Photo = photo,
@@ -187,6 +201,122 @@ internal static class ResumeTestData
         });
 
         return resume;
+    }
+
+    public static User User(
+        int id = UserId,
+        string email = "user@example.com") =>
+        new()
+        {
+            Id = id,
+            FirstName = "Test",
+            LastName = "User",
+            Email = email
+        };
+
+    public static UserAddressTypeSetup UserAddressType(
+        int id,
+        string code,
+        int order) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} address",
+            DisplayName = code,
+            Guid = DeterministicGuid($"user-address-type-{id}"),
+            Order = order
+        };
+
+    public static Role Role(
+        int id = RoleId,
+        string code = "ADMIN",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} role",
+            DisplayName = code,
+            Guid = DeterministicGuid($"role-{id}"),
+            Order = order
+        };
+
+    public static AccessProfile AccessProfile(
+        int id = AccessProfileId,
+        string code = "DEFAULT",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} access profile",
+            DisplayName = code,
+            Guid = DeterministicGuid($"access-profile-{id}"),
+            Order = order
+        };
+
+    public static BillingPlan BillingPlan(
+        int id = BillingPlanId,
+        string code = "FREE",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} billing plan",
+            DisplayName = code,
+            Guid = DeterministicGuid($"billing-plan-{id}"),
+            Order = order,
+            Price = 0,
+            Currency = "USD",
+            BillingInterval = "Monthly"
+        };
+
+    public static TemplateCategory TemplateCategory(
+        int id = TemplateCategoryId) =>
+        new()
+        {
+            Id = id,
+            Code = $"category-{id}",
+            Description = $"Template category {id}",
+            DisplayName = $"Category {id}",
+            Guid = DeterministicGuid($"template-category-{id}"),
+            Order = id
+        };
+
+    public static TemplateRenderTypeSetup TemplateRenderType(
+        int id = TemplateRenderTypeId) =>
+        new()
+        {
+            Id = id,
+            Code = $"render-type-{id}",
+            Description = $"Render type {id}",
+            DisplayName = $"Render type {id}",
+            Guid = DeterministicGuid($"template-render-type-{id}"),
+            Order = id
+        };
+
+    public static Template Template(
+        int id = TemplateId,
+        int categoryId = TemplateCategoryId,
+        int renderTypeId = TemplateRenderTypeId) =>
+        new()
+        {
+            Id = id,
+            Code = $"template-{id}",
+            Description = $"Template {id}",
+            DisplayName = $"Template {id}",
+            Guid = DeterministicGuid($"template-{id}"),
+            TemplateCategoryId = categoryId,
+            RenderTypeId = renderTypeId,
+            Body = "<html></html>"
+        };
+
+    private static Guid DeterministicGuid(string value)
+    {
+        var bytes = System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(value));
+        return new Guid(bytes);
     }
 }
 

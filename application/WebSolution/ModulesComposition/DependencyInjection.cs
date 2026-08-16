@@ -12,6 +12,7 @@ using ResumeEnhancer.ResumeModule.Web.MiniApis;
 using ResumeEnhancer.TemplateModule.PL;
 using ResumeEnhancer.TemplateModule.Web;
 using ResumeEnhancer.TemplateModule.Web.MiniApis;
+using ResumeEnhancer.WebSolution.MediatorComposition;
 
 namespace ResumeEnhancer.WebSolution.ModulesComposition;
 
@@ -19,6 +20,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationModules(this IServiceCollection services)
     {
+        services.AddApplicationMediator();
+
         services.AddProfilingModulePersistence();
         services.AddProfilingModuleWeb();
         services.AddBillingModulePersistence();

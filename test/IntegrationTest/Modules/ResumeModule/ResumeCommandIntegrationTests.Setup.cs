@@ -21,6 +21,7 @@ public sealed partial class ResumeCommandIntegrationTests
                 fullGraphRequest,
                 async (setupper, _, _) =>
                 {
+                    await setupper.EnsureResumeReferenceDataAsync();
                     await setupper.SetupAccessAsync(
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 41,
@@ -72,6 +73,7 @@ public sealed partial class ResumeCommandIntegrationTests
                 minimalRequest,
                 async (setupper, _, _) =>
                 {
+                    await setupper.EnsureResumeReferenceDataAsync();
                     await setupper.SetupAccessAsync(
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 42,
@@ -114,6 +116,7 @@ public sealed partial class ResumeCommandIntegrationTests
                 invalidRequest,
                 async (setupper, _, _) =>
                 {
+                    await setupper.EnsureResumeReferenceDataAsync();
                     await setupper.SetupAccessAsync(
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 43,

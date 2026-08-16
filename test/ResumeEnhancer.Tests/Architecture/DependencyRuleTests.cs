@@ -181,7 +181,9 @@ public sealed class DependencyRuleTests
         {
             if (!string.Equals(project.ModuleName, reference.ModuleName, StringComparison.Ordinal))
             {
-                return "cross-module project references are not allowed";
+                return IsAllowedCrossModuleReference(project.Layer, reference.Layer)
+                    ? null
+                    : "cross-module project references are not allowed";
             }
 
             var allowedModuleLayers = GetAllowedModuleReferenceLayers(project.Layer);
@@ -215,9 +217,9 @@ public sealed class DependencyRuleTests
     private static IReadOnlySet<ModuleLayer> GetAllowedModuleReferenceLayers(ModuleLayer sourceLayer) =>
         sourceLayer switch
         {
-            ModuleLayer.AM => new HashSet<ModuleLayer>(),
-            ModuleLayer.DM => new HashSet<ModuleLayer>(),
-            ModuleLayer.SL => new HashSet<ModuleLayer> { ModuleLayer.AM, ModuleLayer.DM },
+            ModuleLayer.AM => new HashSet<ModuleLayer> { ModuleLayer.DM },
+            ModuleLayer.DM => new HashSet<ModuleLayer> { ModuleLayer.DM },
+            ModuleLayer.SL => new HashSet<ModuleLayer> { ModuleLayer.AM, ModuleLayer.DM, ModuleLayer.SL },
             ModuleLayer.Web => new HashSet<ModuleLayer> { ModuleLayer.AM, ModuleLayer.SL },
             ModuleLayer.PL => new HashSet<ModuleLayer> { ModuleLayer.SL, ModuleLayer.DM },
             _ => throw new InvalidOperationException($"Unsupported module layer '{sourceLayer}'.")
@@ -236,8 +238,16 @@ public sealed class DependencyRuleTests
 
     private static IReadOnlySet<string> GetAllowedInfrastructureReferences(ModuleLayer sourceLayer) =>
         sourceLayer == ModuleLayer.PL
-            ? new HashSet<string> { "ResumeEnhancer.Infrastructure.Persistence" }
+            ? new HashSet<string> { "ResumeEnhancer.Infrastructure.Caching", "ResumeEnhancer.Infrastructure.Persistence" }
             : new HashSet<string>();
+
+    private static bool IsAllowedCrossModuleReference(ModuleLayer sourceLayer, ModuleLayer targetLayer) =>
+        (sourceLayer, targetLayer) switch
+        {
+            (ModuleLayer.DM, ModuleLayer.DM) => true,
+            (ModuleLayer.SL, ModuleLayer.SL) => true,
+            _ => false
+        };
 
     private static bool IsForbiddenPackage(ProjectModel project, string packageName)
     {

@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Moq;
 using ResumeEnhancer.Infrastructure.Persistence;
+using System.Collections.Concurrent;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -99,9 +99,8 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
     {
         return WithConfigureServices(services =>
         {
-            var cacheProvider = new Mock<ICacheProvider>(MockBehavior.Strict);
-
-            services.Replace(ServiceDescriptor.Singleton(cacheProvider.Object));
+            services.Replace(ServiceDescriptor.Singleton<ICacheProvider>(
+                new InMemoryIntegrationTestCacheProvider()));
         });
     }
 
@@ -129,6 +128,64 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
                     configureService(services);
                 }
             });
+        }
+    }
+
+    private sealed class InMemoryIntegrationTestCacheProvider : ICacheProvider
+    {
+        private readonly ConcurrentDictionary<string, object?> _cache = new();
+
+        public Task<CacheResult<T>> GetAsync<T>(
+            string key,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.FromResult(
+                _cache.TryGetValue(key, out var value)
+                    ? CacheResult<T>.Hit((T?)value)
+                    : CacheResult<T>.Miss);
+        }
+
+        public async Task<T> GetOrSetAsync<T>(
+            string key,
+            Func<CancellationToken, Task<T>> factory,
+            CacheEntryOptions? options = null,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_cache.TryGetValue(key, out var cachedValue))
+            {
+                return (T)cachedValue!;
+            }
+
+            var value = await factory(cancellationToken);
+            _cache[key] = value;
+
+            return value;
+        }
+
+        public Task SetAsync<T>(
+            string key,
+            T value,
+            CacheEntryOptions? options = null,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            _cache[key] = value;
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAsync(
+            string key,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            _cache.TryRemove(key, out _);
+
+            return Task.CompletedTask;
         }
     }
 }

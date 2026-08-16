@@ -1,75 +1,90 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans:
-    'Aptos', 'Segoe UI Variable', 'Segoe UI', 'Helvetica Neue', ui-sans-serif,
-    system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif:
-    'Iowan Old Style', 'Baskerville Old Face', 'Palatino Linotype',
-    'Book Antiqua', Georgia, serif;
+    --font-sans:
+        'Aptos', 'Segoe UI Variable', 'Segoe UI', 'Helvetica Neue',
+        ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-serif:
+        'Iowan Old Style', 'Baskerville Old Face', 'Palatino Linotype',
+        'Book Antiqua', Georgia, serif;
 }
 
 :root {
-  color-scheme: light;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  --surface-canvas:
-    radial-gradient(circle at top left, rgba(12, 74, 110, 0.1), transparent 28%),
-    radial-gradient(circle at top right, rgba(180, 83, 9, 0.08), transparent 24%),
-    linear-gradient(180deg, #fcfcfa 0%, #f5f1ea 52%, #ece7df 100%);
-  --surface-canvas-dark:
-    radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 26%),
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.1), transparent 20%),
-    linear-gradient(180deg, #0f172a 0%, #111827 48%, #0b1120 100%);
-  --color-text: #142132;
-  --color-text-muted: #435266;
-  --color-heading: #0f172a;
-  --color-border: rgba(148, 163, 184, 0.3);
-  --color-accent: #0f766e;
-  --color-accent-strong: #115e59;
-  --color-accent-soft: #ccfbf1;
-  background:
-    var(--surface-canvas);
+    color-scheme: light;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    --surface-canvas:
+        radial-gradient(
+            circle at top left,
+            rgba(12, 74, 110, 0.1),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at top right,
+            rgba(180, 83, 9, 0.08),
+            transparent 24%
+        ),
+        linear-gradient(180deg, #fcfcfa 0%, #f5f1ea 52%, #ece7df 100%);
+    --surface-canvas-dark:
+        radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.12),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at top right,
+            rgba(245, 158, 11, 0.1),
+            transparent 20%
+        ),
+        linear-gradient(180deg, #0f172a 0%, #111827 48%, #0b1120 100%);
+    --color-text: #142132;
+    --color-text-muted: #435266;
+    --color-heading: #0f172a;
+    --color-border: rgba(148, 163, 184, 0.3);
+    --color-accent: #0f766e;
+    --color-accent-strong: #115e59;
+    --color-accent-soft: #ccfbf1;
+    background: var(--surface-canvas);
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  font-family: var(--font-sans);
-  color: var(--color-text);
-  background: transparent;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background: transparent;
 }
 
 body.dark {
-  color-scheme: dark;
-  background: var(--surface-canvas-dark);
-  color: #e5eef7;
+    color-scheme: dark;
+    background: var(--surface-canvas-dark);
+    color: #e5eef7;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 button,
 input,
 select,
 textarea {
-  font: inherit;
+    font: inherit;
 }
 
 #root {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
 ::selection {
-  background: rgba(15, 118, 110, 0.18);
-  color: #0f172a;
+    background: rgba(15, 118, 110, 0.18);
+    color: #0f172a;
 }
