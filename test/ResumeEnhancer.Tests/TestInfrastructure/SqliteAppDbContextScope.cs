@@ -7,7 +7,9 @@ using NSubstitute;
 using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
+using ResumeEnhancer.ProfilingModule.DM.Enums;
 using ResumeEnhancer.ProfilingModule.PL;
+using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.DM.Entities;
 using ResumeEnhancer.TemplateModule.PL;
@@ -79,6 +81,11 @@ internal sealed class SqliteAppDbContextScope : IDisposable
             ResumeTestData.User(
                 ResumeTestData.OtherUserId,
                 email: $"user-{ResumeTestData.OtherUserId}@example.com"),
+            ResumeTestData.UserAddressType(ResumeTestData.BillingAddressTypeId, nameof(UserAddressType.Billing), 1),
+            ResumeTestData.UserAddressType(ResumeTestData.CommunicationAddressTypeId, nameof(UserAddressType.Communication), 2),
+            ResumeTestData.Role(),
+            ResumeTestData.AccessProfile(),
+            ResumeTestData.BillingPlan(),
             ResumeTestData.TemplateCategory(),
             ResumeTestData.TemplateRenderType(),
             ResumeTestData.Template());
@@ -91,6 +98,7 @@ internal sealed class SqliteAppDbContextScope : IDisposable
         : AppDbContext(
             options,
             [
+                new BillingModuleDbContextModelConfiguration(),
                 new ProfilingModuleDbContextModelConfiguration(),
                 new ResumeModuleDbContextModelConfiguration(),
                 new TemplateModuleDbContextModelConfiguration()

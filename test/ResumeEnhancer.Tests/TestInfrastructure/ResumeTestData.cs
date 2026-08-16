@@ -1,6 +1,8 @@
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.BillingModule.DM.Entities;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
+using ResumeEnhancer.ProfilingModule.DM.Enums;
 using ResumeEnhancer.TemplateModule.DM.Entities;
 using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 
@@ -10,9 +12,14 @@ internal static class ResumeTestData
 {
     public const int UserId = 1;
     public const int OtherUserId = 2;
+    public const int BillingPlanId = 1;
     public const int TemplateId = 1;
     public const int TemplateCategoryId = 1;
     public const int TemplateRenderTypeId = 1;
+    public const int BillingAddressTypeId = 1;
+    public const int CommunicationAddressTypeId = 2;
+    public const int RoleId = 1;
+    public const int AccessProfileId = 1;
 
     public static CreateResumeRequest CreateResumeRequest() =>
         new()
@@ -207,6 +214,65 @@ internal static class ResumeTestData
             Email = email
         };
 
+    public static UserAddressTypeSetup UserAddressType(
+        int id,
+        string code,
+        int order) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} address",
+            DisplayName = code,
+            Guid = DeterministicGuid($"user-address-type-{id}"),
+            Order = order
+        };
+
+    public static Role Role(
+        int id = RoleId,
+        string code = "ADMIN",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} role",
+            DisplayName = code,
+            Guid = DeterministicGuid($"role-{id}"),
+            Order = order
+        };
+
+    public static AccessProfile AccessProfile(
+        int id = AccessProfileId,
+        string code = "DEFAULT",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} access profile",
+            DisplayName = code,
+            Guid = DeterministicGuid($"access-profile-{id}"),
+            Order = order
+        };
+
+    public static BillingPlan BillingPlan(
+        int id = BillingPlanId,
+        string code = "FREE",
+        int order = 1) =>
+        new()
+        {
+            Id = id,
+            Code = code,
+            Description = $"{code} billing plan",
+            DisplayName = code,
+            Guid = DeterministicGuid($"billing-plan-{id}"),
+            Order = order,
+            Price = 0,
+            Currency = "USD",
+            BillingInterval = "Monthly"
+        };
+
     public static TemplateCategory TemplateCategory(
         int id = TemplateCategoryId) =>
         new()
@@ -249,7 +315,7 @@ internal static class ResumeTestData
 
     private static Guid DeterministicGuid(string value)
     {
-        var bytes = System.Text.Encoding.UTF8.GetBytes(value.PadRight(16, '0')[..16]);
+        var bytes = System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(value));
         return new Guid(bytes);
     }
 }
