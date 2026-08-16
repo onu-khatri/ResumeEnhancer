@@ -1,7 +1,9 @@
 using Bogus;
+using ResumeEnhancer.ProfilingModule.DM.Entities;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.AM.Responses;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.TemplateModule.DM.Entities;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
@@ -10,6 +12,9 @@ internal static class ResumeApiTestData
     public const int OwnerUserId = 1001;
     public const int OtherUserId = 1002;
     public const int IntruderUserId = 1003;
+    public const int TemplateId = 2001;
+    public const int TemplateCategoryId = 2001;
+    public const int TemplateRenderTypeId = 2001;
 
     public static CreateResumeRequest CreateResumeRequest(
         int userId = OwnerUserId,
@@ -259,6 +264,46 @@ internal static class ResumeApiTestData
 
         return new Faker("en");
     }
+
+    public static User User(int userId) => new()
+    {
+        Id = userId,
+        FirstName = $"User{userId}",
+        LastName = "Integration",
+        Email = $"user-{userId}@example.com"
+    };
+
+    public static TemplateCategory TemplateCategory() => new()
+    {
+        Id = TemplateCategoryId,
+        Code = "integration-category",
+        Description = "Integration category",
+        DisplayName = "Integration Category",
+        Guid = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+        Order = 1
+    };
+
+    public static TemplateRenderTypeSetup TemplateRenderType() => new()
+    {
+        Id = TemplateRenderTypeId,
+        Code = "integration-render-type",
+        Description = "Integration render type",
+        DisplayName = "Integration Render Type",
+        Guid = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+        Order = 1
+    };
+
+    public static Template Template() => new()
+    {
+        Id = TemplateId,
+        Code = "integration-template",
+        Description = "Integration template",
+        DisplayName = "Integration Template",
+        Guid = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+        TemplateCategoryId = TemplateCategoryId,
+        RenderTypeId = TemplateRenderTypeId,
+        Body = "<html></html>"
+    };
 }
 
 

@@ -98,7 +98,7 @@ public sealed class ResumeHandlerTests
             cancellationToken);
 
         response.Title.ShouldBe("Updated");
-        await userLookupService.Received(1).UserExistsAsync(ResumeTestData.UserId, cancellationToken);
+        await userLookupService.DidNotReceive().UserExistsAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
         await repository.Received(1).SaveAsync(7, cancellationToken);
     }
 

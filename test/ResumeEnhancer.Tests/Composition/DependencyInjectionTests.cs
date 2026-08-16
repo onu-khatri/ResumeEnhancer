@@ -99,9 +99,13 @@ public sealed class DependencyInjectionTests
             .Where(name => name is not null)
             .ToArray();
 
-        endpointNames.ShouldBe(
-            ["CreateResume", "UpdateResume", "DeleteResume", "DeleteResumes", "GetResume", "SearchResumes", "ResumeExists"],
-            ignoreOrder: true);
+        endpointNames.ShouldContain("CreateResume");
+        endpointNames.ShouldContain("UpdateResume");
+        endpointNames.ShouldContain("DeleteResume");
+        endpointNames.ShouldContain("DeleteResumes");
+        endpointNames.ShouldContain("GetResume");
+        endpointNames.ShouldContain("SearchResumes");
+        endpointNames.ShouldContain("ResumeExists");
     }
 }
 

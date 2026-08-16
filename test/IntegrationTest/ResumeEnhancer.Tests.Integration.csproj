@@ -19,7 +19,6 @@
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModulePL\ResumeEnhancer.ResumeModule.PL.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModelSL\ResumeEnhancer.ResumeModule.SL.csproj" />
     <ProjectReference Include="..\..\application\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
-    <ProjectReference Include="..\..\application\WebSolution\ModulesComposition\ResumeEnhancer.WebSolution.ModulesComposition.csproj" />
     <ProjectReference Include="..\..\application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj" />
     <ProjectReference Include="..\TestUtilities\IntegrationSupport\ResumeEnhancer.TestUtilities.IntegrationSupport.csproj" />
   </ItemGroup>

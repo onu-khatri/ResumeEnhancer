@@ -1,0 +1,4 @@
+report/
+coverage.cobertura.xml
+coverage.opencover.xml
+*.trx
