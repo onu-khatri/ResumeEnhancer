@@ -43,6 +43,7 @@ export function CompactSection<TItem>({
                     >
                         <div className="mb-4 flex justify-end">
                             <Button
+                                aria-label={`Remove ${title} ${index + 1}`}
                                 onClick={() => array.remove(index)}
                                 size="icon"
                                 type="button"

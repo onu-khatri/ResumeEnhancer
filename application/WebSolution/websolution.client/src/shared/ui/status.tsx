@@ -20,7 +20,7 @@ export function InlineAlert({
     return (
         <div
             className={cn(
-                'rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-100',
+                'rounded-2xl border border-[var(--color-warning)] bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--color-text)]',
                 className,
             )}
         >
@@ -40,14 +40,14 @@ export function EmptyState({
     title: string;
 }) {
     return (
-        <Card className="rounded-[2rem] border-dashed border-slate-300 bg-slate-50/80 p-10 text-center dark:border-slate-700 dark:bg-slate-900/60">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-100 text-teal-800 dark:bg-teal-400/10 dark:text-teal-200">
+        <Card className="rounded-[2rem] border-dashed bg-[var(--surface-subtle)] p-10 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]">
                 <ExclamationTriangleIcon className="h-6 w-6" />
             </div>
-            <h2 className="mt-5 text-2xl font-semibold text-slate-950 dark:text-white">
+            <h2 className="mt-5 text-2xl font-semibold text-[var(--color-heading)]">
                 {title}
             </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-[var(--color-text-muted)]">
                 {description}
             </p>
             {action ? <div className="mt-6">{action}</div> : null}
@@ -63,11 +63,11 @@ export function ErrorState({
     onRetry?: () => void;
 }) {
     return (
-        <Card className="rounded-[2rem] border-rose-300 bg-rose-50/90 p-8 dark:border-rose-500/25 dark:bg-rose-500/10">
-            <p className="text-sm font-semibold text-rose-800 dark:text-rose-200">
+        <Card className="rounded-[2rem] border-[var(--color-danger)] bg-[var(--color-danger-soft)] p-8">
+            <p className="text-sm font-semibold text-[var(--color-danger)]">
                 Something went wrong
             </p>
-            <p className="mt-2 text-sm leading-6 text-rose-950 dark:text-rose-100">
+            <p className="mt-2 text-sm leading-6 text-[var(--color-text)]">
                 {description}
             </p>
             {onRetry ? (

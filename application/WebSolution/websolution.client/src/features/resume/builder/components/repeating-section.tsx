@@ -59,14 +59,17 @@ export function RepeatingSection({
                             <div className="flex gap-2">
                                 <IconButton
                                     icon={<ArrowUpIcon className="h-4 w-4" />}
+                                    label={`Move ${title} ${index + 1} up`}
                                     onClick={() => move(index, index - 1)}
                                 />
                                 <IconButton
                                     icon={<ArrowDownIcon className="h-4 w-4" />}
+                                    label={`Move ${title} ${index + 1} down`}
                                     onClick={() => move(index, index + 1)}
                                 />
                                 <IconButton
                                     icon={<TrashIcon className="h-4 w-4" />}
+                                    label={`Remove ${title} ${index + 1}`}
                                     onClick={() => remove(index)}
                                 />
                             </div>
@@ -81,13 +84,21 @@ export function RepeatingSection({
 
 function IconButton({
     icon,
+    label,
     onClick,
 }: {
     icon: ReactNode;
+    label: string;
     onClick: () => void;
 }) {
     return (
-        <Button onClick={onClick} size="icon" type="button" variant="ghost">
+        <Button
+            aria-label={label}
+            onClick={onClick}
+            size="icon"
+            type="button"
+            variant="ghost"
+        >
             {icon}
         </Button>
     );

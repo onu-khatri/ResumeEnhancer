@@ -2,6 +2,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 
 import type { ResumeDetailResponse } from '@/features/resume/model/types';
 import { formatDate } from '@/shared/lib/format';
+import { getResumeTemplate } from '@/features/resume/templates/template-registry';
 
 export function PreviewHero({
     contactDetails,
@@ -10,12 +11,13 @@ export function PreviewHero({
     contactDetails: string[];
     resume: ResumeDetailResponse;
 }) {
+    const template = getResumeTemplate(resume.resumeTemplate);
     return (
         <div className="bg-[linear-gradient(135deg,_rgba(15,118,110,0.12),_rgba(15,23,42,0.03),_rgba(180,83,9,0.06))] px-8 py-8 sm:px-10">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <p className="text-sm font-semibold tracking-[0.32em] text-teal-800 uppercase dark:text-teal-300">
-                        {resume.resumeTemplate ?? 'Executive Clean'}
+                        {template.label}
                     </p>
                     <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
                         {resume.title}

@@ -1,73 +1,29 @@
-# React + TypeScript + Vite
+# ResumeEnhancer Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The client is a React, TypeScript, Vite application organized by feature.
 
-Currently, two official plugins are available:
+## Frontend Foundation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+New work must reuse the shared frontend foundation before creating feature-local controls or styles:
 
-## React Compiler
+- Use `src/shared/ui` for token-driven, accessible presentation primitives.
+- Use `src/shared/lib` only for generic cross-feature helpers.
+- Keep module API clients, response mapping, authorization, entitlements, and workflow state inside the owning feature.
+- Use route contexts for public, authenticated, and transient task surfaces.
+- Use semantic design tokens from `src/index.css`; document exceptions before adding new shared values.
+- Add templates to the resume template registry. Renderers change presentation only and share the same resume information model.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+See `src/shared/README.md` for the dependency boundary.
 
-## Expanding the ESLint configuration
+## Quality Gates
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Run these commands from this directory:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```powershell
+npm run check
+npm run test
+npm run test:coverage
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+`test:coverage` measures executable `src` code and requires at least 92% lines, branches, functions, and statements. Generated coverage output is local-only and ignored by Git.

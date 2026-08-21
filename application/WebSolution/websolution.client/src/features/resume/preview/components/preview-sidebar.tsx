@@ -107,6 +107,7 @@ function SocialLinks({ resume }: { resume: ResumeDetailResponse }) {
         <div className="space-y-3">
             {resume.personalInformation.socialMediaLinks.map((link) => (
                 <a
+                    aria-label={`${link.platform} ${link.displayName ?? 'Open'}`}
                     key={link.id}
                     className="flex items-center justify-between rounded-2xl border border-slate-300 px-4 py-3 text-sm transition hover:border-teal-300 hover:bg-teal-50 dark:border-slate-800 dark:hover:border-teal-400/30 dark:hover:bg-teal-400/10"
                     href={link.url}

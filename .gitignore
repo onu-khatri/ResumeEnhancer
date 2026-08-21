@@ -2,3 +2,4 @@ report/
 coverage.cobertura.xml
 coverage.opencover.xml
 *.trx
+application/WebSolution/websolution.client/coverage/
