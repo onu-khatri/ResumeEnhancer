@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddApplicationCaching(builder.Configuration);
+
 builder.Services.AddAppDbContext((_, options) =>
 {
     options.UseSqlServer(GetConnectionString(builder));

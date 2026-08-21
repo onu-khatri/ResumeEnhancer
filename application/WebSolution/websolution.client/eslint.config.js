@@ -28,4 +28,21 @@ export default defineConfig([
             ],
         },
     },
+    {
+        files: ['src/shared/**/*.{ts,tsx}'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: ['@/features/*'],
+                            message:
+                                'Shared code must not depend on feature-owned APIs, state, or business rules.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
 ]);

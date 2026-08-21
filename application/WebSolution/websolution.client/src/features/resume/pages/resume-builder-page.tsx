@@ -15,6 +15,9 @@ import { SocialLinksSection } from '@/features/resume/builder/sections/social-li
 import { WorkExperienceSection } from '@/features/resume/builder/sections/work-experience-section';
 import { useResumeBuilderController } from '@/features/resume/builder/use-resume-builder-controller';
 import { useResumeProgress } from '@/features/resume/builder/use-resume-progress';
+import { useEffect } from 'react';
+import { useUnsavedWorkWarning } from '@/shared/hooks/use-unsaved-work-warning';
+import { useUnsavedWorkStore } from '@/shared/state/unsaved-work-store';
 
 export function ResumeBuilderPage() {
     const controller = useResumeBuilderController();
@@ -25,6 +28,14 @@ export function ResumeBuilderPage() {
         controller.values,
         sessionUserId,
     );
+    useUnsavedWorkWarning(controller.form.formState.isDirty);
+    const setHasUnsavedWork = useUnsavedWorkStore(
+        (state) => state.setHasUnsavedWork,
+    );
+    useEffect(() => {
+        setHasUnsavedWork(controller.form.formState.isDirty);
+        return () => setHasUnsavedWork(false);
+    }, [controller.form.formState.isDirty, setHasUnsavedWork]);
 
     if (controller.resumeQuery.isPending && !controller.canHydrate) {
         return <BuilderSkeleton />;

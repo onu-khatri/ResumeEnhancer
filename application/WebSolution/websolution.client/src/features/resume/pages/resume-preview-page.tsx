@@ -7,9 +7,9 @@ import { PreviewHero } from '@/features/resume/preview/components/preview-hero';
 import { PreviewMainColumn } from '@/features/resume/preview/components/preview-main-column';
 import { PreviewSidebar } from '@/features/resume/preview/components/preview-sidebar';
 import { PreviewSkeleton } from '@/features/resume/preview/components/preview-skeleton';
+import { ResumeTemplateRenderer } from '@/features/resume/templates/resume-template-renderer';
 import { formatDate } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { EmptyState, ErrorState, InlineAlert } from '@/shared/ui/status';
 
 export function ResumePreviewPage() {
@@ -118,16 +118,17 @@ export function ResumePreviewPage() {
                     />
                 ) : null}
 
-                <Card className="overflow-hidden rounded-[2rem] border-white/60 bg-white/90 p-0 dark:border-white/10 dark:bg-slate-950/80">
-                    <PreviewHero
-                        contactDetails={contactDetails}
-                        resume={resume}
-                    />
-                    <div className="grid gap-8 px-8 py-8 sm:px-10 lg:grid-cols-[0.8fr_1.2fr]">
-                        <PreviewSidebar resume={resume} />
-                        <PreviewMainColumn resume={resume} />
-                    </div>
-                </Card>
+                <ResumeTemplateRenderer
+                    hero={
+                        <PreviewHero
+                            contactDetails={contactDetails}
+                            resume={resume}
+                        />
+                    }
+                    main={<PreviewMainColumn resume={resume} />}
+                    sidebar={<PreviewSidebar resume={resume} />}
+                    template={resume.resumeTemplate}
+                />
             </div>
         </ResumeShell>
     );

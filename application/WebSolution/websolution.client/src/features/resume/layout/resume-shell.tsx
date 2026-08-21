@@ -14,6 +14,8 @@ import { useState, type PropsWithChildren, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/auth-context';
+import { themeOptions, useTheme } from '@/app/theme-provider';
+import { useUnsavedWorkStore } from '@/shared/state/unsaved-work-store';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/lib/cn';
@@ -34,6 +36,8 @@ export function ResumeShell({
 }: PropsWithChildren<ResumeShellProps>) {
     const navigate = useNavigate();
     const { logout, session } = useAuth();
+    const { setTheme, theme } = useTheme();
+    const hasUnsavedWork = useUnsavedWorkStore((state) => state.hasUnsavedWork);
     const [logoutOpen, setLogoutOpen] = useState(false);
 
     return (
@@ -89,12 +93,41 @@ export function ResumeShell({
                         />
                         <Button
                             className="ml-auto"
-                            onClick={() => setLogoutOpen(true)}
+                            onClick={() => {
+                                if (
+                                    !hasUnsavedWork ||
+                                    window.confirm(
+                                        'You have unsaved changes. Leave this page?',
+                                    )
+                                )
+                                    setLogoutOpen(true);
+                            }}
                             variant="ghost"
                         >
                             <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
                             Logout
                         </Button>
+                        <label className="ml-auto flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                            <span>Theme</span>
+                            <select
+                                aria-label="Color theme"
+                                className="h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm dark:border-slate-700 dark:bg-slate-950"
+                                onChange={(event) =>
+                                    setTheme(
+                                        event.target
+                                            .value as (typeof themeOptions)[number],
+                                    )
+                                }
+                                value={theme}
+                            >
+                                {themeOptions.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option[0].toUpperCase() +
+                                            option.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
                     </div>
                 </Card>
 
@@ -150,6 +183,7 @@ function WorkspaceTab({
     label: string;
     to: string;
 }) {
+    const hasUnsavedWork = useUnsavedWorkStore((state) => state.hasUnsavedWork);
     return (
         <NavLink
             className={({ isActive }) =>
@@ -160,6 +194,15 @@ function WorkspaceTab({
                         : 'border-slate-300 bg-white/85 text-slate-700 hover:border-teal-300 hover:text-slate-950 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-300',
                 )
             }
+            onClick={(event) => {
+                if (
+                    hasUnsavedWork &&
+                    !window.confirm(
+                        'You have unsaved changes. Leave this page?',
+                    )
+                )
+                    event.preventDefault();
+            }}
             to={to}
         >
             {icon}

@@ -41,7 +41,7 @@ export function SelectField({
                 <div className="relative">
                     <ListboxButton
                         className={cn(
-                            'flex h-12 w-full items-center justify-between rounded-2xl border border-slate-300 bg-white px-4 text-left text-sm text-slate-950 shadow-sm focus:border-teal-700 focus:ring-4 focus:ring-teal-700/12 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-white',
+                            'ui-control flex h-12 w-full items-center justify-between rounded-2xl border px-4 text-left text-sm shadow-sm',
                             error && 'border-rose-500 focus:ring-rose-600/12',
                         )}
                     >
@@ -50,7 +50,7 @@ export function SelectField({
                         </span>
                         <ChevronUpDownIcon className="h-5 w-5 text-slate-500" />
                     </ListboxButton>
-                    <ListboxOptions className="absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-3xl border border-slate-300 bg-white p-2 shadow-2xl outline-none dark:border-slate-700 dark:bg-slate-900">
+                    <ListboxOptions className="ui-card absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-3xl border p-2 shadow-2xl outline-none">
                         {options.map((option) => (
                             <ListboxOption
                                 key={option.value}

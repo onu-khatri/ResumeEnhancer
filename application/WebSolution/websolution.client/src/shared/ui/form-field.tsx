@@ -60,8 +60,9 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         >
             <input
                 ref={ref}
+                required={required}
                 className={cn(
-                    'h-12 rounded-2xl border border-slate-300 bg-white px-4 text-sm text-slate-950 shadow-sm transition placeholder:text-slate-500 focus:border-teal-700 focus:ring-4 focus:ring-teal-700/12 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-400',
+                    'ui-control h-12 rounded-2xl border px-4 text-sm shadow-sm transition',
                     error &&
                         'border-rose-500 focus:border-rose-600 focus:ring-rose-600/12',
                     className,
@@ -92,8 +93,9 @@ export const TextareaField = forwardRef<
     >
         <textarea
             ref={ref}
+            required={required}
             className={cn(
-                'min-h-28 rounded-3xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 shadow-sm transition placeholder:text-slate-500 focus:border-teal-700 focus:ring-4 focus:ring-teal-700/12 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-400',
+                'ui-control min-h-28 rounded-3xl border px-4 py-3 text-sm shadow-sm transition',
                 error &&
                     'border-rose-500 focus:border-rose-600 focus:ring-rose-600/12',
                 className,
