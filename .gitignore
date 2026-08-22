@@ -2,5 +2,6 @@ report/
 coverage.cobertura.xml
 coverage.opencover.xml
 *.trx
-.vs/
 application/WebSolution/websolution.client/coverage/
+/.vs/
+/.vs/CopilotSnapshots/
