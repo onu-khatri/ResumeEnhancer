@@ -12,6 +12,12 @@ metadata:
 
 Implement tasks from an OpenSpec change.
 
+When local Codex skills or focused agents already exist for the target
+repository, use them to improve implementation quality and validation. Keep
+this skill as the OpenSpec coordinator: it still owns change selection, CLI
+state handling, task sequencing, pause decisions, checkbox updates, and the
+final completion summary.
+
 **Store selection:** If the user names a store (a store is a standalone OpenSpec repo registered on this machine) or the work lives in one, run `openspec store list --json` to discover registered store ids, then pass `--store <id>` on the commands that read or write specs and changes (`new change`, `status`, `instructions`, `list`, `show`, `validate`, `archive`, `doctor`, `context`, `schemas`, `view`). Once selected, treat `--store <id>` as sticky for the rest of the workflow. Every unscoped example of those commands below is shorthand: before running it, append the flag. For example, run `openspec status --change "<name>" --json --store "<id>"`, not the unscoped form shown below. Other commands do not take the flag. Hints printed by commands already carry the flag; keep it on follow-ups. Without a store, commands act on the nearest local `openspec/` root.
 
 **Input**: Optionally specify a change name (e.g., `$openspec-apply-change (Codex) or /openspec-apply-change (other agents) add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
@@ -80,7 +86,42 @@ Implement tasks from an OpenSpec change.
    Do not copy `context` or `operationGuidance` verbatim into implementation
    files or planning artifacts unless the user separately asks for that content.
 
-5. **Show current progress**
+5. **Reason about the implementation shape and load only the needed helpers**
+
+   Before editing code, synthesize the change into an implementation map:
+   - Which tasks are frontend, backend, full-stack, research-heavy, or
+     security-sensitive
+   - Which code areas, contracts, migrations, shared UI surfaces, or
+     cross-module boundaries are likely to move
+   - What verification is needed before a task can be marked complete
+
+   When repository-local Codex helpers exist, load or delegate the smallest
+   matching set instead of solving every slice generically:
+   - **Frontend-focused work**: load `$frontend-dev-guidelines` and
+     `$frontend-developer`, or delegate the implementation slice to
+     `frontend-implementer`
+   - **Backend-focused work**: load `$dotnet-backend-patterns` and
+     `$backend-feature-development`, or delegate the implementation slice to
+     `backend-implementer`
+   - **Research or traceability gaps**: use `knowledge-researcher` to gather
+     evidence, requirement links, or architecture traces before coding
+   - **Security-sensitive changes**: use `security-auditor`, or at minimum load
+     the relevant security skills as a review lens before calling the work done
+   - **Risky or non-trivial diffs**: use `code-reviewer`, or at minimum load
+     `$production-code-reviewer`, before marking affected tasks complete
+   - **Large multi-slice full-stack work**: keep this skill as the coordinator
+     and use `story-orchestrator` only when the change can be cleanly split
+     into independent lanes and the added coordination overhead is justified
+
+   Delegation is optional and scoped:
+   - Do not hand off change selection, OpenSpec CLI interpretation, or task-file
+     ownership
+   - Do not delegate two helpers into the same contract, migration, or shared UI
+     surface concurrently unless you are explicitly coordinating conflicts
+   - Do not use helpers to bypass ambiguity, blocked states, or user approval
+     checkpoints required elsewhere
+
+6. **Show current progress**
 
    Display:
    - Schema being used
@@ -88,12 +129,15 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-6. **Implement tasks (loop until done or blocked)**
+7. **Implement tasks (loop until done or blocked)**
 
    For each pending task:
    - Show which task is being worked on
+   - Re-check whether the task is best handled directly or by one focused local
+     helper
    - Make the code changes required
    - Keep changes minimal and focused
+   - Run the smallest meaningful verification for the touched area
    - Mark task complete in the tasks file: `- [ ]` → `- [x]`
    - Continue to next task
 
@@ -104,11 +148,12 @@ Implement tasks from an OpenSpec change.
    - Error or blocker encountered → report and wait for guidance
    - User interrupts
 
-7. **On completion or pause, show status**
+8. **On completion or pause, show status**
 
    Display:
    - Tasks completed this session
    - Overall progress: "N/M tasks complete"
+   - Which local skills or agents were used, if any
    - If all done: suggest archive
    - If paused: explain why and wait for guidance
 
@@ -166,6 +211,8 @@ What would you like to do?
 **Guardrails**
 - Keep going through tasks until done or blocked
 - Always read context files before starting (from the apply instructions output)
+- Do the implementation-shape reasoning before code edits; do not jump from task
+  text straight to patching
 - If task is ambiguous, pause and ask before implementing
 - If implementation reveals issues, pause and suggest artifact updates
 - Keep code changes minimal and scoped to each task
@@ -179,6 +226,14 @@ What would you like to do?
 - Consider every guidance entry; explain any inapplicable or conflicting advice
 - Do not copy runtime context or operation guidance into implementation files or planning artifacts
 - Preserve CLI-controlled blocked/ready/all-done behavior and completion criteria
+- Use the smallest helper set that materially improves the task; avoid
+  delegation for its own sake
+- Keep this skill responsible for OpenSpec coordination even when helpers are
+  used
+- Do not let helper output silently broaden scope, relax acceptance criteria, or
+  mark tasks complete without verification
+- Do not parallelize edits across shared contracts, migrations, or shared UI
+  primitives unless conflict ownership is explicit
 
 **Fluid Workflow Integration**
 

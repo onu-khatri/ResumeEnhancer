@@ -490,6 +490,8 @@ Perceived data loss is the single most damaging failure mode in this category. T
 
 A job-search tool should be usable by a broad population, including users of assistive technology. Accessibility is both an ethical obligation and an acquisition opportunity.
 
+The platform must ensure that every supported application theme maintains WCAG 2.2 AA color contrast across every application-controlled interface surface. This includes normal and large text, placeholder and supporting text, form controls, icons that communicate meaning, visible control boundaries, and focus, selected, validation, hover, and other operable states. Theme palettes and color use must be semantic, centrally governed, and regression-tested so a change that fixes one theme cannot introduce unreadable foreground/background combinations in another.
+
 ### 15.4 Performance Perception
 
 Because users are time-pressed, perceived slowness (long preview render, slow export, slow AI responses) reads as low product quality. Performance targets should be set for the moments users feel most: first draft, preview update, export, and analysis results.
