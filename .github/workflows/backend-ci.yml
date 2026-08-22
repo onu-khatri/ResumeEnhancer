@@ -1,0 +1,147 @@
+name: Backend CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/backend-ci.yml"
+      - ".editorconfig"
+      - "application/Core/**"
+      - "application/Infrastructure/**"
+      - "application/Modules/**"
+      - "application/WebSolution/ModulesComposition/**"
+      - "application/WebSolution/WebSolution.Server/**"
+      - "application/ResumeEnhancerApp.slnx"
+      - "test/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/backend-ci.yml"
+      - ".editorconfig"
+      - "application/Core/**"
+      - "application/Infrastructure/**"
+      - "application/Modules/**"
+      - "application/WebSolution/ModulesComposition/**"
+      - "application/WebSolution/WebSolution.Server/**"
+      - "application/ResumeEnhancerApp.slnx"
+      - "test/**"
+
+concurrency:
+  group: backend-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate backend
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore solution
+        run: dotnet restore application/ResumeEnhancerApp.slnx
+
+      - name: Build solution
+        run: dotnet build application/ResumeEnhancerApp.slnx --configuration Release --no-restore
+
+      - name: Prepare backend test report folders
+        run: |
+          if (Test-Path report) {
+            Get-ChildItem -LiteralPath report -Directory | Remove-Item -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path report/BE-UnitTest | Out-Null
+          New-Item -ItemType Directory -Path report/BE-IntegrationTest | Out-Null
+
+      - name: Run unit tests with coverage
+        run: >
+          dotnet test test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.Unit.csproj
+          --configuration Release
+          --no-restore
+          --settings test/coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=results.trx"
+          --results-directory report/BE-UnitTest
+
+      - name: Enforce unit test coverage thresholds
+        run: |
+          $coverageFile = Get-ChildItem -Path report/BE-UnitTest -Recurse -Filter coverage.cobertura.xml | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $coverageFile) {
+            throw "Unit test coverage report was not generated."
+          }
+
+          [xml]$coverage = Get-Content -LiteralPath $coverageFile
+          $lineCoverage = [math]::Round([double]$coverage.coverage.'line-rate' * 100, 2)
+          $branchCoverage = [math]::Round([double]$coverage.coverage.'branch-rate' * 100, 2)
+
+          Write-Host "Unit line coverage: $lineCoverage%"
+          Write-Host "Unit branch coverage: $branchCoverage%"
+
+          if ($lineCoverage -lt 90) {
+            throw "Unit test line coverage $lineCoverage% is below the required 90%."
+          }
+
+          if ($branchCoverage -lt 70) {
+            throw "Unit test branch coverage $branchCoverage% is below the required 70%."
+          }
+
+      - name: Run integration tests with coverage
+        run: >
+          dotnet test test/IntegrationTest/ResumeEnhancer.Tests.Integration.csproj
+          --configuration Release
+          --no-restore
+          --settings test/coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --logger "trx;LogFileName=results.trx"
+          --results-directory report/BE-IntegrationTest
+
+      - name: Enforce integration test coverage thresholds
+        run: |
+          $coverageFile = Get-ChildItem -Path report/BE-IntegrationTest -Recurse -Filter coverage.cobertura.xml | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $coverageFile) {
+            throw "Integration test coverage report was not generated."
+          }
+
+          [xml]$coverage = Get-Content -LiteralPath $coverageFile
+          $lineCoverage = [math]::Round([double]$coverage.coverage.'line-rate' * 100, 2)
+          $branchCoverage = [math]::Round([double]$coverage.coverage.'branch-rate' * 100, 2)
+
+          Write-Host "Integration line coverage: $lineCoverage%"
+          Write-Host "Integration branch coverage: $branchCoverage%"
+
+          if ($lineCoverage -lt 20) {
+            throw "Integration test line coverage $lineCoverage% is below the required 20%."
+          }
+
+          if ($branchCoverage -lt 5) {
+            throw "Integration test branch coverage $branchCoverage% is below the required 5%."
+          }
+
+      - name: Upload backend unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-unit-test-report
+          path: report/BE-UnitTest
+          if-no-files-found: error
+
+      - name: Upload backend integration test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-integration-test-report
+          path: report/BE-IntegrationTest
+          if-no-files-found: error
