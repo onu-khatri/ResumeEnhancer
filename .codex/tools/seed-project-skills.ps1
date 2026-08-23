@@ -189,12 +189,14 @@ Use this skill when a decision deserves durable documentation because it affects
   "architect-review" = @'
 ---
 name: architect-review
-description: Review ResumeEnhancer changes from an architecture perspective, focusing on layering, module boundaries, dependency direction, scalability, and long-term maintainability. Use when Codex needs a design-level review beyond line-by-line correctness.
+description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
 # Architect Review
 
-Use this skill for design-level review when the main question is whether a change fits the system, not just whether it compiles or passes tests.
+Read `KnowledgeBase/INDEX.md`, then `architecture-review.knowledge.md` before producing findings. Use distributed review only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability; then read `distributed-architecture-review.knowledge.md`.
+
+Route domain, security, performance, research, and ADR work to their specialist skills only when their trigger applies. Report Architecture Impact as High, Medium, or Low with affected quality attributes, then evidence-backed findings, residual risks, and verification gaps.
 '@
   "backend-feature-development" = @'
 ---
@@ -249,34 +251,38 @@ Use this skill for broad investigations where the answer depends on multiple rep
   "domain-driven-design" = @'
 ---
 name: domain-driven-design
-description: Apply domain-driven design thinking to ResumeEnhancer by clarifying business concepts, boundaries, invariants, and model responsibilities. Use when Codex needs to shape new domain behavior or review whether a design fits the business model cleanly.
+description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
 # Domain Driven Design
 
-Use this skill to reason about business concepts before pushing behavior into code.
+Read `KnowledgeBase/INDEX.md`, then `domain-modeling.knowledge.md` before proposing domain-modeling patterns. Retrieve modular architecture when dependencies, composition, or integration change, and project routing for local adaptation.
+
+Stop after viability assessment when no meaningful invariant, divergent context, or lifecycle rule exists.
 '@
   "dotnet-architect" = @'
 ---
 name: dotnet-architect
-description: Design and review ResumeEnhancer solutions as a .NET modular monolith with clean layering, Minimal APIs, Mediator, EF Core, and explicit composition. Use when Codex needs framework-aware architecture guidance for backend or cross-layer changes.
+description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
 # Dotnet Architect
 
-Use this skill when .NET-specific architecture decisions matter, especially around dependency direction, composition, ASP.NET Core boundaries, and EF Core integration.
+Read `KnowledgeBase/INDEX.md`, then `dotnet-modular-architecture.knowledge.md` before selecting a boundary, dependency, composition, or integration pattern. Retrieve domain-modeling and project-routing knowledge only when applicable.
+
+State ownership, dependency direction, verification implications, and an ADR recommendation for durable decisions.
 '@
   "dotnet-backend-patterns" = @'
 ---
 name: dotnet-backend-patterns
-description: Apply ResumeEnhancer backend implementation patterns for ASP.NET Core, Minimal APIs, FluentValidation, Mediator, Mapster, EF Core, repositories, and testing. Use when Codex needs the preferred house style for backend changes in this repository.
+description: Apply .NET backend implementation patterns for API boundaries, application behavior, persistence, and testing. Use when a change needs pattern selection or a framework-aware implementation review.
 ---
 
 # Dotnet Backend Patterns
 
-Use this skill as the implementation playbook for backend consistency.
+Use this skill to select and apply the smallest proven .NET backend pattern that fits the change and the target project.
 
-Read `references/ef-core-best-practices.md` and `references/implementation-playbook.md` when persistence or full backend flow details are needed.
+Check `KnowledgeBase/INDEX.md`, then retrieve only the API/application, EF Core persistence, and project-adaptation topics that affect the task.
 '@
   "frontend-dev-guidelines" = @'
 ---
@@ -344,36 +350,6 @@ foreach ($name in $skillBodies.Keys) {
   $path = Join-Path $PSScriptRoot "..\\skills\\$name\\SKILL.md"
   $resolved = [System.IO.Path]::GetFullPath($path)
   Set-Content -LiteralPath $resolved -Value $skillBodies[$name] -NoNewline
-}
-
-$refs = @{
-  "dotnet-backend-patterns\\references\\ef-core-best-practices.md" = @'
-# EF Core Best Practices For ResumeEnhancer
-
-- Keep entity configuration in `ResumeModulePL/Configurations`.
-- Keep persistence abstractions in `ResumeModelSL`, not in Web or Host layers.
-- Use migrations deliberately and mention schema impact in PRs.
-- Prefer explicit query shapes over accidental lazy-loading assumptions.
-- Keep setup data and seed behavior separate from request-time business logic.
-- Treat mapping, validation, and persistence responsibilities as distinct concerns.
-'@
-  "dotnet-backend-patterns\\references\\implementation-playbook.md" = @'
-# Backend Implementation Playbook
-
-1. Start from the user story and business rule.
-2. Update AM contracts only if the API shape must change.
-3. Add or update validators in `ResumeModuleWeb`.
-4. Implement use-case orchestration in `ResumeModelSL`.
-5. Extend persistence abstractions in SL only when needed.
-6. Implement EF and repository behavior in PL.
-7. Add unit or integration tests that prove the change through the right boundary.
-'@
-}
-
-foreach ($relative in $refs.Keys) {
-  $path = Join-Path $PSScriptRoot "..\\skills\\$relative"
-  $resolved = [System.IO.Path]::GetFullPath($path)
-  Set-Content -LiteralPath $resolved -Value $refs[$relative] -NoNewline
 }
 
 $agentsDir = Join-Path $PSScriptRoot "..\\agents"

@@ -1,4 +1,4 @@
 interface:
   display_name: "Dotnet Architect"
-  short_description: "Help with Dotnet Architect tasks"
-  default_prompt: "Use $dotnet-architect for .NET-specific architecture guidance in ResumeEnhancer."
+  short_description: "Design modular .NET architecture"
+  default_prompt: "Use $dotnet-architect to make an ownership, dependency, composition, or integration decision for a .NET backend change."

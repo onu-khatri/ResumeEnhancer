@@ -1,41 +1,37 @@
 ---
 name: domain-driven-design
-description: Apply domain-driven design thinking to ResumeEnhancer by clarifying business concepts, boundaries, invariants, and model responsibilities. Use when Codex needs to shape new domain behavior or review whether a design fits the business model cleanly.
+description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
 # Domain Driven Design
 
-Use this skill pragmatically. The goal is clearer business modeling for ResumeEnhancer, not performative DDD vocabulary.
+Use this skill pragmatically. The goal is clearer business modeling, not performative DDD vocabulary.
 
 ## Use this skill when
 
-- business concepts, rules, or boundaries are ambiguous
-- you need to shape a new feature around business language and invariants
-- a design should be checked for domain leakage or weak model boundaries
+- business concepts, rules, or ownership boundaries are ambiguous
+- lifecycle, policy, or state-transition invariants affect design
+- a design needs a bounded-context, aggregate, value-object, or domain-service decision
 
 ## Do not use this skill when
 
-- the task is straightforward CRUD with low business complexity
-- the issue is purely technical and not domain-shaped
+- the task is straightforward data maintenance with no meaningful invariants
+- the issue is purely technical and has no business-model consequence
 
-## Workflow
+## Knowledge Routing
 
-1. Decide whether the problem actually deserves DDD depth.
-2. Identify subdomains, bounded contexts, core terminology, and business rules.
-3. Map those ideas to the existing modular monolith rather than pretending the codebase is a blank slate.
-4. Define where invariants live and where translation between contexts should happen.
-5. If a formal artifact list is needed, read `references/ddd-deliverables.md`.
+1. Read `KnowledgeBase/INDEX.md`.
+2. Read `domain-modeling.knowledge.md` before proposing a domain-modeling pattern.
+3. Read `dotnet-modular-architecture.knowledge.md` when the model decision changes dependencies, composition, or integration seams.
+4. For ResumeEnhancer adaptation, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
 
-## ResumeEnhancer focus
+## Workflow Gate
 
-- resume lifecycle and ownership rules
-- bounded contexts across frontend, Web, SL, and persistence
-- language used in business requirements versus code
-- invariants that must not leak into transport or storage shortcuts
+Stop after the viability assessment when the task has no meaningful invariant, divergent context, or lifecycle rule. Do not introduce tactical DDD patterns for simple CRUD.
 
-## Output requirements
+## Output Requirements
 
 - DDD viability assessment
-- current vocabulary and boundaries
-- candidate aggregates or domain services when relevant
-- next implementation or ADR recommendation
+- vocabulary, ownership, and invariant decisions when modeling is justified
+- explicit translation and integration boundaries when applicable
+- evidence and ADR recommendation for durable context or consistency choices

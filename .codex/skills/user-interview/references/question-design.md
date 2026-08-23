@@ -33,6 +33,7 @@ Ask parent decisions before children. For example, resolve audience and outcome 
 ## Interview Rules
 
 - Ask open, neutral, one-part questions. Do not ask several decisions in one message.
+- Before each question, use the host's structured question UI when it is available in the active mode. Fall back to one-at-a-time plain chat only when it is unavailable.
 - Prefer past behavior and specific examples to predictions such as "Would you use this?"
 - Separate what the user said from the interpretation or proposed next action.
 - Explain relevant evidence that conflicts with the answer, then ask which source should govern rather than silently choosing.

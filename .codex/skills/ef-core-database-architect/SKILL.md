@@ -1,11 +1,11 @@
 ---
 name: ef-core-database-architect
-description: Design and review ResumeEnhancer database and persistence changes using EF Core, SQL Server, shared persistence infrastructure, and migration discipline. Use when Codex needs to shape schemas, repositories, seeding, mappings, or migration strategy for this project.
+description: Design and review EF Core persistence changes with explicit schema, query, transaction, migration, initialization, and verification decisions. Use when a backend change has meaningful persistence impact.
 ---
 
 # EF Core Database Architect
 
-Use this skill for persistence design in the actual stack this repository uses, so schema and data-access changes stay consistent, migration-safe, and reviewable.
+Use this skill for persistence design that is migration-safe, reviewable, and compatible with the target application's data lifecycle.
 
 ## Use this skill when
 
@@ -20,12 +20,13 @@ Use this skill for persistence design in the actual stack this repository uses, 
 
 ## Design workflow
 
-1. Start from the domain entity and the business behavior it supports.
-2. Keep EF configuration in `ResumeEnhancer.<ModuleName>.PL` and persistence abstractions in `ResumeEnhancer.<ModuleName>.SL`.
-3. Keep domain entities and domain-only concepts in `ResumeEnhancer.<ModuleName>.DM`.
-4. Prefer existing repository conventions over new abstractions.
-5. Add or update migrations deliberately; never hand-edit generated migration code without review.
-6. Keep setup data and seed behavior separate from request-time business logic.
+1. Check `KnowledgeBase/INDEX.md`, then read the EF Core persistence topic.
+2. Read the target project's persistence knowledge before relying on local abstractions, schema conventions, migration tooling, or initialization rules.
+3. Start from the business behavior and data lifecycle, then identify the entity, relationship, query, transaction, migration, and rollout impact.
+4. Keep persistence configuration and adapters outside transport and application orchestration code.
+5. Prefer established project persistence conventions over new abstractions.
+6. Add or update migrations deliberately; never hand-edit generated migration code without review.
+7. Keep initialization and seed behavior separate from request-time business logic.
 
 ## Review lenses
 
@@ -36,17 +37,9 @@ Use this skill for persistence design in the actual stack this repository uses, 
 - migration safety, ordering, and idempotency
 - backward compatibility of schema changes against existing data
 
-## ResumeEnhancer focus
-
-- `ResumeEnhancer.<ModuleName>.PL` for EF configuration and repository adapters
-- `ResumeEnhancer.<ModuleName>.SL` for persistence abstractions
-- shared infrastructure under `application/Infrastructure`
-- migration help: `dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help`
-- for detailed persistence conventions, read `dotnet-backend-patterns/references/ef-core-best-practices.md`
-
 ## Definition of Done
 
-- `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- When schema or persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
-- Migration impact and seed-data changes are stated explicitly for the reviewer.
+- The project build and relevant persistence tests have been run or their gaps are stated explicitly.
+- Migration, initialization, compatibility, and rollout impact is stated for the reviewer.
+- The design does not depend on unverified project-specific persistence assumptions.
 

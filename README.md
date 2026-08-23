@@ -1,396 +1,127 @@
 # ResumeEnhancer
 
-ResumeEnhancer is a modular .NET solution for resume management. It combines a
-layered modular-monolith architecture with CQRS-style application handlers,
-Minimal APIs, shared EF Core persistence infrastructure, explicit migrations,
-and a React/Vite client shell.
+ResumeEnhancer is a modular resume platform for creating, improving, organizing, and eventually monetizing professional career documents. The product is being built as a modern resume workspace: users should be able to maintain structured resume content, tailor it for roles, preview polished templates, and use guided intelligence without losing ownership of their story.
 
-## Architecture Summary
+The repository currently implements the platform foundation with a .NET modular monolith, a React/Vite frontend, shared persistence infrastructure, module composition boundaries, and documented product backlog artifacts for the next product domains.
 
-The solution is organized by platform area first, then by business module:
+## Product Purpose
 
-- `Core` contains shared domain and common library projects.
-- `Infrastructure` contains reusable technical capabilities such as caching,
-  persistence, and migrations.
-- `Modules` contains business modules. The current implemented module is
-  `<ModuleName>`.
-- `WebSolution` contains the ASP.NET Core host and React/Vite client.
-- `test` contains unit tests, HTTP integration tests, and reusable integration
-  test support utilities.
+Resume work is high effort and high trust. Users need more than a document editor; they need a workspace that helps them turn experience into credible, targeted, and presentation-ready material.
 
-The Resume module is split into application model, domain model, service layer,
-persistence layer, and web/API layer projects. The host composes shared
-infrastructure and enters all modules through `WebSolution/ModulesComposition`;
-that boundary registers module web layers and persistence adapters.
+ResumeEnhancer exists to support that workflow by focusing on:
 
-## Architecture Fit
+- Structured resume data that can survive template, layout, and language changes.
+- Guided resume creation and editing instead of blank-page authoring.
+- Practical analysis that helps users understand resume strength for a target role.
+- Clear customization that improves presentation without damaging content or ATS suitability.
+- A modular product architecture that can grow into billing, entitlements, AI analysis, multi-language documents, and sharing.
 
-These scores are a qualitative snapshot of the current structure, not a claim
-that every pattern is implemented in its strictest form.
+## Product Vision
 
-| Architecture or practice | Current fit | How the project fulfills it | Remaining gap or tradeoff |
-| --- | --- | --- | --- |
-| Layered Architecture | Strong, about 92% | The solution has clear Core, Infrastructure, Modules, and WebSolution areas. Resume module code is split into AM, DM, SL, PL, Web, and application composition responsibilities. | Some shared infrastructure is still registered directly by the host, which is normal for the current composition style. |
-| Modular Architecture | Strong, about 92% | Resume functionality is isolated under `Modules/<ModuleName>`; host-facing registration starts through `WebSolution/ModulesComposition`, so the host does not reference module AM, SL, PL, DM, or Web projects directly. | Cross-module communication rules are not yet needed or formalized because there is only one business module. |
-| Vertical Slice Architecture | Moderate to strong, about 72% | Resume command/query contracts, handlers, validators, and Minimal API endpoints are split per use case, with one endpoint operation per file. | The solution is still primarily layered by project. A stricter vertical-slice structure would group all files for a use case together across Web/SL/PL boundaries. |
-| Clean Architecture | Strong, about 93% | Domain model projects are infrastructure-free, `ResumeEnhancer.<ModuleName>.SL` owns use cases and persistence ports, `ResumeEnhancer.<ModuleName>.PL` implements those ports, Web does not reference PL, module composition is isolated in an outer application-level project, integration tests exercise the public HTTP boundary, and architecture tests enforce module dependency rules automatically. | Future cross-module communication rules will need to be formalized when additional business modules are introduced. |
-| Clean Code principles | Strong, about 91% | Responsibilities are grouped into small folders/files, sample host code has been removed, dependencies are registered explicitly, validation and mapping are centralized, README files document local rules, and the test suite now separates unit tests, integration tests, and reusable test support. | Broader module count will eventually require stronger conventions for cross-module contracts. |
+The long-term direction is a career-document platform where users can manage resumes and related documents across multiple roles, markets, and versions. ResumeEnhancer should become a trusted workspace for:
 
-## Current Dependency Rule
+- Building and editing resumes with autosave and version-aware persistence.
+- Selecting professional templates and safely changing visual presentation.
+- Tailoring documents for job descriptions with honest, reviewable AI support.
+- Organizing language variants, role-specific versions, and future cover-letter flows.
+- Offering premium capabilities through transparent entitlements and fair upgrade boundaries.
 
-The dependency direction is the main architectural guardrail:
+The guiding product principle is that the system should make resumes better without silently inventing, overwriting, or obscuring the user's own experience.
 
-```text
-ResumeEnhancer.WebSolution.Server
-  -> Infrastructure/Caching
-  -> Infrastructure/Persistence
-  -> WebSolution/ModulesComposition
+## Current Status
 
-ResumeEnhancer.WebSolution.ModulesComposition
-  -> ResumeEnhancer.<ModuleName>.Web
-  -> ResumeEnhancer.<ModuleName>.PL
+The platform foundation is in active development. The current implementation includes:
 
-ResumeEnhancer.<ModuleName>.Web
-  -> Core/WebLibrary
-  -> ResumeEnhancer.<ModuleName>.AM
-  -> ResumeEnhancer.<ModuleName>.SL
+- ASP.NET Core host with a modular-monolith backend structure.
+- Resume module layers for API contracts, domain model, service logic, persistence, and Minimal API endpoints.
+- Shared EF Core persistence, migrations, setup-data seeding, repositories, unit of work, and query helpers.
+- React, TypeScript, Vite frontend shell with shared UI foundation work in progress.
+- Unit, integration, and architecture tests around backend behavior and module boundaries.
+- Product documentation under `Business-Requirements`, `User-Stories`, `prd`, `openspec`, and `KnowledgeBase`.
 
-ResumeEnhancer.<ModuleName>.SL
-  -> ResumeEnhancer.<ModuleName>.AM
-  -> ResumeEnhancer.<ModuleName>.DM
+For detailed architecture, dependency rules, module layering, API surface, and persistence notes, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
-ResumeEnhancer.<ModuleName>.PL
-  -> ResumeEnhancer.<ModuleName>.SL (persistence abstractions)
-  -> ResumeEnhancer.<ModuleName>.DM
-  -> Infrastructure/Persistence
+## Tech Stack
 
-Infrastructure/Migration
-  -> Infrastructure/Persistence
-  -> Modules/<ModuleName>/ResumeEnhancer.<ModuleName>.PL
+| Area | Technology |
+| --- | --- |
+| Backend | .NET 10, ASP.NET Core, Minimal APIs |
+| Application flow | Mediator, CQRS-style command/query handlers |
+| Validation and mapping | FluentValidation, Mapster |
+| Persistence | EF Core, SQL Server, shared `AppDbContext`, explicit migration console |
+| Frontend | React 19, TypeScript, Vite, React Router, TanStack Query, Tailwind CSS |
+| Testing | xUnit, Shouldly, NetArchTest, ASP.NET Core integration testing, Vitest |
+| Documentation | Business requirements, user stories, OpenSpec changes, ADRs, repository READMEs |
 
-ResumeEnhancer.<ModuleName>.DM
-  -> Core/DomainLibrary
-
-Infrastructure/Persistence
-  -> Core/DomainLibrary
-
-ResumeEnhancer.Tests.Integration
-  -> ResumeEnhancer.WebSolution.Server
-  -> TestUtilities/IntegrationSupport
-  -> ResumeEnhancer.<ModuleName>.AM/DM/PL support assertions
-
-TestUtilities/IntegrationSupport
-  -> Core/DomainLibrary
-  -> Infrastructure/Caching
-  -> Infrastructure/Persistence
-```
-
-The host should not reference Resume module AM, DM, SL, PL, or Web projects
-directly; it should enter modules through `WebSolution/ModulesComposition`.
-`WebSolution/ModulesComposition` owns module registration, so it may reference module Web
-and PL projects. `ResumeEnhancer.<ModuleName>.Web` must not reference PL. `ResumeEnhancer.<ModuleName>.SL` must
-not reference PL; it defines persistence ports under application abstractions,
-and PL implements them. Domain entities stay in DM, use-case orchestration stays
-in SL, EF/database work stays in PL and shared ResumeEnhancer.Infrastructure.Persistence, and HTTP concerns
-stay in Web.
-
-## Outer-To-Domain Dependency Flow
-
-Solid arrows show current compile-time dependency flow from outer layers toward
-domain types. Domain projects do not depend back on web, application,
-persistence, caching, or migration projects.
-
-```mermaid
-flowchart LR
-    subgraph Outer["Outer Layer"]
-        Browser["React/Vite client"]
-        Host["ResumeEnhancer.WebSolution.Server<br/>ASP.NET Core host"]
-        MigrationConsole["Migration console"]
-    end
-
-    subgraph WebBoundary["Web/API Boundary"]
-        ModuleComposition["ResumeEnhancer.WebSolution.ModulesComposition<br/>module DI + endpoint facade"]
-        ModuleWeb["ResumeEnhancer.<ModuleName>.Web<br/>Minimal APIs + validators"]
-        ResumeEnhancer.Core.WebLibrary["Core/WebLibrary"]
-        AM["ResumeEnhancer.<ModuleName>.AM<br/>request/response contracts"]
-    end
-
-    subgraph Application["Application / Use Cases"]
-        SL["ResumeEnhancer.<ModuleName>.SL<br/>CQRS contracts + handlers"]
-        Ports["SL Abstractions/Persistence<br/>repository ports + result models"]
-        Mapping["Mapster mapping helpers"]
-    end
-
-    subgraph InfrastructureAdapters["ResumeEnhancer.Infrastructure.Persistence / Infrastructure Adapters"]
-        PL["ResumeEnhancer.<ModuleName>.PL<br/>EF adapters + configuration"]
-        ResumeEnhancer.Infrastructure.Persistence["Infrastructure/Persistence<br/>AppDbContext + UoW"]
-        ResumeEnhancer.Infrastructure.Caching["Infrastructure/Caching"]
-    end
-
-    subgraph Domain["Domain Layer"]
-        DM["ResumeEnhancer.<ModuleName>.DM<br/>Resume entities"]
-        ResumeEnhancer.Core.DomainLibrary["Core/DomainLibrary<br/>domain base types"]
-    end
-
-    Browser --> Host
-    Host --> ModuleComposition
-    Host --> ResumeEnhancer.Infrastructure.Persistence
-    Host --> ResumeEnhancer.Infrastructure.Caching
-
-    ModuleComposition --> ModuleWeb
-    ModuleComposition --> PL
-
-    ModuleWeb --> ResumeEnhancer.Core.WebLibrary
-    ModuleWeb --> AM
-    ModuleWeb --> SL
-
-    SL --> AM
-    SL --> Ports
-    SL --> Mapping
-    SL --> DM
-
-    PL --> Ports
-    PL --> DM
-    PL --> ResumeEnhancer.Infrastructure.Persistence
-
-    ResumeEnhancer.Infrastructure.Persistence --> ResumeEnhancer.Core.DomainLibrary
-    DM --> ResumeEnhancer.Core.DomainLibrary
-    MigrationConsole --> ResumeEnhancer.Infrastructure.Persistence
-    MigrationConsole --> PL
-```
-
-## High-Level Graph
-
-```mermaid
-flowchart TB
-    subgraph WebSolution["WebSolution"]
-        Client["ResumeEnhancer.WebSolution.Client<br/>React + Vite"]
-        Server["ResumeEnhancer.WebSolution.Server<br/>ASP.NET Core host"]
-    end
-
-    subgraph <ModuleName>["<ModuleName>"]
-        Composition["ResumeEnhancer.WebSolution.ModulesComposition<br/>module facade"]
-        Web["ResumeEnhancer.<ModuleName>.Web<br/>Minimal APIs + validation"]
-        AM["ResumeEnhancer.<ModuleName>.AM<br/>Requests + responses"]
-        SL["ResumeEnhancer.<ModuleName>.SL<br/>CQRS handlers + mapping"]
-        Ports["SL Persistence Ports<br/>IResumeRepository + criteria/results"]
-        PL["ResumeEnhancer.<ModuleName>.PL<br/>EF adapters + configuration"]
-        DM["ResumeEnhancer.<ModuleName>.DM<br/>Domain entities"]
-    end
-
-    subgraph Infrastructure["Infrastructure"]
-        ResumeEnhancer.Infrastructure.Caching["ResumeEnhancer.Infrastructure.Caching<br/>ICacheProvider + strategies"]
-        ResumeEnhancer.Infrastructure.Persistence["ResumeEnhancer.Infrastructure.Persistence<br/>AppDbContext + UoW"]
-        Migration["Migration<br/>EF migration console"]
-    end
-
-    subgraph Core["Core"]
-        ResumeEnhancer.Core.DomainLibrary["ResumeEnhancer.Core.DomainLibrary<br/>Audit/domain bases"]
-        ResumeEnhancer.Core.CommonLibrary["ResumeEnhancer.Core.CommonLibrary"]
-        ResumeEnhancer.Core.WebLibrary["ResumeEnhancer.Core.WebLibrary<br/>ASP.NET helpers"]
-    end
-
-    Database["SQL Server"]
-
-    Client --> Server
-    Server --> Composition
-    Server --> ResumeEnhancer.Infrastructure.Caching
-    Server --> ResumeEnhancer.Infrastructure.Persistence
-
-    Composition --> Web
-    Composition --> PL
-
-    Web --> ResumeEnhancer.Core.WebLibrary
-    Web --> AM
-    Web --> SL
-
-    SL --> AM
-    SL --> Ports
-    SL --> DM
-
-    PL --> Ports
-    PL --> DM
-    PL --> ResumeEnhancer.Infrastructure.Persistence
-
-    DM --> ResumeEnhancer.Core.DomainLibrary
-    ResumeEnhancer.Infrastructure.Persistence --> ResumeEnhancer.Core.DomainLibrary
-    ResumeEnhancer.Infrastructure.Persistence --> Database
-    Migration --> ResumeEnhancer.Infrastructure.Persistence
-    Migration --> PL
-```
-
-## Solution Layout
+## Repository Layout
 
 | Path | Purpose |
 | --- | --- |
-| `application/Core/DomainLibrary` | Shared domain base classes such as `AuditEntity`, `SetupEntity`, `BusinessEntity`, and relation bases. |
-| `application/Core/CommonLibrary` | Reserved for framework-neutral shared utilities. It currently has no active shared helpers. |
-| `application/Core/WebLibrary` | ASP.NET Core-specific endpoint execution and request/header helpers. |
-| `application/Infrastructure/Caching` | Provider-neutral `ICacheProvider` with in-memory, Redis/distributed cache, and MemCache strategies. |
-| `application/Infrastructure/Persistence` | Shared `AppDbContext`, unit of work, repositories, model loading, query specifications, transaction wrappers, and setup seeding helpers. |
-| `application/Infrastructure/Migration` | Console project for creating EF migrations, applying migrations, and running seeders. |
-| `application/Modules/<ModuleName>/<ModuleName>AM` | Project `ResumeEnhancer.<ModuleName>.AM`; owns request and response contracts shared by Web and SL. |
-| `application/Modules/<ModuleName>/<ModuleName>DM` | Project `ResumeEnhancer.<ModuleName>.DM`; owns domain entities and setup/business relation models. |
-| `application/Modules/<ModuleName>/<ModuleName>SL` | Project `ResumeEnhancer.<ModuleName>.SL`; owns CQRS contracts, Mediator handlers, persistence abstractions, and Mapster mapping helpers. |
-| `application/Modules/<ModuleName>/<ModuleName>PL` | Project `ResumeEnhancer.<ModuleName>.PL`; owns EF configurations, module schema, implementations of SL-owned persistence ports, and seed data. |
-| `application/Modules/<ModuleName>/<ModuleName>Web` | Project `ResumeEnhancer.<ModuleName>.Web`; owns Minimal API endpoints and FluentValidation validators. |
-| `application/WebSolution/ModulesComposition` | Application-level module composition boundary; registers module Web/PL projects and exposes endpoint mapping. |
-| `application/WebSolution/WebSolution.Server` | ASP.NET Core host, OpenAPI/Scalar setup, SPA hosting, and dependency composition. |
-| `application/WebSolution/websolution.client` | React + TypeScript + Vite client shell. |
-| `test/ResumeEnhancer.Tests` | Unit and focused component tests for core, infrastructure, composition, and Resume module behavior. |
-| `test/IntegrationTest` | HTTP/API-boundary integration tests that host the real ASP.NET Core application with fake auth and in-memory relational persistence. |
-| `test/TestUtilities/IntegrationSupport` | Reusable integration-test host, fake authentication, database, setupper, data-generation, and xUnit support utilities. |
+| `application` | Main source code for core libraries, infrastructure, modules, host, and frontend client. |
+| `application/Core` | Shared domain, common, and web helper libraries. |
+| `application/Infrastructure` | Cross-cutting persistence, caching, and migration infrastructure. |
+| `application/Modules` | Business modules. The Resume module is the current primary implementation. |
+| `application/WebSolution` | ASP.NET Core host, module composition boundary, and React/Vite client. |
+| `test` | Unit tests, integration tests, and reusable test utilities. |
+| `Business-Requirements` | Product and domain business requirements. |
+| `User-Stories` | Implementation-ready story packs and supporting research. |
+| `openspec` | OpenSpec-driven change specifications. |
+| `KnowledgeBase` | Durable architecture and project knowledge artifacts. |
+| `prd` | Product requirement documents. |
 
-## Responsibility-Based Folder Layout
+## Getting Started
 
-`Infrastructure/Persistence` is grouped by persistence responsibility:
+### Prerequisites
 
-```text
-Audit/
-Composition/
-Context/
-Loading/
-Querying/
-Repositories/
-Seeding/
-Transactions/
-UnitOfWork/
+- .NET SDK compatible with `net10.0`.
+- Node.js and npm compatible with the frontend toolchain.
+- SQL Server for normal local persistence workflows.
+- PowerShell or a shell capable of running the documented commands.
+
+### Build The Solution
+
+```powershell
+dotnet build application\ResumeEnhancerApp.slnx
 ```
 
-`ResumeEnhancer.<ModuleName>.SL` is grouped by CQRS/service-layer responsibility:
+### Run Backend Unit Tests
 
-```text
-Composition/
-Abstractions/Persistence/
-Contracts/Commands/
-Contracts/Queries/
-Handlers/Commands/
-Handlers/Queries/
-Mapping/
+```powershell
+dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore
 ```
 
-`ResumeEnhancer.<ModuleName>.PL` is grouped by persistence responsibility:
+### Run Backend Integration Tests
 
-```text
-Composition/
-Configurations/
-Context/
-Repositories/
-Seeding/
+```powershell
+dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore
 ```
 
-`ResumeEnhancer.WebSolution.ModulesComposition` is grouped as a small host-facing facade:
+### Run The API Host
 
-```text
-DependencyInjection.cs
+```powershell
+dotnet run --project application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj
 ```
 
-`ResumeEnhancer.<ModuleName>.Web` separates route registration, command endpoints, query
-endpoints, and request validators:
+In development, the host exposes OpenAPI and Scalar API reference endpoints.
 
-```text
-MiniApis/Commands/
-MiniApis/Queries/
-Validation/PersonalInformation/
-Validation/Resumes/
-Validation/Sections/
-Validation/Shared/
+### Work With The Frontend
+
+```powershell
+cd application\WebSolution\websolution.client
+npm install
+npm run dev
 ```
 
-## Patterns In Use
+Useful frontend checks:
 
-| Pattern | Where | Notes |
-| --- | --- | --- |
-| Modular monolith | Whole solution | One deployable host with isolated business modules. |
-| Module composition boundary | `WebSolution/ModulesComposition` | Host references one module composition project; it composes Resume and future module Web/PL projects. |
-| Layered module architecture | Resume module AM/DM/SL/PL/Web projects | Keeps transport, contracts, use cases, domain, and persistence separate. |
-| CQRS-style handlers | `ResumeEnhancer.<ModuleName>.SL/Contracts` and `ResumeEnhancer.<ModuleName>.SL/Handlers` | Commands and queries are separate contracts handled through Mediator. |
-| Mediator pattern | `ResumeEnhancer.<ModuleName>.Web` + `ResumeEnhancer.<ModuleName>.SL` | Minimal APIs send commands/queries to SL handlers via the martinothamar `Mediator` package. |
-| Repository pattern | `ResumeEnhancer.<ModuleName>.SL/Abstractions/Persistence`, `ResumeEnhancer.<ModuleName>.PL/Repositories`, and `Infrastructure/Persistence/Repositories` | SL defines Resume-specific persistence ports, PL implements them, and shared ResumeEnhancer.Infrastructure.Persistence exposes common audited-entity repositories. |
-| Unit of Work | `Infrastructure/Persistence/UnitOfWork` | One scoped `AppDbContext` and one scoped `UnitOfWork<AppDbContext>` per DI scope. |
-| Query Specification | `Infrastructure/Persistence/Querying` | Reusable criteria/include/order/projection query shapes for audited entities. |
-| Model Loader | `Infrastructure/Persistence/Loading` | Typed nested include-path builder for repository queries. |
-| FluentValidation | `ResumeEnhancer.<ModuleName>.Web/Validation` | Request validation is a web-layer concern. SL handlers assume valid request contracts. |
-| Mapster mapping | `ResumeEnhancer.<ModuleName>.SL/Mapping` | Maps AM contracts, DM entities, and persistence result models. |
-| Strategy pattern | `Infrastructure/Caching/Strategies` | Cache provider behavior is selected by configuration. |
-| Code-first migrations | `Infrastructure/Migration` | EF Core migrations live outside normal web startup. |
-| Integration test host builder | `test/TestUtilities/IntegrationSupport/Hosting` | Standardizes `WebApplicationFactory`, fake auth, SQLite in-memory persistence, and selected DI overrides for real HTTP tests. |
-| Setup object pattern | `test/IntegrationTest/Modules/<ModuleName>/*.Setup.cs` | Keeps `[Theory]` data compact with description, arrange delegate, input DTO, and assert delegate. |
-| Architecture dependency tests | `test/ResumeEnhancer.Tests/Architecture` | Enforces module layer project-reference, package-reference, and current assembly dependency rules, including future module projects discovered under `application/Modules`. |
-
-Auto-registration attributes, when introduced, should be used only in PL
-implementation projects. Web and SL registrations should stay explicit.
-
-## Resume API Surface
-
-Resume Minimal APIs are grouped under:
-
-```text
-/api/resumes
+```powershell
+npm run check
+npm run build
+npm run test
+npm run test:coverage
 ```
 
-Current endpoints:
-
-| Method | Route | Use case |
-| --- | --- | --- |
-| `POST` | `/api/resumes/` | Create a resume. |
-| `PUT` | `/api/resumes/{resumeId}` | Update a resume. |
-| `DELETE` | `/api/resumes/{resumeId}` | Delete one resume. |
-| `POST` | `/api/resumes/delete` | Delete multiple resumes. |
-| `GET` | `/api/resumes/{resumeId}` | Get resume detail. |
-| `POST` | `/api/resumes/search` | Search resumes with paging and filters. |
-| `GET` | `/api/resumes/{resumeId}/exists` | Check resume existence. |
-
-Endpoint handlers live one operation per file under
-`ResumeEnhancer.<ModuleName>.Web/MiniApis/Commands` and `ResumeEnhancer.<ModuleName>.Web/MiniApis/Queries`.
-
-## Persistence Model
-
-`Infrastructure/Persistence` provides a shared `AppDbContext` and persistence
-toolkit:
-
-- audit-aware `SaveChangesAsync(IAudit)`
-- optimistic concurrency retry for rowversion-backed `AuditEntity.App_Version`
-- common `IAuditEntityRepository<T>` operations
-- paged query results
-- query specifications
-- typed nested model loaders
-- relational, nested, and non-relational transaction wrappers
-- setup-data seeding helpers
-- module table/schema mapping conventions
-
-`UnitOfWork<AppDbContext>` is scoped with the `AppDbContext` and coordinates
-repositories, save operations, setup entity preloading, and transaction entry.
-It is infrastructure only; business rules belong in module handlers/services.
-
-## Domain Table Categories
-
-Shared domain base types in `ResumeEnhancer.Core.DomainLibrary.DomainModel` drive table categories:
-
-| Base type | Table prefix | Use |
-| --- | --- | --- |
-| `SetupEntity` | `S_` | Seedable setup/master data. |
-| `SetupRelation` | `SR_` | Seedable setup/config relationships. |
-| `BusinessEntity` | `B_` | Operational root business records. |
-| `BusinessRelation` | `BR_` | Operational child/relationship records. |
-
-The Resume module schema is `resume`, so examples include
-`resume.B_Resume`, `resume.BR_Education`, and
-`resume.S_ResumeSectionSetup`.
-
-## Validation And Mapping Rules
-
-- Web request validation belongs in `ResumeEnhancer.<ModuleName>.Web`.
-- FluentValidation validators live beside the web endpoints by request area.
-- Simple and cross-field request rules should be expressed in validators.
-- SL handlers should not duplicate request validation.
-- Mapping belongs in `ResumeEnhancer.<ModuleName>.SL/Mapping` and uses Mapster.
-- Custom mapping code should stay focused on workflow concerns such as access
-  checks, normalization, and EF collection synchronization.
-
-## Migration Workflow
-
-Migrations are handled by the console project, not by normal web startup.
+### Migration Console
 
 Show migration help:
 
@@ -398,121 +129,49 @@ Show migration help:
 dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- --help
 ```
 
-Create a migration:
+Apply migrations and seed data:
 
 ```powershell
-dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields
+dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a -s
 ```
 
-Apply pending migrations:
+## Product Roadmap Direction
 
-```powershell
-dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -a
-```
+The repository already contains requirement and story material for several future product areas:
 
-Run seeders:
+- Resume builder persistence and autosave orchestration.
+- Theme, layout, and accessibility improvements.
+- Multi-language document management.
+- AI-assisted resume analysis and job matching.
+- Billing, plans, and entitlement-aware premium features.
+- Stronger frontend foundation and shared component behavior.
 
-```powershell
-dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -s
-```
+These areas should continue to be delivered through traceable business requirements, user stories, OpenSpec changes, implementation tasks, and validation evidence.
 
-Create, apply, and seed:
+## Engineering Principles
 
-```powershell
-dotnet run --project application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields -a -s
-```
+- Preserve module boundaries and enter business modules through `application/WebSolution/ModulesComposition`.
+- Keep HTTP behavior in module Web projects, use-case orchestration in SL, domain concepts in DM, and EF-specific behavior in PL.
+- Treat setup data by stable semantic code and resolve database IDs only when assigning foreign keys.
+- Prefer small, verifiable changes that connect back to product intent.
+- Report validation honestly: distinguish local builds, automated tests, coverage gates, hosted workflow results, and PR status.
 
-The migration console is verbose by default. It prints EF CLI details, pending
-migrations, registered seeders, EF diagnostics, colored severity messages, and
-full exception stack traces on failure.
+## Documentation Map
 
-Default development connection string:
+- [ARCHITECTURE.md](ARCHITECTURE.md) explains current architecture, dependency rules, module layout, API surface, migrations, and test structure.
+- [AGENTS.md](AGENTS.md) defines repository-level agent instructions and architecture guardrails.
+- [HOW_TO_USE_CODEX_AGENTS.md](HOW_TO_USE_CODEX_AGENTS.md) explains how specialized Codex agents are used in this repository.
+- `Business-Requirements/*.BR.md` captures product and domain intent.
+- `User-Stories/*.US.md`, `*.SI.md`, and `*.Research.md` capture implementation-ready stories and supporting evidence.
+- `openspec` tracks formal change proposals and specifications.
+- `KnowledgeBase` stores durable architecture decisions and project knowledge.
 
-```text
-Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer
-```
+## Contribution Expectations
 
-## Main Dependencies
+Before changing behavior, read the relevant README, business requirement, user story, OpenSpec change, and implementation files. Keep changes scoped, preserve existing ownership boundaries, and run the smallest meaningful validation for the area touched.
 
-| Area | Dependencies |
-| --- | --- |
-| Runtime | .NET `net10.0` projects with nullable reference types enabled. |
-| Web/API | ASP.NET Core, `Microsoft.AspNetCore.OpenApi`, `Scalar.AspNetCore`. |
-| ResumeEnhancer.Infrastructure.Persistence | EF Core `Microsoft.EntityFrameworkCore`, `Relational`, `SqlServer`, and `Design` for migrations. |
-| CQRS/Mediator | `Mediator.Abstractions` and `Mediator.SourceGenerator`. |
-| Mapping | `Mapster`. |
-| Validation | `FluentValidation` and `FluentValidation.DependencyInjectionExtensions`. |
-| ResumeEnhancer.Infrastructure.Caching | `Microsoft.Extensions.Caching.*`, including in-memory and StackExchangeRedis support. |
-| Client | React + TypeScript + Vite through the `.esproj` client project. |
-| Testing | xUnit.net v3, Shouldly, NSubstitute, Moq, AutoFixture, Bogus, MoreLINQ, NetArchTest, ASP.NET Core MVC Testing, and EF Core SQLite. |
+For code changes, include the commands that were run and any validation that remains outstanding. For documentation-only changes, verify links, paths, and internal consistency.
 
-## Build
+## License
 
-Build the full solution:
-
-```powershell
-dotnet build application\ResumeEnhancerApp.slnx
-```
-
-Run unit tests:
-
-```powershell
-dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore
-```
-
-Run integration tests:
-
-```powershell
-dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore
-```
-
-Current test count:
-
-```text
-Unit tests: 231 passing
-Integration tests: 14 passing
-Total tests: 245 passing
-```
-
-Run the API host:
-
-```powershell
-dotnet run --project application\WebSolution\WebSolution.Server\ResumeEnhancer.WebSolution.Server.csproj
-```
-
-In development, the host maps OpenAPI and Scalar API reference UI through
-`MapOpenApi()` and `MapScalarApiReference()`.
-
-## Adding A New Module
-
-Use the Resume module as the template:
-
-1. Create `ResumeEnhancer.<ModuleName>.DM` for domain entities.
-2. Create `ResumeEnhancer.<ModuleName>.AM` for request and response contracts.
-3. Create `ResumeEnhancer.<ModuleName>.SL` for CQRS contracts, handlers, mapping, and persistence ports.
-4. Create `ResumeEnhancer.<ModuleName>.PL` for EF configuration, schema, seeders, and implementations of SL-owned ports.
-5. Create `ResumeEnhancer.<ModuleName>.Web` for Minimal APIs, controllers, validators, and module web registration.
-6. Add the module to `WebSolution/ModulesComposition` for host-facing registration and endpoint mapping.
-7. Register persistence with `Add<ModuleName>ModulePersistence()` inside `ResumeEnhancer.WebSolution.ModulesComposition`.
-8. Register web/application dependencies with `Add<ModuleName>ModuleWeb()` inside `ResumeEnhancer.WebSolution.ModulesComposition`.
-9. Expose module registration through `AddApplicationModules()`.
-10. Reference the module PL project from `Infrastructure/Migration`.
-11. Reference only `WebSolution/ModulesComposition` from the host.
-12. Create and review an EF migration.
-
-## Current Notes
-
-- Resume CRUD/search/exists API flows are implemented through Minimal APIs,
-  Mediator handlers, Mapster mapping, SL-owned repository ports, and PL
-  repository adapters.
-- Resume API integration coverage exercises the real HTTP boundary, including
-  routing, JSON binding, validation, mediator handlers, repository persistence,
-  fake authentication headers, and database side effects.
-- Architecture dependency tests enforce the clean dependency rule for current
-  Resume module assemblies and automatically scan future module project files
-  added under `application/Modules`.
-- `Core/CommonLibrary` is intentionally light and currently has no active
-  shared helpers.
-
-
-
+This repository includes a [LICENSE](LICENSE) file. Review it before distributing or reusing the project.

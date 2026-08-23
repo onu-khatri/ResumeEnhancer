@@ -1,50 +1,53 @@
 ---
 name: architect-review
-description: Review ResumeEnhancer changes from an architecture perspective, focusing on layering, module boundaries, dependency direction, scalability, integration risk, and long-term maintainability. Use when Codex needs a design-level review beyond line-by-line correctness.
+description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
 # Architect Review
 
-Use this skill for design-level review when code correctness alone is not enough.
+Use this skill for evidence-led design review when code correctness alone is not enough.
 
 ## Use this skill when
 
-- the main question is whether a solution fits the repository architecture
-- a change touches multiple layers, shared contracts, or long-lived abstractions
-- you need to identify future maintenance cost before merge
+- a diff or design changes ownership, dependency direction, contracts, composition, or long-lived abstractions
+- the main question is architecture fit, structural risk, or future maintenance cost
+- a review needs to separate blocking design defects from non-blocking watch items
+- the change may affect reliability, availability, scalability, performance, security, observability, deployability, or cost efficiency
 
 ## Do not use this skill when
 
-- the task is only to find local bugs in a small change
-- there is no architecture-sensitive behavior involved
-- the request is purely implementation, not review
+- the task is only a local correctness review
+- there is no architecture-sensitive behavior
+- the request is implementation rather than review
 
-## Review workflow
+## Knowledge Routing
 
-1. Read the story, requirement, or stated design goal.
-2. Inspect the actual diff and enough surrounding code to understand the call path.
-3. Check dependency direction across frontend, Web, AM, SL, PL, and DM.
-4. Evaluate whether responsibilities are leaking across transport, domain, and persistence concerns.
-5. Separate immediate design defects from watch items that do not block the change.
+1. Read `KnowledgeBase/INDEX.md`.
+2. Read `architecture-review.knowledge.md` before producing findings.
+3. Select review mode: modular-monolith by default; distributed only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
+4. In distributed mode, read `distributed-architecture-review.knowledge.md`.
+5. Read `dotnet-modular-architecture.knowledge.md` only for applicable architecture lenses.
+6. For ResumeEnhancer facts, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
 
-## Review lenses
+## Specialist Gates
 
-- module boundaries and ownership
-- dependency direction and composition root discipline
-- contract stability and duplication
-- persistence leakage into higher layers
-- scale, testability, and future refactor cost
+- Load `$domain-driven-design` for business vocabulary, bounded-context, aggregate, lifecycle, or invariant risk.
+- Load `$backend-security-coder` for trust boundaries, authentication/authorization, sensitive data, secrets, abuse, privacy, or export risk.
+- Load `$performance-optimization` for observed or visible latency, throughput, query, cache, resource, or capacity risk.
+- Load `$deep-research` before recommending a concrete distributed platform or pattern not supported by repository evidence.
+- Recommend `$architecture-decision-records` when a durable choice changes boundaries, integration, persistence, deployment, or test expectations.
 
-## ResumeEnhancer focus
+## Review Gate
 
-- Minimal API endpoint boundaries
-- validator, handler, repository, and mapper placement
-- frontend feature boundaries and API-client ownership
-- cross-layer naming consistency and traceability to user stories
+Do not label a concern architectural without evidence of a boundary, dependency, operational, or evolution consequence. Mark uninspected behavior as unverified.
 
-## Output requirements
+Do not enter distributed mode merely because a change is large or future-facing. Do not present a technology preference as a requirement, violation, or solution without quality-attribute evidence and constraints.
+
+## Output Requirements
 
 - findings first
-- severity and impact
-- what should change now
-- what should be documented or monitored later
+- Architecture Impact: High, Medium, or Low, with affected quality attributes and rationale
+- severity, evidence, impact, and smallest corrective direction
+- blocking defects separate from significant risks and watch items
+- required specialist skill, research, or ADR action and why
+- residual risks and verification gaps stated explicitly

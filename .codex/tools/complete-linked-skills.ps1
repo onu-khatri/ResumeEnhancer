@@ -117,54 +117,54 @@ Use this skill to create durable ADRs that another engineer or agent can underst
   "architect-review" = @'
 ---
 name: architect-review
-description: Review ResumeEnhancer changes from an architecture perspective, focusing on layering, module boundaries, dependency direction, scalability, integration risk, and long-term maintainability. Use when Codex needs a design-level review beyond line-by-line correctness.
+description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
 # Architect Review
 
-Use this skill for design-level review when code correctness alone is not enough.
+Use this skill for evidence-led design review when code correctness alone is not enough.
 
 ## Use this skill when
 
-- the main question is whether a solution fits the repository architecture
-- a change touches multiple layers, shared contracts, or long-lived abstractions
-- you need to identify future maintenance cost before merge
+- a diff or design changes ownership, dependency direction, contracts, composition, or long-lived abstractions
+- the main question is architecture fit, structural risk, or future maintenance cost
 
 ## Do not use this skill when
 
-- the task is only to find local bugs in a small change
-- there is no architecture-sensitive behavior involved
-- the request is purely implementation, not review
+- the task is only a local correctness review
+- there is no architecture-sensitive behavior
 
-## Review workflow
+## Knowledge Routing
 
-1. Read the story, requirement, or stated design goal.
-2. Inspect the actual diff and enough surrounding code to understand the call path.
-3. Check dependency direction across frontend, Web, AM, SL, PL, and DM.
-4. Evaluate whether responsibilities are leaking across transport, domain, and persistence concerns.
-5. Separate immediate design defects from watch items that do not block the change.
+1. Read `KnowledgeBase/INDEX.md`.
+2. Read `architecture-review.knowledge.md` before producing findings.
+3. Select modular-monolith mode by default; use distributed mode only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
+4. In distributed mode, read `distributed-architecture-review.knowledge.md`.
+5. Read `dotnet-modular-architecture.knowledge.md` only for applicable architecture lenses.
+6. For ResumeEnhancer facts, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
 
-## Review lenses
+## Specialist Gates
 
-- module boundaries and ownership
-- dependency direction and composition root discipline
-- contract stability and duplication
-- persistence leakage into higher layers
-- scale, testability, and future refactor cost
+- Load `$domain-driven-design` for business vocabulary, bounded-context, aggregate, lifecycle, or invariant risk.
+- Load `$backend-security-coder` for trust, authorization, sensitive-data, secret, abuse, privacy, or export risk.
+- Load `$performance-optimization` for observed or visible latency, throughput, query, cache, resource, or capacity risk.
+- Load `$deep-research` before concrete distributed platform or pattern recommendations unsupported by repository evidence.
+- Recommend `$architecture-decision-records` for durable boundary, integration, persistence, deployment, or test-expectation decisions.
 
-## ResumeEnhancer focus
+## Review Gate
 
-- Minimal API endpoint boundaries
-- validator, handler, repository, and mapper placement
-- frontend feature boundaries and API-client ownership
-- cross-layer naming consistency and traceability to user stories
+Do not label a concern architectural without evidence of a boundary, dependency, operational, or evolution consequence. Mark uninspected behavior as unverified.
 
-## Output requirements
+Do not enter distributed mode merely because a change is large or future-facing. Do not present a technology preference as a requirement, violation, or solution without quality-attribute evidence and constraints.
+
+## Output Requirements
 
 - findings first
-- severity and impact
-- what should change now
-- what should be documented or monitored later
+- Architecture Impact: High, Medium, or Low, with affected quality attributes and rationale
+- severity, evidence, impact, and smallest corrective direction
+- blocking defects separate from significant risks and watch items
+- required specialist skill, research, or ADR action and why
+- residual risks and verification gaps stated explicitly
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architect-review
@@ -494,45 +494,41 @@ Use this skill when a shallow code read would create avoidable risk and the answ
   "domain-driven-design" = @'
 ---
 name: domain-driven-design
-description: Apply domain-driven design thinking to ResumeEnhancer by clarifying business concepts, boundaries, invariants, and model responsibilities. Use when Codex needs to shape new domain behavior or review whether a design fits the business model cleanly.
+description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
 # Domain Driven Design
 
-Use this skill pragmatically. The goal is clearer business modeling for ResumeEnhancer, not performative DDD vocabulary.
+Use this skill pragmatically. The goal is clearer business modeling, not performative DDD vocabulary.
 
 ## Use this skill when
 
-- business concepts, rules, or boundaries are ambiguous
-- you need to shape a new feature around business language and invariants
-- a design should be checked for domain leakage or weak model boundaries
+- business concepts, rules, or ownership boundaries are ambiguous
+- lifecycle, policy, or state-transition invariants affect design
+- a design needs a bounded-context, aggregate, value-object, or domain-service decision
 
 ## Do not use this skill when
 
-- the task is straightforward CRUD with low business complexity
-- the issue is purely technical and not domain-shaped
+- the task is straightforward data maintenance with no meaningful invariants
+- the issue is purely technical and has no business-model consequence
 
-## Workflow
+## Knowledge Routing
 
-1. Decide whether the problem actually deserves DDD depth.
-2. Identify subdomains, bounded contexts, core terminology, and business rules.
-3. Map those ideas to the existing modular monolith rather than pretending the codebase is a blank slate.
-4. Define where invariants live and where translation between contexts should happen.
-5. If a formal artifact list is needed, read `references/ddd-deliverables.md`.
+1. Read `KnowledgeBase/INDEX.md`.
+2. Read `domain-modeling.knowledge.md` before proposing a domain-modeling pattern.
+3. Read `dotnet-modular-architecture.knowledge.md` when the model decision changes dependencies, composition, or integration seams.
+4. For ResumeEnhancer adaptation, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
 
-## ResumeEnhancer focus
+## Workflow Gate
 
-- resume lifecycle and ownership rules
-- bounded contexts across frontend, Web, SL, and persistence
-- language used in business requirements versus code
-- invariants that must not leak into transport or storage shortcuts
+Stop after the viability assessment when the task has no meaningful invariant, divergent context, or lifecycle rule. Do not introduce tactical DDD patterns for simple CRUD.
 
-## Output requirements
+## Output Requirements
 
 - DDD viability assessment
-- current vocabulary and boundaries
-- candidate aggregates or domain services when relevant
-- next implementation or ADR recommendation
+- vocabulary, ownership, and invariant decisions when modeling is justified
+- explicit translation and integration boundaries when applicable
+- evidence and ADR recommendation for durable context or consistency choices
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/domain-driven-design
@@ -540,46 +536,47 @@ Use this skill pragmatically. The goal is clearer business modeling for ResumeEn
   "dotnet-architect" = @'
 ---
 name: dotnet-architect
-description: Design and review ResumeEnhancer solutions as a .NET modular monolith with clean layering, Minimal APIs, Mediator, EF Core, and explicit composition. Use when Codex needs framework-aware architecture guidance for backend or cross-layer changes.
+description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
 # Dotnet Architect
 
-Use this skill when architecture guidance should be grounded in the actual .NET stack and conventions used in this repository.
+Use this skill when an architecture decision needs .NET-aware reasoning rather than a local implementation pattern.
 
 ## Use this skill when
 
-- a backend or cross-layer change needs .NET-specific architecture judgment
-- the question touches composition, endpoint style, service boundaries, or persistence integration
-- you need design guidance that fits the existing modular monolith
+- a backend or cross-layer change needs ownership, dependency, composition, or integration decisions
+- a new abstraction, module seam, registration boundary, or durable architecture choice is proposed
+- architecture guidance must account for application, domain, transport, persistence, and host responsibilities together
 
 ## Do not use this skill when
 
-- the task is not meaningfully .NET or backend related
-- a smaller implementation-focused skill is enough
+- the task is not meaningfully architecture-sensitive
+- an established local pattern answers the question without a boundary decision
+- you only need a design review of an existing change; use `$architect-review`
 
-## Architecture workflow
+## Knowledge Routing
 
-1. Clarify the goal, constraints, and affected layers.
-2. Apply repository-specific rules before generic framework advice.
-3. Check dependency direction, composition root behavior, and lifetime management.
-4. Review contracts, validation, handlers, mapping, and persistence boundaries together.
-5. Open `dotnet-backend-patterns` references when deeper implementation patterns are needed.
+1. Read `KnowledgeBase/INDEX.md`.
+2. Read `dotnet-modular-architecture.knowledge.md` before selecting a boundary, dependency, composition, or integration pattern.
+3. Read `domain-modeling.knowledge.md` only when business boundaries, language, or invariants are material.
+4. For ResumeEnhancer adaptation, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
+5. Retrieve Group 1 API/application or EF/persistence knowledge only when that decision area is affected.
 
-## Review lenses
+## Workflow
 
-- Minimal API endpoint discipline
-- handler and service-layer cohesion
-- EF Core and repository integration
-- explicit composition and testability
-- performance and operational tradeoffs
+1. Clarify the behavior, constraints, and affected owners.
+2. Make the smallest boundary decision that preserves dependency direction and explicit composition.
+3. Evaluate lifecycle, configuration, failure, and test consequences.
+4. State alternatives and tradeoffs when the choice is durable.
+5. Use `$architecture-decision-records` when the project needs the decision recorded.
 
-## ResumeEnhancer focus
+## Output Requirements
 
-- module registration and startup composition
-- separation of Web, AM, SL, PL, and DM
-- migration and seeding consequences
-- contract and frontend integration stability
+- proposed ownership and dependency direction
+- applicable project authority and any unresolved conflict
+- composition and verification consequences
+- ADR recommendation when the decision is durable
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-architect
@@ -587,42 +584,37 @@ Use this skill when architecture guidance should be grounded in the actual .NET 
   "dotnet-backend-patterns" = @'
 ---
 name: dotnet-backend-patterns
-description: Apply ResumeEnhancer backend implementation patterns for ASP.NET Core, Minimal APIs, FluentValidation, Mediator, Mapster, EF Core, repositories, Dapper, and testing. Use when Codex needs the preferred house style for backend changes in this repository.
+description: Apply .NET backend implementation patterns for API boundaries, application behavior, persistence, and testing. Use when a change needs pattern selection or a framework-aware implementation review.
 ---
 
 # Dotnet Backend Patterns
 
-Use this skill as the backend implementation playbook for ResumeEnhancer.
+Use this skill to select and apply the smallest proven .NET backend pattern that fits the change and the target project.
 
 ## Use this skill when
 
-- implementing or reviewing backend code in this repository
-- you need the local house style for endpoints, validation, handlers, repositories, and persistence
+- implementing or reviewing .NET backend code
+- you need a pattern for API boundaries, application behavior, persistence, or verification
 - a change should align with proven patterns instead of introducing a new stack shape
 
-## Read these references based on the task
+## Knowledge routing
 
-- `references/implementation-playbook.md` for end-to-end backend delivery patterns
-- `references/ef-core-best-practices.md` for EF Core modeling, querying, and performance guidance
-- `references/dapper-patterns.md` when a low-level query path is justified
+1. Check `KnowledgeBase/INDEX.md`.
+2. Read the API/application delivery topic for request flow, validation, mapping, error behavior, and test-boundary choices.
+3. Read the EF Core persistence topic for model, query, transaction, migration, or initialization choices.
+4. Read the target project's adaptation topic before applying project-specific frameworks, composition conventions, or abstractions.
 
-## Reusable assets
+## Pattern selection
 
-- `assets/repository-template.cs` for repository scaffolding patterns
-- `assets/service-template.cs` for service-layer composition patterns
-
-## Core rules
-
-- keep HTTP concerns in the Web layer
-- keep business decisions in SL
-- keep persistence details in PL
-- use validation and mapping intentionally, not mechanically
-- prefer repository conventions already present in ResumeEnhancer over new abstractions
+- Preserve explicit transport, application, domain, and persistence boundaries.
+- Prefer established project patterns over introducing a framework or abstraction without a demonstrated need.
+- Treat contract compatibility, validation, cancellation, error behavior, query shape, and verification as deliberate design decisions.
+- Do not assume a particular mediator, mapper, repository, unit-of-work, or validation library unless project guidance requires it.
 
 ## Output requirements
 
 - impacted backend layers
-- pattern or template chosen
+- selected pattern and rationale
 - persistence and testing notes
 
 ## Upstream URL
@@ -1221,56 +1213,6 @@ Use this note for higher-quality ADRs when the decision is important enough to r
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architecture-decision-records
 '@
-  "architect-review\references\review-lenses.md" = @'
-# Architecture Review Lenses
-
-Use these lenses when a change is large enough that line-by-line correctness is not the whole story.
-
-## Boundary checks
-
-- do dependencies still point the right way
-- did transport concerns leak into business or persistence logic
-- are contracts stable and intentionally shaped
-
-## Evolution checks
-
-- will future features get easier or harder after this change
-- is the abstraction sized to the real problem
-- does the design create hidden coupling or duplicated policy
-
-## Risk checks
-
-- migration and rollout complexity
-- testability and observability
-- cross-layer naming and responsibility drift
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architect-review
-'@
-  "backend-feature-development\references\delivery-playbook.md" = @'
-# Backend Delivery Playbook
-
-Use this playbook for backend stories that require more than a direct code edit.
-
-## Suggested phases
-
-1. confirm story scope and existing behavior
-2. shape contracts and validation
-3. implement handlers and business rules
-4. update persistence and mapping
-5. add tests and rollout notes
-
-## Delivery concerns
-
-- backward compatibility of request and response models
-- validator coverage for user-controlled inputs
-- mapper correctness and null handling
-- repository query efficiency and transaction safety
-- migration, seed data, and integration-test impact
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-development-feature-development
-'@
   "backend-security-coder\references\security-review-guide.md" = @'
 # Backend Security Review Guide
 
@@ -1317,27 +1259,6 @@ Use this playbook when behavior must stay stable while structure improves.
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-refactoring-tech-debt
-'@
-  "dotnet-architect\references\architecture-lenses.md" = @'
-# Dotnet Architecture Lenses
-
-Use these lenses when reviewing or designing .NET changes for ResumeEnhancer.
-
-## Framework-aware checks
-
-- endpoint composition and registration
-- dependency-injection lifetime correctness
-- handler and service cohesion
-- EF Core usage and repository boundaries
-
-## Operational checks
-
-- migration safety
-- startup wiring and configuration
-- test seams and replaceable infrastructure
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-architect
 '@
   "frontend-design\references\design-playbook.md" = @'
 # Frontend Design Playbook
