@@ -100,40 +100,14 @@ Document significant ResumeEnhancer decisions using durable ADRs that preserve c
   "architect-review" = @'
 ---
 name: architect-review
-description: Review ResumeEnhancer changes from an architecture perspective, focusing on layering, module boundaries, dependency direction, scalability, and long-term maintainability. Use when Codex needs a design-level review beyond line-by-line correctness.
+description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
 # Architect Review
 
-Perform a design-level review of ResumeEnhancer changes with emphasis on architecture fit, dependency direction, and future maintainability.
+Read `KnowledgeBase/INDEX.md`, then `architecture-review.knowledge.md` before producing findings. Use distributed review only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability; then read `distributed-architecture-review.knowledge.md`.
 
-## Use this skill when
-
-- The main question is whether a change fits the architecture
-- You need a design-level review beyond correctness
-- You want to assess layering, module boundaries, or long-term maintainability
-
-## Do not use this skill when
-
-- There is no architecture-sensitive change
-- A pure defect review is enough without design analysis
-- The task is only to generate implementation code
-
-## Instructions
-
-1. Review dependency direction, boundary ownership, and integration impact.
-2. Check whether the host, Web, SL, PL, and DM roles remain clean.
-3. Call out architectural shortcuts that make future work harder.
-4. Prefer repository-specific reasoning over generic pattern advice.
-5. Highlight what should be changed now versus what is a future architectural watch item.
-
-## Review focus
-
-- compile-time dependency direction
-- module composition entry points
-- transport versus domain versus persistence leakage
-- API contract boundaries
-- scalability, testability, and refactor cost
+Route domain, security, performance, research, and ADR work to their specialist skills only when their trigger applies. Report Architecture Impact as High, Medium, or Low with affected quality attributes, then evidence-backed findings, residual risks, and verification gaps.
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architect-review
@@ -385,37 +359,14 @@ Perform broad, evidence-driven investigation before important ResumeEnhancer dec
   "domain-driven-design" = @'
 ---
 name: domain-driven-design
-description: Apply domain-driven design thinking to ResumeEnhancer by clarifying business concepts, boundaries, invariants, and model responsibilities. Use when Codex needs to shape new domain behavior or review whether a design fits the business model cleanly.
+description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
 # Domain Driven Design
 
-Use DDD thinking pragmatically in ResumeEnhancer to clarify business language, domain boundaries, invariants, and tactical implementation choices.
+Read `KnowledgeBase/INDEX.md`, then `domain-modeling.knowledge.md` before proposing domain-modeling patterns. Retrieve modular architecture when dependencies, composition, or integration change, and project routing for local adaptation.
 
-## Use this skill when
-
-- You need to model a complex business concept or boundary in ResumeEnhancer
-- You want to decide whether deeper DDD practices are justified
-- You need to connect strategic product language to tactical implementation
-
-## Do not use this skill when
-
-- The task is simple CRUD with low business complexity
-- The work is a localized bug fix with no domain ambiguity
-
-## Instructions
-
-1. Run a viability check before committing to full DDD depth.
-2. Produce strategic artifacts first: subdomains, bounded contexts, glossary.
-3. Map strategic ideas to the current modular monolith structure.
-4. If a deliverable checklist is needed, open `references/ddd-deliverables.md`.
-
-## Output requirements
-
-- scope and assumptions
-- current DDD stage
-- artifacts produced
-- next-step recommendation
+Stop after viability assessment when no meaningful invariant, divergent context, or lifecycle rule exists.
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/domain-driven-design
@@ -423,38 +374,14 @@ Use DDD thinking pragmatically in ResumeEnhancer to clarify business language, d
   "dotnet-architect" = @'
 ---
 name: dotnet-architect
-description: Design and review ResumeEnhancer solutions as a .NET modular monolith with clean layering, Minimal APIs, Mediator, EF Core, and explicit composition. Use when Codex needs framework-aware architecture guidance for backend or cross-layer changes.
+description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
 # Dotnet Architect
 
-Provide .NET-specific architecture guidance for ResumeEnhancer using the actual stack in this repository: ASP.NET Core, Minimal APIs, Mediator, EF Core, explicit composition, and modular layering.
+Read `KnowledgeBase/INDEX.md`, then `dotnet-modular-architecture.knowledge.md` before selecting a boundary, dependency, composition, or integration pattern. Retrieve domain-modeling and project-routing knowledge only when applicable.
 
-## Use this skill when
-
-- A backend or cross-layer change needs .NET-specific architecture judgment
-- You need guidance on ASP.NET Core, composition, EF Core, or clean layering
-- You are reviewing whether a .NET solution fits the current design direction
-
-## Do not use this skill when
-
-- The task is not .NET or backend related
-- A smaller implementation-focused skill is sufficient
-
-## Instructions
-
-1. Clarify goals, constraints, and impacted layers.
-2. Apply repository-specific architecture rules before generic .NET advice.
-3. Check dependency direction, composition boundaries, and persistence integration.
-4. For deeper implementation patterns, open the local `dotnet-backend-patterns` references.
-
-## Capabilities
-
-- modular monolith design
-- Minimal API and service-layer boundaries
-- EF Core and repository integration
-- testing and verification strategy
-- performance and maintainability tradeoffs
+State ownership, dependency direction, verification implications, and an ADR recommendation for durable decisions.
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-architect

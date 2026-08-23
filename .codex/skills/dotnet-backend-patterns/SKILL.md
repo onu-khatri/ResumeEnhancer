@@ -1,49 +1,41 @@
 ---
 name: dotnet-backend-patterns
-description: Apply ResumeEnhancer backend implementation patterns for ASP.NET Core, Minimal APIs, FluentValidation, the Mediator source generator, Mapster, EF Core + SQL Server, repositories, unit of work, and testing. Use when Codex needs the preferred house style for backend changes in this repository.
+description: Apply .NET backend implementation patterns for API boundaries, application behavior, persistence, and testing. Use when a change needs pattern selection or a framework-aware implementation review.
 ---
 
 # Dotnet Backend Patterns
 
-Use this skill as the backend implementation playbook for ResumeEnhancer.
+Use this skill to select and apply the smallest proven .NET backend pattern that fits the change and the target project.
 
 ## Use this skill when
 
-- implementing or reviewing backend code in this repository
-- you need the local house style for endpoints, validation, handlers, repositories, and persistence
+- implementing or reviewing .NET backend code
+- you need a pattern for API boundaries, application behavior, persistence, or verification
 - a change should align with proven patterns instead of introducing a new stack shape
 
-## Read these references based on the task
+## Knowledge routing
 
-- `references/implementation-playbook.md` for the end-to-end backend flow (contracts, Minimal API endpoints, validators, Mediator handlers, Mapster mapping, repositories, composition)
-- `references/ef-core-best-practices.md` for persistence specifics (AppDbContext audit pipeline, entity configuration, module schema, migrations, seeding, query shaping)
+1. Check `KnowledgeBase/INDEX.md`.
+2. Read the API/application delivery topic for request flow, validation, mapping, error behavior, and test-boundary choices.
+3. Read the EF Core persistence topic for model, query, transaction, migration, or initialization choices.
+4. Read the target project's adaptation topic before applying project-specific frameworks, composition conventions, or abstractions.
 
-## Reusable assets
+## Pattern selection
 
-- `assets/repository-template.cs` for the `IUnitOfWork<AppDbContext>` repository pattern
-- `assets/service-template.cs` for the Mediator contract + handler + Mapster mapping slice
-
-## Core rules
-
-- keep HTTP concerns in `ResumeEnhancer.<ModuleName>.Web`
-- keep request/response contracts in `ResumeEnhancer.<ModuleName>.AM`
-- keep contracts, handlers, and mapping workflow in `ResumeEnhancer.<ModuleName>.SL`
-- keep domain entities in `ResumeEnhancer.<ModuleName>.DM`
-- keep EF configuration, repositories, and seeding in `ResumeEnhancer.<ModuleName>.PL`
-- use the `Mediator` source generator, not MediatR
-- use Mapster mapping with explicit `.Ignore()` for navigation properties
-- prefer `IUnitOfWork<AppDbContext>` and `IAuditEntityRepository<>` over new abstractions
-- validate with FluentValidation in the Web layer; keep request DTOs in AM
+- Preserve explicit transport, application, domain, and persistence boundaries.
+- Prefer established project patterns over introducing a framework or abstraction without a demonstrated need.
+- Treat contract compatibility, validation, cancellation, error behavior, query shape, and verification as deliberate design decisions.
+- Do not assume a particular mediator, mapper, repository, unit-of-work, or validation library unless the project adaptation guidance requires it.
 
 ## Output requirements
 
 - impacted backend layers
-- pattern or template chosen
+- selected pattern and rationale
 - persistence and testing notes
 
 ## Definition of Done
 
-- `dotnet build application\ResumeEnhancerApp.slnx` passes.
-- Relevant unit tests pass: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`.
-- When persistence changes, integration tests pass: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`.
+- The selected pattern fits the target project's existing architecture.
+- The build and relevant tests have been run or their gaps are stated explicitly.
+- Persistence changes include migration, initialization, and rollout notes.
 

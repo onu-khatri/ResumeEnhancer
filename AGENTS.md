@@ -21,18 +21,40 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 ## Working Style
 
 - Read the relevant README, user stories, business requirements, and implementation files before changing behavior.
+- Check `KnowledgeBase/INDEX.md` before planning, implementing, reviewing, or documenting work; then read only the linked knowledge topics that apply.
 - Follow existing naming, folder, and dependency patterns before introducing new structure.
 - Prefer extending current flows over inventing parallel abstractions.
 - Keep changes scoped to the user request.
 - Make business intent traceable when possible by connecting code changes back to existing requirement artifacts.
+- Before asking the user an interview or optional clarification question, use the host's structured question UI as the first choice when available. Use one-at-a-time chat questions only when it is unavailable.
 
 ## Skills And Agents
 
-- Use the project skill at `.codex/skills/project-knowledge-builder/` when the task is to build reusable project knowledge, trace architecture, or document conventions.
-- Use project custom agents from `.codex/agents/` as focused helpers, not as replacements for reading the repo yourself.
-- If a task needs durable repository guidance, prefer `AGENTS.md`.
-- If a task needs a reusable workflow, prefer a skill.
-- If a task needs a reusable specialist subagent, prefer `.codex/agents/*.toml`.
+- Discover available repository skills under `.codex/skills/<skill-name>/SKILL.md` and custom agents under `.codex/agents/*.toml` before choosing a workflow. Read a selected skill's `SKILL.md` before acting; read only its routed references that apply.
+- Use `AGENTS.md` for durable repository-wide constraints, a skill for reusable task guidance, and a custom agent for a focused delegated workstream. A delegated agent does not replace the main agent's repository inspection or ownership of the final result.
+- Keep these mechanisms separate: skill UI metadata is `.codex/skills/<skill-name>/agents/openai.yaml`; OpenSpec workflows live in `.agents/skills/`; custom-agent definitions live in `.codex/agents/`.
+
+### Skill Selection
+
+- Backend delivery: `$backend-feature-development`, `$dotnet-backend-patterns`, `$ef-core-database-architect`, `$backend-security-coder`, and `$performance-optimization` as the change requires.
+- Architecture and domain: `$architect-review`, `$dotnet-architect`, `$domain-driven-design`, and `$architecture-decision-records`.
+- Frontend delivery: `$frontend-developer`, `$frontend-dev-guidelines`, `$react-patterns`, `$frontend-design`, `$production-ui-generator`, and `$frontend-security-coder` as applicable.
+- Full-stack and story delivery: `$full-stack-feature-orchestrator`, `$us-kickoff`, `$plan-writing`, and the OpenSpec skills in `.agents/skills/` when the user explicitly requests that workflow.
+- Review, quality, and security: `$production-code-reviewer`, `$ai-code-review`, `$code-review-checklist`, `$clean-code`, `$code-refactoring-tech-debt`, `$security-manager`, and `$design-review` as relevant.
+- Research and durable guidance: `$deep-research`, `$project-knowledge-builder`, `$documentation-generator`, `$readme-generator`, `$prd-manager`, and `$user-story-creator`. Use `$project-knowledge-builder` for reusable `KnowledgeBase/` artifacts, not ordinary documentation.
+- Delivery operations: `$git-workflows`, `$git-worktrees`, `$git-commit`, and `$pr-creator` when managing branches, commits, worktrees, or pull requests.
+- Use `$user-interview` when a selected workflow requires user-confirmed material decisions; do not silently replace a required interview with assumptions.
+
+### Custom Agent Selection
+
+- `backend-implementer`: assigned backend slices across Minimal APIs, validation, Mediator, persistence, and tests.
+- `frontend-implementer`: assigned React/TypeScript feature slices, routes, forms, and typed API integration.
+- `knowledge-researcher`: evidence gathering and approval-driven reusable knowledge work; it does not implement product code.
+- `security-auditor`: OWASP-oriented review of trust boundaries, authorization, validation, data exposure, and abuse resistance.
+- `code-reviewer`: defect-first review of real diffs across correctness, security, architecture, and tests.
+- `story-orchestrator`: approved multi-story dependency ordering, parallel-work planning, and review-ready handoff.
+
+For parallel work, assign explicit ownership before editing shared contracts, migrations, composition, or shared UI primitives. Keep cross-layer contract changes in one coordinating lane, and use agents only when their role materially improves the task.
 
 ## Verification Expectations
 

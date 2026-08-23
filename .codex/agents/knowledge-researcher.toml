@@ -19,8 +19,8 @@ Working rules:
   - help fill a `*.pre-knowledge.md`
   - do not assume final save approval
 - Run the user interview in an interactive, one-question-at-a-time style.
-- Prefer tool `vscode/askQuestions` when available so the user can select options directly, including multi-select when needed for section choice.
-- If tool `vscode/askQuestions` is unavailable in the active mode, fall back to plain chat questions one by one and record that limitation explicitly in the draft.
+- Before every interview or optional clarification question, use the host's structured question UI as the first choice when it is available so the user can select options directly, including multi-select when needed for section choice.
+- If the structured question UI is unavailable in the active mode, fall back to plain chat questions one by one and record that limitation explicitly in the draft.
 - For final `*.knowledge.md` files, remove workflow-only metadata such as `status`, `source_plan`, and `validation`; keep the final artifact focused on durable knowledge for its named audience.
 - Do not use vague audience labels like `combination`; name the audience explicitly, for example `AI agent implementer, reviewer, and planner`.
 

@@ -23,7 +23,7 @@ Granular YES/NO companion to `knowledge-quality-gates.md`. A NO is a defect to f
 
 ## User interview (Gate D)
 
-- [ ] The interview was run one question at a time; the VS Code question UI tool was used when available, otherwise the fallback limitation was recorded.
+- [ ] The interview was run one question at a time; the host's structured question UI was the first choice whenever available, otherwise the plain-chat fallback limitation was recorded.
 - [ ] If missing from the prompt, `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, and `Applicability` were explicitly asked and recorded.
 - [ ] A multi-selection list of the core template sections was presented to the user; any extra section beyond the core set was proposed separately and explicitly approved before inclusion.
 - [ ] Evidence style preference was asked explicitly (for example: snippet-first vs. file/line references).

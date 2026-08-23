@@ -35,7 +35,7 @@ A one-off answer is enough and no saved artifact is needed.
 |---|------|------|
 | 1 | Check `KnowledgeBase/` for an existing artifact; extend it or start fresh | — |
 | 2 | Frame the topic and investigate, keeping an evidence map | A |
-| 3 | Interview the user (framing: objective, audience, depth of knowledge, expected structure, applicability, scope, core-section selection, evidence style, extra-section approval) in an interactive one-question-at-a-time flow, preferring the VS Code question UI tool when available | — |
+| 3 | Interview the user (framing: objective, audience, depth of knowledge, expected structure, applicability, scope, core-section selection, evidence style, extra-section approval) in an interactive one-question-at-a-time flow. Use the host's structured question UI first when available; use chat only when it is unavailable. | — |
 | 4 | Write `KnowledgeBase/<topic-name>.kb_plan.md`; **wait for approval** | — |
 | 5 | Compose `KnowledgeBase/<topic-name>.pre-knowledge.md` with snippet-first, self-sufficient sections | B–C |
 | 6 | **Interview the user again** (resolve ambiguities, preferences, options; confirm core sections and any discovered extra sections) | D |
@@ -64,8 +64,8 @@ Gates A–H (defined in `references/knowledge-quality-gates.md`):
 - Save artifacts under `KnowledgeBase/`.
 - Do not skip the user interview just because the initial prompt already contains some scope details; confirm unresolved preferences explicitly.
 - If the prompt does not explicitly provide `Objective`, `Audience`, `Depth of knowledge`, `Expected structure`, or `Applicability`, ask for them and do not assume them.
-- Run the interview one question at a time. Prefer the VS Code question UI tool when it is available in the active mode so the user can answer with option buttons and multi-select where needed.
-- If the VS Code question UI tool is not available, fall back to plain chat questions one by one and record that limitation explicitly.
+- Run the interview one question at a time. Before every interview or optional clarification question, use the host's structured question UI first when it is available, including for option buttons and genuine multi-select decisions.
+- If the structured question UI is unavailable, fall back to plain chat questions one by one and record that limitation explicitly.
 - Do not rely on path-only evidence where a short snippet would better ground the claim.
 - Do not leave a kept section too thin; every included section should contain enough concrete snippet material that a cold-start agent can reason from the artifact itself.
 - `*.pre-knowledge.md` may include workflow metadata needed for approval and validation. Final `*.knowledge.md` should omit `status`, `source_plan`, and `validation`.

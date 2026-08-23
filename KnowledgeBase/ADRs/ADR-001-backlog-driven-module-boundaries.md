@@ -16,7 +16,7 @@ The current user-story backlog defines a much broader product surface. The repos
 
 This ADR also needs to clarify the split between authentication runtime concerns and user or authorization-profile concerns so those responsibilities do not collapse into one module boundary.
 
-The decision must preserve the repository rules already documented in `AGENTS.md` and `README.md`:
+The decision must preserve the repository rules already documented in `AGENTS.md` and `ARCHITECTURE.md`:
 
 - the host enters modules through `application/WebSolution/ModulesComposition`
 - HTTP concerns stay in `*.Web`
@@ -277,4 +277,4 @@ It may collaborate with `IdentityModule`, but it should remain the source of tru
 - [User-Stories/26.2 audit-analytics-backend.US.md](../../User-Stories/26.2%20audit-analytics-backend.US.md)
 - [User-Stories/27.2 feature-flags-backend.US.md](../../User-Stories/27.2%20feature-flags-backend.US.md)
 - [AGENTS.md](../../AGENTS.md)
-- [README.md](../../README.md)
+- [ARCHITECTURE.md](../../ARCHITECTURE.md)
