@@ -21,19 +21,19 @@ Use this skill to establish shared understanding of a plan before the calling sk
 
 ## Interview Workflow
 
-1. Frame the plan: state the intended outcome, known facts, constraints, and the decision the plan must support.
-2. Build a design tree of every material branch: user outcome, scope and non-goals, workflows and states, rules and edge cases, data and integration contracts, security/privacy, non-functional expectations, dependencies, rollout/verification, and approval. Omit a branch only when it demonstrably does not apply.
-3. Explore the repository before asking about each branch. Read the relevant requirements, stories, code, tests, configuration, and established conventions. Mark the branch `evidence-backed` when the answer is available; do not ask the user to rediscover repository facts.
-4. Order remaining branches by dependency. Resolve prerequisites before dependent decisions, then ask one focused question at a time. Use the host's structured question UI as the first choice for every interview or optional clarification question when it is available, including option and multi-select prompts. Only when it is unavailable, ask in chat and wait for the answer before continuing.
-5. Use neutral, concrete wording. For past behavior or workflow discovery, ask for a recent example, trigger, actions, alternatives, constraints, and outcome rather than hypothetical preference. Probe when an answer remains ambiguous, conflicts with evidence, or opens a new material branch.
-6. After each answer, update the design tree and revisit affected dependent branches. Continue until every material branch is evidence-backed, explicitly decided by the user, intentionally deferred with an owner, or documented as a blocking unknown.
-7. Present a shared-understanding summary: decisions, evidence, assumptions, deferred items, blockers, and the precise effect on the calling skill's next step. Ask for confirmation before treating the interview as complete.
+1. Frame the outcome, known facts, constraints, and decision the calling workflow needs.
+2. Explore relevant repository evidence before selecting a material branch. Do not ask the user for an answer already available from an authoritative source.
+3. Keep only the compact state needed for the next question. Use one session-scoped local state artifact under root `tmp/` only when the rolling state is no longer compact, the user explicitly asks to preserve it, or a real handoff/interruption requires persistence. Batch artifact updates at those checkpoints, not after every answer. Artifact operations are internal: do not announce file creation, reads, updates, pruning, or paths unless the user asks.
+4. Select the highest-value unresolved branch, then ask one focused question. Prefer the host's structured UI; otherwise use a lettered chat prompt with `◯` single-select or `☐` multi-select options. Offer 2-6 relevant choices and end with `Other — type your own answer` whenever options are appropriate.
+5. Accept free text. Reduce each answer to only the facts, gaps, conflicts, and dependencies that can affect later work; preserve the source as `User-provided`, `evidence-backed`, or `inferred`.
+6. Adapt to the updated state, revisit only immediate dependencies, and stop when enough information exists to satisfy the request. Do not retain question history, old options, reasoning traces, duplicate facts, or completed branches.
+7. Present confirmed requirements, assumptions and inferences, open questions, and the precise next action. Request confirmation before treating the interview as complete.
 
-Record user answers as `User-provided`; do not relabel them as repository observations or externally validated research. Preserve uncertainty when the user is unsure. Do not replace a repository exploration with a question merely because asking is faster.
+Read [question-design.md](references/question-design.md) for branch selection, state-artifact storage and pruning, question formats, and answer handling.
 
 ## Completion Gate
 
-Do not end the interview after one answer or a superficial summary. End only after the design tree has been reviewed and the user confirms the shared-understanding summary, or after documenting the exact blocking unknowns that prevent that confirmation.
+End when the compact state is sufficient, all material gaps or conflicts are resolved or disclosed, and all inferences are explicit. If this is impossible, document the blocking unknowns, their owner, and the decision each prevents.
 
 ## Approval Gate
 
