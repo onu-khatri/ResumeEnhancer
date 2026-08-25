@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.WebSolution.ModulesComposition;
 using ResumeEnhancer.Infrastructure.Persistence;
 using Scalar.AspNetCore;
+using EmptyProjectTesting.Middleware;
+using ResumeEnhancer.Core.CommonLibrary.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +17,13 @@ builder.Services.AddAppDbContext((_, options) =>
     options.UseSqlServer(GetConnectionString(builder));
 });
 builder.Services.AddApplicationModules();
-
+builder.Host.ConfigureSerilog(builder.Configuration);
 builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionHandler>();
 app.UseDefaultFiles();
 app.MapStaticAssets();
 

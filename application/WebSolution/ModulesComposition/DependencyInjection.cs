@@ -1,3 +1,5 @@
+using EmptyProjectTesting.Middleware;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ResumeEnhancer.BillingModule.PL;
@@ -30,6 +32,7 @@ public static class DependencyInjection
         services.AddTemplateModuleWeb();
         services.AddResumeModulePersistence();
         services.AddResumeModuleWeb();
+        services.AddTransient<GlobalExceptionHandler>();
 
         return services;
     }

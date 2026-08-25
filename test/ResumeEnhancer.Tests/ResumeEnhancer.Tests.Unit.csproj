@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\application\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
     <ProjectReference Include="..\..\application\Core\WebLibrary\ResumeEnhancer.Core.WebLibrary.csproj" />
     <ProjectReference Include="..\..\application\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
-    <ProjectReference Include="..\..\application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.Migration.csproj" />
+    <ProjectReference Include="..\..\application\Infrastructure\Migration\ResumeEnhancer.Infrastructure.DatabaseMigration.csproj" />
     <ProjectReference Include="..\..\application\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModuleAM\ResumeEnhancer.ProfilingModule.AM.csproj" />
     <ProjectReference Include="..\..\application\Modules\ProfilingModule\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />

@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using ResumeEnhancer.BillingModule.PL;
+using ResumeEnhancer.Infrastructure.DatabaseMigration;
 using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.ProfilingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
+using ResumeEnhancer.TemplateModule.PL;
 
-namespace ResumeEnhancer.Infrastructure.Migration;
+namespace ResumeEnhancer.Infrastructure;
 
 public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
@@ -24,7 +28,7 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
             })
             .Options;
 
-        return new AppDbContext(options, [new ResumeModuleDbContextModelConfiguration()]);
+        return new AppDbContext(options, [new ResumeModuleDbContextModelConfiguration(), new BillingModuleDbContextModelConfiguration(), new ProfilingModuleDbContextModelConfiguration(), new TemplateModuleDbContextModelConfiguration()]);
     }
 
     private static string? GetConnectionStringFromArgs(string[] args)

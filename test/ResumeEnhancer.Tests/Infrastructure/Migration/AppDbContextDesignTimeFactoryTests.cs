@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using ResumeEnhancer.Infrastructure.Persistence;
-using ResumeEnhancer.Infrastructure.Migration;
+using ResumeEnhancer.Infrastructure.DatabaseMigration;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.Infrastructure;
 
 namespace ResumeEnhancer.Tests.Unit.Infrastructure.Migration;
 
