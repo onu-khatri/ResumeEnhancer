@@ -164,7 +164,7 @@ public sealed class DependencyRuleTests
             ApplicationRoot,
             "Infrastructure",
             "Migration",
-            "ResumeEnhancer.Infrastructure.Migration.csproj"));
+            "ResumeEnhancer.Infrastructure.DatabaseMigration.csproj"));
         var violations = project.ProjectReferences
             .Where(reference =>
                 (reference.Area == ProjectArea.Module && reference.Layer != ModuleLayer.PL)
