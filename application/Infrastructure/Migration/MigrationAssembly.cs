@@ -1,4 +1,4 @@
-namespace ResumeEnhancer.Infrastructure.Migration;
+namespace ResumeEnhancer.Infrastructure.DatabaseMigration;
 
 public static class MigrationAssembly
 {

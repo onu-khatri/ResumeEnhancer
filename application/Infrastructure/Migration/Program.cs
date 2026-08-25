@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ResumeEnhancer.Infrastructure.Persistence;
-using ResumeEnhancer.Infrastructure.Migration;
+using ResumeEnhancer.Infrastructure.DatabaseMigration;
 using ResumeEnhancer.ProfilingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.PL;
@@ -15,7 +15,7 @@ return await MigrationConsole.RunAsync(args);
 internal static class MigrationConsole
 {
     private const string DefaultConnectionString =
-        "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Server=TLG-PF5R29H7;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
+      "Server=MONTU-KHARB-DES;Integrated Security=True;Persist Security Info=False;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
     private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -452,7 +452,7 @@ internal static class MigrationConsole
                     "application",
                     "Infrastructure",
                     "Migration",
-                    "ResumeEnhancer.Infrastructure.Migration.csproj");
+                    "ResumeEnhancer.Infrastructure.DatabaseMigration.csproj");
 
                 if (File.Exists(applicationProject))
                 {

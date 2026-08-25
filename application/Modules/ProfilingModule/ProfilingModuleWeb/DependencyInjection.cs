@@ -15,9 +15,9 @@ public static class DependencyInjection
         return services;
     }
 
-    public static Type[] GetProfilingModuleMediatorAssemblies() =>
-    [
-        typeof(ProfilingModuleWebAssembly),
-        typeof(ProfilingModuleSLAssembly)
-    ];
+    //public static Type[] GetProfilingModuleMediatorAssemblies() =>  //NO need this type[] array return method
+    //[
+    //    typeof(ProfilingModuleWebAssembly),
+    //    typeof(ProfilingModuleSLAssembly)
+    //];
 }

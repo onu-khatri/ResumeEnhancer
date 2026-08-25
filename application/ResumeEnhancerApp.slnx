@@ -8,7 +8,7 @@
   <Folder Name="/Core/WebLibrary/" />
   <Folder Name="/Infrastructure/">
     <Project Path="Infrastructure/Caching/ResumeEnhancer.Infrastructure.Caching.csproj" Id="d0ccebf6-3130-4d87-8105-8aef4211db28" />
-    <Project Path="Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj" Id="4a241c97-7f35-4104-bbf7-63c19f8f6e3e" />
+    <Project Path="Infrastructure/Migration/ResumeEnhancer.Infrastructure.DatabaseMigration.csproj" Id="4a241c97-7f35-4104-bbf7-63c19f8f6e3e" />
     <Project Path="Infrastructure/Persistence/ResumeEnhancer.Infrastructure.Persistence.csproj" Id="65e64fdb-d687-414b-8c51-3f564d536c08" />
   </Folder>
   <Folder Name="/Infrastructure/Persistence/" />

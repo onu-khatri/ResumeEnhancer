@@ -31,6 +31,10 @@ public sealed class TemplateModuleSeeder : IAppDbContextSeeder
             },
             cancellationToken);
 
+        // ✅ FIX 1: Render Types ko Database me save karo taaki Database IDs generate ho sakein
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        // ✅ FIX 2: Save hone ke baad Dictionary populate karo (Dictionary upper position par properly work karegi)
         var renderTypeIdsByCode = await dbContext.Set<TemplateRenderTypeSetup>()
             .AsNoTracking()
             .ToDictionaryAsync(item => item.Code, item => item.Id, StringComparer.OrdinalIgnoreCase, cancellationToken);
