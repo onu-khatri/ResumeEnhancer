@@ -24,7 +24,7 @@ public sealed class AppDbContextDesignTimeFactoryTests
     [Fact]
     public void MigrationAssembly_AssemblyName_ReturnsMigrationAssemblyName()
     {
-        MigrationAssembly.AssemblyName.ShouldBe("ResumeEnhancer.Infrastructure.Migration");
+        MigrationAssembly.AssemblyName.ShouldBe("ResumeEnhancer.Infrastructure.DatabaseMigration");
     }
 }
 

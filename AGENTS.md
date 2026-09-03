@@ -45,6 +45,14 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 - Delivery operations: `$git-workflows`, `$git-worktrees`, `$git-commit`, and `$pr-creator` when managing branches, commits, worktrees, or pull requests.
 - Use `$user-interview` when a selected workflow requires user-confirmed material decisions; do not silently replace a required interview with assumptions.
 
+### Frontend Operating Model
+
+- Use [frontend workflow routing](.codex/skills/frontend-dev-guidelines/references/frontend-workflow-routing.md) to select frontend skills and the `frontend-implementer` agent.
+- Resolve material uncertainty before frontend delivery: use `$deep-research` for significant evidence gaps and `$user-interview` for a material user decision that evidence cannot answer.
+- Assign one primary implementation owner for a workstream. `$frontend-developer` is the default for frontend code; `$production-ui-generator` is an alternative only for an explicitly UI-dominant surface, not a parallel implementer.
+- Treat `$frontend-dev-guidelines` as the non-delegating standards authority. Use design, React-pattern, security, performance, review, and slides skills only when their stated trigger applies.
+- Specialist skills return constraints, findings, or a handoff to the primary owner. They do not recursively invoke other frontend skills, spawn the `frontend-implementer`, or duplicate implementation work.
+
 ### Custom Agent Selection
 
 - `backend-implementer`: assigned backend slices across Minimal APIs, validation, Mediator, persistence, and tests.

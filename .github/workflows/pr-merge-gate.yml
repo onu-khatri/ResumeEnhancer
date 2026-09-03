@@ -1,0 +1,34 @@
+name: PR Merge Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend CI
+    uses: ./.github/workflows/frontend-ci.yml
+
+  backend:
+    name: Backend CI
+    uses: ./.github/workflows/backend-ci.yml
+
+  merge-gate:
+    name: PR merge gate
+    needs:
+      - frontend
+      - backend
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce successful CI
+        env:
+          BACKEND_RESULT: ${{ needs.backend.result }}
+          FRONTEND_RESULT: ${{ needs.frontend.result }}
+        run: |
+          test "$FRONTEND_RESULT" = "success"
+          test "$BACKEND_RESULT" = "success"

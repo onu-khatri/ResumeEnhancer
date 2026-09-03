@@ -7,6 +7,8 @@ description: Create presentation-ready frontend walkthroughs, implementation sum
 
 Use this skill to turn product or implementation work into clear, polished presentation material without losing technical truth.
 
+For multi-skill work, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). This is a terminal communication step and does not trigger design, implementation, or review work.
+
 ## Use this skill when
 
 - the deliverable is a presentation, demo narrative, or HTML slide deck

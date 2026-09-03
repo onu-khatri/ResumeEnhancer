@@ -7,6 +7,8 @@ description: Identify and fix performance issues in ResumeEnhancer across the Re
 
 Use this skill to make ResumeEnhancer fast without sacrificing clarity or correctness. Apply it in proportion to the actual bottleneck.
 
+For a frontend workstream, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md) and return measured findings or fixes to the primary owner. Do not enter a broader frontend workflow without a concrete performance trigger.
+
 ## Use this skill when
 
 - a query, page, or endpoint is observably slow

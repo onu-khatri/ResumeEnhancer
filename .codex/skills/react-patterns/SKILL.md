@@ -7,6 +7,8 @@ description: Apply production-grade React and TypeScript patterns for ResumeEnha
 
 Use this skill to write React/TypeScript code that fits the ResumeEnhancer client stack and stays easy to change. It complements `frontend-dev-guidelines` and `frontend-developer`.
 
+For multi-skill work, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). Use this only to resolve a concrete React or TypeScript pattern decision; it is not a delivery coordinator and does not delegate work.
+
 ## Stack
 
 - React 19 + TypeScript 6 + Vite

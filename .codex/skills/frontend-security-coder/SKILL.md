@@ -7,6 +7,8 @@ description: Implement and review secure frontend behavior in ResumeEnhancer wit
 
 Use this skill for client-side security work that should prevent real browser-side vulnerabilities instead of relying on backend protection alone.
 
+For multi-skill work, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). This is a bounded security pass: return findings or required constraints to the primary owner and do not delegate implementation.
+
 ## Use this skill when
 
 - the UI handles authentication, tokens, redirects, user-generated content, or sensitive data

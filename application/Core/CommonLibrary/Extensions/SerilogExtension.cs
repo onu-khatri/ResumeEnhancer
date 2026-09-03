@@ -32,7 +32,7 @@ public static class SerilogExtension
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 30);
             }
-            else
+            else if (!string.IsNullOrWhiteSpace(LogConnectionString))
             {
                 config.WriteTo.MSSqlServer(connectionString: LogConnectionString, sinkOptions: sink_Options);
             }
