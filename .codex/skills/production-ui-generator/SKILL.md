@@ -7,6 +7,8 @@ description: Generate production-grade UI for ResumeEnhancer with intentional de
 
 Use this skill when the UI should feel launch-ready, deliberate, and implementable in the current client stack.
 
+For multi-skill work, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). Use this as the sole primary implementation lane only for an explicitly UI-dominant request; otherwise provide a design/implementation handoff and do not run alongside `$frontend-developer`.
+
 ## Use this skill when
 
 - building or upgrading a major product surface

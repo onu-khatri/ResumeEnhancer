@@ -287,12 +287,18 @@ Check `KnowledgeBase/INDEX.md`, then retrieve only the API/application, EF Core 
   "frontend-dev-guidelines" = @'
 ---
 name: frontend-dev-guidelines
-description: Apply ResumeEnhancer frontend development guidelines for React, TypeScript, Vite, feature boundaries, forms, data fetching, and UI states. Use when Codex needs project-consistent frontend implementation guidance.
+description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
-# Frontend Dev Guidelines
+# Frontend Development Guidelines
 
-Use this skill to stay aligned with the current client structure, route flow, feature organization, and typed form patterns.
+Use this skill to make frontend changes that are reliable, maintainable, and native to the existing React/Vite client. Preserve verified local patterns; do not import a framework doctrine from another application.
+
+Read `KnowledgeBase/INDEX.md`, inspect the target route, feature, shared primitive, and nearest tests, then read [project adaptation](references/project-adaptation.md).
+
+For non-trivial work, assess the approach with [decision triage](references/decision-triage.md). Use the smallest relevant guide for [client architecture](references/client-architecture.md), [data and state](references/data-and-state.md), [routing and styling](references/routing-and-styling.md), [accessibility](references/accessibility-and-responsive.md), [TypeScript and performance](references/typescript-and-performance.md), or [testing](references/testing-guide.md).
+
+Keep network access typed and centralized, model all user-visible async states, keep forms schema-led, preserve responsive keyboard-accessible interaction, and report exactly which validation ran.
 '@
   "frontend-design" = @'
 ---
@@ -307,12 +313,12 @@ Use this skill when the task is primarily about product design quality and user 
   "frontend-developer" = @'
 ---
 name: frontend-developer
-description: Implement frontend features in ResumeEnhancer using the existing React, TypeScript, Vite, feature, route, hook, and API-client patterns. Use when Codex needs to build or modify product UI in a way that fits the current client architecture.
+description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Use this skill to build product-facing client code that integrates correctly with the current app shell and feature structure.
+Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. Read `$frontend-dev-guidelines` for detailed shared implementation standards, preserve the typed shared API client, implement complete user-visible states, and report focused verification precisely.
 '@
   "frontend-security-coder" = @'
 ---
@@ -378,9 +384,13 @@ sandbox_mode = "workspace-write"
 '@
   "frontend-implementer.toml" = @'
 name = "frontend-implementer"
-description = "Focused ResumeEnhancer frontend implementer for React, forms, hooks, routes, and feature UIs."
+description = "Single-lane ResumeEnhancer frontend implementer for React/TypeScript features, forms, routes, typed client data, and focused verification."
 developer_instructions = """
-Read AGENTS.md first. Work inside feature boundaries, reuse shared UI and model types, define loading and error states, and keep forms aligned with existing schema and API models.
+Read AGENTS.md first, then `.codex/skills/frontend-dev-guidelines/references/frontend-workflow-routing.md`. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
+
+Load `$frontend-developer` and `$frontend-dev-guidelines` for assigned implementation. Consult a specialist only when the routing trigger applies, incorporate its result, and remain the sole implementer. Do not run `$deep-research` or `$user-interview`; return a material evidence gap or user decision to the parent with the exact question and evidence checked.
+
+Work inside feature boundaries, reuse shared UI and model types, keep API interaction typed and centralized, implement meaningful user-visible states, preserve accessible responsive behavior, add focused tests, and report exactly which checks ran. If a requirement or contract is materially missing, return the blocker to the parent instead of inventing it.
 """
 model = "gpt-5"
 model_reasoning_effort = "medium"

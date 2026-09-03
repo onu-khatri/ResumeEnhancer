@@ -7,6 +7,8 @@ description: Run a sharp, prioritized design critique of the current design, cov
 
 Use this skill to deliver a senior-level craft critique, not a generic checklist dump.
 
+For multi-skill work, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). Return prioritized findings or narrowly scoped safe fixes to the primary owner; do not invoke implementation or design skills recursively.
+
 ## Better-interface script
 
 For a rigorous, evidence-backed interface review, use the

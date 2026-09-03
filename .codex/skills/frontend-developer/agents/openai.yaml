@@ -1,4 +1,4 @@
 interface:
   display_name: "Frontend Developer"
-  short_description: "Help with Frontend Developer tasks"
-  default_prompt: "Use $frontend-developer to implement the ResumeEnhancer frontend feature in the current client stack."
+  short_description: "Deliver production-ready React features"
+  default_prompt: "Use $frontend-developer to implement an accessible, tested ResumeEnhancer frontend feature in the current client stack."

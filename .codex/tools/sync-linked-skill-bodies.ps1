@@ -389,52 +389,18 @@ State ownership, dependency direction, verification implications, and an ADR rec
   "frontend-dev-guidelines" = @'
 ---
 name: frontend-dev-guidelines
-description: Apply ResumeEnhancer frontend development guidelines for React, TypeScript, Vite, feature boundaries, forms, data fetching, and UI states. Use when Codex needs project-consistent frontend implementation guidance.
+description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
 # Frontend Development Guidelines
 
-Apply project-consistent frontend implementation standards for ResumeEnhancer while learning from the upstream production-grade frontend guidance.
+Use this skill to make frontend changes that are reliable, maintainable, and native to the existing React/Vite client. Preserve verified local patterns; do not import a framework doctrine from another application.
 
-## Use this skill when
+Read `KnowledgeBase/INDEX.md`, inspect the target route, feature, shared primitive, and nearest tests, then read [project adaptation](references/project-adaptation.md).
 
-- Implementing frontend code in ResumeEnhancer
-- You need house rules for feature structure, forms, routing, fetching, and UI states
-- You are reviewing whether a frontend change fits the current client architecture
+For non-trivial work, assess the approach with [decision triage](references/decision-triage.md). Use the smallest relevant guide for [client architecture](references/client-architecture.md), [data and state](references/data-and-state.md), [routing and styling](references/routing-and-styling.md), [accessibility](references/accessibility-and-responsive.md), [TypeScript and performance](references/typescript-and-performance.md), or [testing](references/testing-guide.md).
 
-## Do not use this skill when
-
-- The task is backend-only
-- You only need visual design guidance without implementation standards
-
-## Instructions
-
-1. Prefer the ResumeEnhancer client architecture over the upstream stack assumptions.
-2. Reuse existing `features`, `shared/ui`, `shared/api`, route, and model patterns.
-3. Keep forms aligned with current schema, API models, and feature hooks.
-4. For detailed adapted guidance, open:
-   - `references/project-adaptation.md`
-   - `references/file-organization.md`
-   - `references/data-fetching.md`
-   - `references/loading-and-error-states.md`
-   - `references/component-patterns.md`
-
-## Core rules
-
-- preserve feature boundaries
-- define loading, empty, error, and success states intentionally
-- keep API interaction typed and centralized
-- avoid introducing stack patterns that do not fit the current React Router + Vite setup
-
-## Output requirements
-
-- recommended file placement
-- state and data flow pattern
-- loading and error state plan
-- type and form alignment notes
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-dev-guidelines
+Keep network access typed and centralized, model all user-visible async states, keep forms schema-led, preserve responsive keyboard-accessible interaction, and report exactly which validation ran.
 '@
   "frontend-design" = @'
 ---
@@ -469,12 +435,12 @@ Design deliberate, product-quality user experiences for ResumeEnhancer rather th
   "frontend-developer" = @'
 ---
 name: frontend-developer
-description: Implement frontend features in ResumeEnhancer using the existing React, TypeScript, Vite, feature, route, hook, and API-client patterns. Use when Codex needs to build or modify product UI in a way that fits the current client architecture.
+description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Implement production-facing client work in ResumeEnhancer with strong attention to feature boundaries, typed models, interaction states, accessibility, and API integration.
+Implement production-facing client work in ResumeEnhancer with correct feature ownership, typed data boundaries, accessible responsive behavior, and focused verification. Read `$frontend-dev-guidelines` for detailed shared standards; do not import Next.js, server-component, or uninstalled-tooling patterns.
 
 ## Use this skill when
 
@@ -488,11 +454,11 @@ Implement production-facing client work in ResumeEnhancer with strong attention 
 
 ## Instructions
 
-1. Clarify the target page, feature, route, and interaction flow.
+1. Clarify the target page, feature, route, entitlement, API contract, and interaction flow.
 2. Reuse existing feature boundaries, shared UI, typed models, and API client patterns.
-3. Implement accessibility, responsive behavior, and meaningful empty or error states.
-4. Keep frontend state aligned with current schema and service models.
-5. Prefer implementation choices that match the existing app shell and route structure.
+3. Define meaningful pending, empty, error, success, and permission behavior.
+4. Keep frontend state, schema, and service models aligned.
+5. Add focused tests and verify accessibility and responsive behavior before finishing.
 
 ## Output requirements
 

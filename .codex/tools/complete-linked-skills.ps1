@@ -623,61 +623,18 @@ Use this skill to select and apply the smallest proven .NET backend pattern that
   "frontend-dev-guidelines" = @'
 ---
 name: frontend-dev-guidelines
-description: Apply ResumeEnhancer frontend development guidelines for React, TypeScript, Vite, feature boundaries, forms, data fetching, routing, and UI states. Use when Codex needs project-consistent frontend implementation guidance or review criteria.
+description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
 # Frontend Development Guidelines
 
-Use this skill to keep ResumeEnhancer frontend work aligned with the current client architecture while still benefiting from stronger upstream patterns.
+Use this skill to make frontend changes that are reliable, maintainable, and native to the existing React/Vite client. Preserve verified local patterns; do not import a framework doctrine from another application.
 
-## Use this skill when
+Read `KnowledgeBase/INDEX.md`, inspect the target route, feature, shared primitive, and nearest tests, then read [project adaptation](references/project-adaptation.md).
 
-- implementing or reviewing frontend code in ResumeEnhancer
-- deciding where files belong and how data, routes, and state should flow
-- improving UI states, forms, or API integration quality
+For non-trivial work, assess the approach with [decision triage](references/decision-triage.md). Use the smallest relevant guide for [client architecture](references/client-architecture.md), [data and state](references/data-and-state.md), [routing and styling](references/routing-and-styling.md), [accessibility](references/accessibility-and-responsive.md), [TypeScript and performance](references/typescript-and-performance.md), or [testing](references/testing-guide.md).
 
-## Do not use this skill when
-
-- the task is backend-only
-- you only need visual design direction without implementation standards
-
-## Workflow
-
-1. Start from the target route, feature, or component behavior.
-2. Prefer existing feature boundaries and shared primitives over new ones.
-3. Keep data access typed and centralized.
-4. Design loading, empty, error, success, and permission states intentionally.
-5. Use the local adaptation note before following an upstream resource literally.
-
-## Read these references as needed
-
-- `references/project-adaptation.md`
-- `references/file-organization.md`
-- `references/data-fetching.md`
-- `references/loading-and-error-states.md`
-- `references/component-patterns.md`
-- `references/routing-guide.md`
-- `references/styling-guide.md`
-- `references/typescript-standards.md`
-- `references/common-patterns.md`
-- `references/complete-examples.md`
-
-## Core rules
-
-- preserve feature boundaries
-- align forms with current schemas and hooks
-- keep API interaction typed and centralized
-- avoid importing stack assumptions that do not fit React Router plus Vite
-
-## Output requirements
-
-- recommended file placement
-- route, state, and data flow notes
-- loading and error state plan
-- type alignment notes
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-dev-guidelines
+Keep network access typed and centralized, model all user-visible async states, keep forms schema-led, preserve responsive keyboard-accessible interaction, and report exactly which validation ran.
 '@
   "frontend-design" = @'
 ---
@@ -735,12 +692,12 @@ Use this skill to shape product-quality experiences instead of interchangeable c
   "frontend-developer" = @'
 ---
 name: frontend-developer
-description: Implement frontend features in ResumeEnhancer using the existing React, TypeScript, Vite, route, hook, and API-client patterns. Use when Codex needs to build or modify product UI in a way that fits the current client architecture.
+description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Use this skill for product-facing implementation that should feel native to the current client codebase.
+Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. `$frontend-dev-guidelines` owns detailed shared standards; this skill owns delivery sequencing and evidence.
 
 ## Use this skill when
 
@@ -756,9 +713,9 @@ Use this skill for product-facing implementation that should feel native to the 
 
 1. Identify the page, route, feature boundary, and API dependencies.
 2. Reuse existing shared UI, hooks, and typed models before creating new primitives.
-3. Implement complete states: loading, empty, error, success, and permission.
-4. Keep form state, schema, and API models aligned.
-5. Verify responsive behavior and accessibility before finishing.
+3. Implement typed service, query/mutation, form/state, and presentation flow.
+4. Implement complete pending, empty, error, success, and permission states.
+5. Keep form state, schema, and API models aligned; verify responsive accessible behavior and focused tests.
 
 ## ResumeEnhancer focus
 
@@ -766,6 +723,7 @@ Use this skill for product-facing implementation that should feel native to the 
 - typed interaction with `shared/api`
 - route-aware page composition
 - user-story traceability from UI behavior to service calls
+- no Next.js, server-component, or uninstalled-tooling assumptions without repository evidence
 
 ## Output requirements
 
@@ -1284,21 +1242,23 @@ Use this playbook when the interface needs a stronger design point of view.
   "frontend-developer\references\implementation-playbook.md" = @'
 # Frontend Implementation Playbook
 
-Use this note when a story needs a more deliberate frontend delivery path.
+Use this note for a route, form, remote-data, or multi-state feature. It complements `$frontend-dev-guidelines`; current source and requirements remain authoritative.
 
 ## Delivery sequence
 
-1. place the work in the right route and feature boundary
-2. align types, schemas, and API calls
-3. implement all user-visible states
-4. verify responsive and accessible behavior
+1. confirm the user outcome, route entry, entitlement, API contract, and acceptance behavior
+2. extend the nearest feature, shared UI, service, hook/store, and test before creating a new abstraction
+3. align request/response, form, and view models at the feature boundary
+4. implement service, query/mutation, local state, and page composition with complete visible states
+5. validate keyboard, focus, responsive, theme, and reduced-motion behavior
+6. add focused tests and run proportional client checks
 
 ## Common checks
 
 - shared UI reused where appropriate
-- API calls and models remain typed
-- form values match validation and backend expectations
-- loading and error handling are explicit
+- API calls use `shared/api/api-client.ts` and models remain typed
+- form values match validation, mapping, and backend expectations
+- query invalidation and loading, error, success, and permission behavior are explicit
 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-developer
