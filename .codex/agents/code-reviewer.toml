@@ -3,6 +3,8 @@ description = "Defect-first reviewer for ResumeEnhancer backend, frontend, and a
 developer_instructions = """
 Read AGENTS.md first, then load $production-code-reviewer. Apply $security-manager lenses when the change crosses a trust boundary.
 
+When reviewing Git history or delivery state, use $git-workflows, $git-worktrees, and $git-commit only to verify the relevant branch, worktree, commit boundary, or push evidence; do not mutate the contributor's branch during review.
+
 Review the real diff, not stated intent. Read enough surrounding code to understand the full call path before judging.
 
 Prioritize:

@@ -1,6 +1,6 @@
 ---
 name: user-story-creator
-description: Create or revise evidence-grounded, implementation-ready ResumeEnhancer user-story packs from business requirements, product decisions, research, and repository context. Use for feature, defect, technical-debt, or research stories in User-Stories/*.US.md, *.SI.md, and *.Research.md; use us-kickoff after approval and readiness.
+description: Create or revise evidence-grounded, implementation-ready ResumeEnhancer user-story packs from business requirements, product decisions, research, and repository context. Use for feature, defect, technical-debt, or research stories in User-Stories/*.US.md, *.SI.md, and *.Research.md; use us-kickoff for approved GitHub handoff and issues-kickoff for implementation.
 ---
 
 # User Story Creator
@@ -14,7 +14,7 @@ Create small, traceable story packs that let engineering start work without redi
 - After approval, implement only the approved plan. If evidence changes the affected BR, scope, slices, dependencies, or acceptance criteria materially, present a revised plan and wait for approval again.
 - Treat `Business-Requirements/`, approved product decisions, existing stories, and the current repository as evidence. Do not turn a plausible design choice into a stated requirement.
 - Do not fabricate research findings, user quotes, baselines, targets, or competitor claims. When evidence is missing, record the gap and create a bounded research/spike slice only when resolving it is necessary to plan implementation.
-- Use `openspec-propose` for a new OpenSpec change, `openspec-update-change` for a planned change, and `us-kickoff` only after an approved story is ready to implement.
+- Use `openspec-propose` for a new OpenSpec change, `openspec-update-change` for a planned change, and `us-kickoff` only after an approved story is ready for GitHub handoff.
 - Use `project-knowledge-builder` when the requested outcome is durable repository knowledge rather than a delivery story.
 
 ## Story Pack
@@ -127,6 +127,8 @@ As a <persona>, I want <capability>, so that <measurable or observable outcome>.
 
 Omit headings that have no meaningful content only when that omission does not obscure a decision. Keep requirements declarative and acceptance criteria observable. Separate business rules from UI or technical implementation suggestions.
 
+After a story is handed to GitHub, preserve a `## GitHub Issues` section in the `.US.md` containing one row per created issue with the canonical issue link, created date, and issue number. Do not add placeholder rows before issue creation; do not remove or rewrite verified rows when revising a story unless the handoff is explicitly being reconciled.
+
 ### 6. Add delivery context and evidence
 
 In `.SI.md`, document only the implementation context that another engineer needs: integration points, state/error matrix, component or API surfaces, validation behavior, edge cases, test focus, and any migration, authorization, accessibility, responsiveness, performance, or observability concerns that apply.
@@ -175,4 +177,4 @@ If material decisions remain unresolved, leave the story in a draft/planning sta
 
 ## Handoff
 
-Present the completed, approved-scope story pack with its BR traceability, slices, dependencies, open questions, and readiness status. Obtain any required product or architecture approval before marking a story ready. Once the story pack is approved and its Definition Of Ready is met, hand it to `$us-kickoff` for delivery planning.
+Present the completed, approved-scope story pack with its BR traceability, slices, dependencies, open questions, and readiness status. Obtain any required product or architecture approval before marking a story ready. Once the story pack is approved and its Definition Of Ready is met, hand it to `$us-kickoff` for GitHub handoff. The handoff workflow records the verified issue link, created date, and number in the story's `## GitHub Issues` section. Stop after handoff; the user must explicitly invoke `$issues-kickoff` later for issue intake and implementation.
