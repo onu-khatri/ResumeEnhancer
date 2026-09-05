@@ -1,0 +1,6 @@
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_PAT_TOKEN"
+
+[mcp_servers.github.http_headers]
+X-MCP-Toolsets = "issues,repos,pull_requests,actions"

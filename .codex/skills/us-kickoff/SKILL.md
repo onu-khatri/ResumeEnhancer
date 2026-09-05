@@ -1,11 +1,11 @@
 ---
 name: us-kickoff
-description: Turn approved ResumeEnhancer user stories into coordinated, review-ready implementation work. Assess readiness, resolve dependencies, classify delivery shape, plan isolated branches or worktrees, assign focused agents, gate on human approval, and track each story to PR-ready. Use when the user asks to kick off, start, or parallelize user stories that are sliced and ready to build.
+description: Prepare approved ResumeEnhancer user stories for GitHub issue handoff. Assess readiness, resolve dependencies, classify delivery shape, and invoke create-github-issue; use issues-kickoff for implementation execution.
 ---
 
 # US Kickoff
 
-Use this skill to convert approved story slices into sequenced, isolated, verifiable workstreams without losing readiness discipline or architectural boundaries. It is the entry point that `story-orchestrator` and parallel workstreams run through.
+Use this skill to validate approved story slices and hand them off to GitHub in a traceable order without losing readiness discipline or architectural boundaries. It does not create branches, worktrees, implementation agents, or PRs; `issues-kickoff` owns that implementation phase.
 
 ## Story file anatomy
 
@@ -15,12 +15,14 @@ Stories live in `User-Stories/` as a trio per slice:
 - `<epic>.<n> <slug>.SI.md` — supporting information (components, wireframes, state matrix, edge cases, test focus).
 - `<epic>.<n> <slug>.Research.md` — competitor/product research evidence.
 
+After GitHub handoff, the `.US.md` also contains a `## GitHub Issues` register with one row per created issue: issue title and canonical link, created date, and issue number. This is the durable story-to-issue traceability record.
+
 The `.US.md` frontmatter carries the delivery state and must be kept current:
 
 ```yaml
 id: RES-BE-001
 title: <story title>
-status:            # Ready_To_Implement | In_Progress | Blocked | PR_Open | Done
+status:            # Ready_To_Implement | Move_To_GitHub_Issue | In_Progress | Blocked | PR_Open | Done
 branch:            # codex/<story-id>-<slug>-<timestamp>
 worktree_path:     # .worktrees/<story-id>-<slug>
 base_branch: main  # normalize from `master` to the repo's actual default
@@ -49,9 +51,9 @@ If a story fails a gate, do not force it into a workstream; report it as not rea
 
 Read the selected `.US.md`, `.SI.md`, and `.Research.md` files plus any linked `Business-Requirements/*.BR.md`.
 
-### 2. Resolve dependencies
+### 2. Resolve dependencies and handoff order
 
-Build a dependency graph from each story's `Dependency:` field (e.g., frontend `RES-FE-001` depends on backend `RES-BE-001`). Topologically order the slices; mark cross-layer frontend/backend pairs so the backend slice lands first.
+Build a dependency graph from each story's `Dependency:` field (e.g., frontend `RES-FE-001` depends on backend `RES-BE-001`). Topologically order the slices; mark cross-layer frontend/backend pairs so the backend slice is handed off first. Preserve the order and references in the resulting GitHub issues.
 
 ### 3. Classify delivery shape
 
@@ -69,47 +71,34 @@ Identify shared files and cross-cutting surfaces before parallelizing:
 - shared UI primitives, router, and app shell
 - `ResumeEnhancer.WebSolution.ModulesComposition` and module registration
 
-### 5. Plan parallel groups
+### 5. Prepare the handoff plan
 
-Group independent, non-conflicting slices into parallel lanes. Each lane gets an isolated branch or worktree and one focused agent. Keep any shared-contract or migration work in a single coordinating lane.
+State which stories remain one issue and which require multiple issues. For a split, document pick order, dependencies, blocking relationships, and related references. Keep shared-contract or migration work in one sequenced issue when the story evidence requires it.
 
 ### 6. Human approval checkpoint
 
-Stop and present a short plan for explicit approval before any branch, worktree, or parallel execution:
+Stop and present a short plan for explicit approval before any GitHub issue creation:
 
-- dependency order and parallel groups
-- per-story agent, branch/worktree, and scope
+- dependency/pick order and proposed issue splits
+- per-story or per-slice scope and delivery shape
 - conflict risk and which stories are sequenced (not parallel)
 - any story that is not ready and why
 
-### 7. Execute and track
+### 7. Create the GitHub issue handoff
 
-After approval:
-- create a `codex/<story-id>-<slug>-<timestamp>` branch or `.worktrees/<story-id>-<slug>` worktree (see `git-worktrees`)
-- update the story frontmatter (`status`, `branch`, `worktree_path`, `updated`)
-- assign the focused agent and hand it the story file(s) plus the relevant skills
+After approval, invoke `$create-github-issue` for each approved story in dependency/pick order. That skill decides whether a story must be split, creates and verifies the issue set, writes the `## GitHub Issues` register with each issue's title/link, created date, and number, and changes the source status to `Move_To_GitHub_Issue` only after successful handoff.
 
-### 8. Report and close
+If issue creation, duplicate detection, reference reconciliation, or source status update fails, stop and report the exact handoff state. Do not start implementation from this skill.
 
-Each workstream reports back: touched areas, verification commands run, blockers, PR readiness. Update the frontmatter (`status` -> `PR_Open`, `pr_url`) when a PR is opened, and `Done` only after merge and verification.
+### 8. Report and continue
 
-## Definition of Done per workstream
+Report each story's readiness result, issue number/URL set, pick order, dependencies, source status, and confirmation that the source story's `## GitHub Issues` register was updated. Once the stories are in `Move_To_GitHub_Issue`, stop after the handoff; implementation begins only when the user explicitly invokes `$issues-kickoff`.
 
-- Backend: `dotnet build application\ResumeEnhancerApp.slnx` and the relevant `dotnet test` project pass.
-- Frontend: `npm run check` and `npm run build` pass in the client.
-- Contract, migration, or shared-file conflicts are reported before merge.
-- Each story ends PR-ready with story traceability and verification notes in the PR.
+## Boundary with issues-kickoff
 
-## When to simplify
-
-Do not parallelize when:
-- stories share the same contract, migration, or shared UI surface
-- the dependency chain is strictly serial
-- the overhead of isolation outweighs the parallelism benefit
-
-For a serial chain, drive one story at a time through `full-stack-feature-orchestrator`.
+`us-kickoff` owns story readiness, dependency analysis, issue splitting guidance, approval, and GitHub handoff. `issues-kickoff` owns explicit user-invoked issue intake, top-10 GitHub search, scope confirmation, branch/worktree creation, implementation-agent assignment, code changes, tests/builds, PR creation, and implementation status transitions.
 
 ## Reference
 
-Read `references/kickoff-playbook.md` for the status model, approval-summary template, and workstream reporting format.
+Read `references/kickoff-playbook.md` for the handoff status model and approval-summary template. Use `$create-github-issue` for issue content, split decisions, issue references, and source-status updates.
 

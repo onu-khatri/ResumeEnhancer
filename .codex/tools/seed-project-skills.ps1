@@ -29,28 +29,28 @@ Use this skill to finish implementation work safely and package it for review wi
   "us-kickoff" = @'
 ---
 name: us-kickoff
-description: Fan out approved ResumeEnhancer user stories into implementation work with readiness checks, human approval, parallel agent assignment, and isolated branch or worktree planning. Use when the user asks to kick off stories, start implementation, or parallelize work for user stories that are already sliced and ready to build.
+description: Prepare approved ResumeEnhancer user stories for GitHub issue handoff with readiness checks, dependency ordering, and human approval. Use issues-kickoff for implementation execution.
 ---
 
 # US Kickoff
 
-Use this skill to turn approved story slices into coordinated implementation work without losing readiness discipline or architectural boundaries.
+Use this skill to validate approved story slices and hand them to GitHub through `$create-github-issue` without losing readiness discipline or architectural boundaries. It does not create branches, worktrees, or implementation agents.
 
 ## Entry Criteria
 
 - target stories are identified
 - each story is `Ready_To_Implement` or equivalent approved state
 - dependencies and sequence are known
-- the user has confirmed the kickoff after a short summary of the plan
+- the user has confirmed the issue handoff after a short summary of the plan
 
 ## Workflow
 
 1. Read the selected story files and any linked business requirements.
-2. Group stories by delivery shape: frontend-only, backend-only, full-stack, architecture, or research.
-3. Identify dependencies, shared files, migration risk, and likely merge conflicts.
-4. Stop for a short human approval checkpoint before parallel execution.
-5. After approval, assign each story to an isolated branch or worktree with a focused agent.
-6. Require each workstream to report touched areas, verification, blockers, and PR readiness.
+2. Resolve dependencies and determine issue pick order and any evidence-backed splits.
+3. Identify shared files, migration risk, and likely merge conflicts.
+4. Stop for a short human approval checkpoint before issue creation.
+5. After approval, invoke `$create-github-issue` for the approved stories in dependency order.
+6. After verified handoff, use `$issues-kickoff` for branches, worktrees, agents, implementation, and PR readiness.
 '@
   "production-ui-generator" = @'
 ---
@@ -434,7 +434,7 @@ Use `$pr-creator` to prepare a ResumeEnhancer pull request from the current chan
 '@ -NoNewline
 
 Set-Content -LiteralPath (Join-Path $promptDir "US_Kickoff_Starter.prompt.md") -Value @'
-Use `$us-kickoff` to evaluate the selected ResumeEnhancer user stories and prepare a kickoff plan.
+Use `$us-kickoff` to evaluate the selected ResumeEnhancer user stories and prepare an approved GitHub issue handoff plan. After verified handoff, stop; the user must explicitly invoke `$issues-kickoff` later for top-10 issue intake and implementation.
 
 - Only continue if the stories are ready to implement.
 - Group by frontend, backend, full-stack, research, or architecture work.

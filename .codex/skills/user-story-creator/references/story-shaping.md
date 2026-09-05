@@ -1,6 +1,6 @@
 # Story Shaping
 
-Use this reference when selecting a story type, breaking down a capability, or turning requirements into testable acceptance criteria. It supports authoring only; `$us-kickoff` owns delivery sequencing, worktrees, and agent assignment.
+Use this reference when selecting a story type, breaking down a capability, or turning requirements into testable acceptance criteria. It supports authoring only; `$us-kickoff` owns GitHub-handoff sequencing and `$issues-kickoff` owns implementation sequencing, worktrees, and agent assignment.
 
 ## Story Types
 

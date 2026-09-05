@@ -1,4 +1,4 @@
 interface:
   display_name: "Us Kickoff"
-  short_description: "Help with Us Kickoff tasks"
-  default_prompt: "Use $us-kickoff to kick off ready ResumeEnhancer user stories into implementation work."
+  short_description: "Prepare story-to-GitHub handoffs"
+  default_prompt: "Use $us-kickoff to validate ready ResumeEnhancer stories and hand them off to verified GitHub issues."
