@@ -7,11 +7,6 @@ description: >-
   discovery and proposal through implementation, verification, spec sync,
   archiving, and pull-request handling. Resumes safely from existing OpenSpec,
   branch, issue, PR, and CI state instead of duplicating work.
-compatibility: >-
-  Requires OpenSpec with its workflow skills installed. Designed for agents
-  with GitHub repository, issue, branch, file, pull-request, review, and CI
-  capabilities. Explicit sub-skill invocation is preferred when supported;
-  otherwise load and follow the installed OpenSpec skill instructions.
 ---
 
 # OpenSpec GitHub Orchestrator

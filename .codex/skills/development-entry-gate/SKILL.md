@@ -1,7 +1,6 @@
 ---
 name: development-entry-gate
 description: Gate any ResumeEnhancer development-related work before code changes by reconstructing current state, classifying the delivery shape, and routing the minimum backend, frontend, architecture, security, research, and verification skills. Do not use it for documentation-only work.
-version: "1.0.0"
 license: MIT
 ---
 
