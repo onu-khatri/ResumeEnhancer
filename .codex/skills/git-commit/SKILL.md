@@ -36,7 +36,7 @@ git diff --cached --stat
 git branch --show-current
 ```
 
-- If on `main`, create a `codex/<feature-intent>-<timestamp>` branch first (see `pr-creator`).
+- If on `main`, use `$issues-kickoff` and `$git-worktrees` to create the canonical `openspec/...` branch first.
 - Confirm the issue/story ID and intended files before staging. Preserve unrelated staged or unstaged changes.
 - Stop if a merge, rebase, cherry-pick, or bisect is active until its state is understood.
 

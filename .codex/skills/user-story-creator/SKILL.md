@@ -100,7 +100,7 @@ Write the `.US.md` with the headings that materially apply:
 **Layer:** <Frontend | Backend | Full Stack | Architecture | Research>
 **Priority:** <business priority or explicitly unknown>
 **Persona:** <actor>
-**Dependency:** <None | story IDs or named prerequisites>
+**Depends on:** <None | story IDs or named prerequisites>
 **Source Classification:** <Observed | Inferred | Recommended>
 
 ### User Story

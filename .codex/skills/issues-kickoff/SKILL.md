@@ -5,7 +5,7 @@ description: When explicitly invoked, find the top 10 matching ResumeEnhancer Gi
 
 # Issues Kickoff
 
-Use this skill only when the user explicitly invokes it. It is not an automatic continuation of `$create-github-issue` or `$us-kickoff`. It starts with GitHub issue intake, then executes implementation only for the issues the user selects and approves. It does not author stories or create the initial GitHub issue handoff.
+Use this skill only when the user explicitly invokes it. It is not an automatic continuation of `$create-github-issue` or `$us-kickoff`. It starts with GitHub issue intake, then executes implementation only for the issues the user selects and approves. It does not author stories or create the initial GitHub issue handoff. OpenSpec coordination is mandatory for implementation; this skill never assigns implementation agents directly.
 
 ## Issue intake
 
@@ -55,11 +55,19 @@ Read `AGENTS.md`, `KnowledgeBase/INDEX.md`, the selected source story pack, and 
 
 ### 5. Resolve issue order and dependencies
 
-Use the issue `Pick order`, `Depends on`, `Blocks`, and `Related` sections plus the story `Dependency:` fields to build a topological delivery graph. Implement prerequisites before dependents. Keep independent issues in parallel groups only when they do not share contracts, migrations, composition, shared UI primitives, or other conflict-heavy files.
+Use the issue `Pick order`, `Depends on`, `Blocks`, and `Related to` sections plus the story `Depends on` fields to build a topological delivery graph. Implement prerequisites before dependents. Keep independent issues in parallel groups only when they do not share contracts, migrations, composition, shared UI primitives, or other conflict-heavy files. `Depends on` is authoritative for prerequisites; `Blocks` must be its inverse, `Related to` never orders work, and contradictory, cyclic, or unavailable references block execution.
 
 If references are missing, contradictory, cyclic, or point to an unavailable issue, stop and report the exact dependency problem. Do not invent an order.
 
-### 6. Classify and assign implementation ownership
+### 6. Resolve OpenSpec coordination before ownership
+
+Before creating branches, worktrees, or implementation handoffs, check for an active matching OpenSpec change. If one exists, reconcile its name, tasks, scope, and branch with the selected issue. If none exists, invoke `$openspec-orchestrator` to establish the required OpenSpec planning state. Pass the issue, source story pack, dependency result, requested scope, and repository evidence already loaded. Require its stateful handoff and `PASS`/`BLOCKED` readiness result.
+
+Do not continue an issue when the orchestrator is `BLOCKED`; report the exact missing decision, evidence, dependency, or capability. A `PASS` does not replace the approval checkpoint in step 9.
+
+Use the OpenSpec orchestrator's delivery shape and ordered specialist route to prepare the implementation handoff. It coordinates the handoff but does not replace the approval checkpoint or the assigned implementation owner's code responsibility.
+
+### 7. Classify implementation ownership for the OpenSpec handoff
 
 - **backend** — Minimal APIs, contracts, handlers, EF, migrations: `backend-implementer`.
 - **frontend** — React feature UI, forms, hooks, and API integration: `frontend-implementer`.
@@ -67,9 +75,9 @@ If references are missing, contradictory, cyclic, or point to an unavailable iss
 - **architecture** — boundaries, ADRs, composition: `story-orchestrator` with `architect-review`.
 - **research** — evidence or knowledge work: `knowledge-researcher`.
 
-Assign one primary implementation owner per issue. Load specialist skills only when their trigger applies; they return constraints or findings to the primary owner and do not duplicate implementation.
+Select one primary implementation owner per issue and pass that ownership to `$openspec-orchestrator`. `issues-kickoff` does not invoke the owner or any implementation agent. Load specialist skills only when their trigger applies; they return constraints or findings to the OpenSpec-coordinated owner and do not duplicate implementation.
 
-### 7. Identify conflicts before execution
+### 8. Identify conflicts before execution
 
 Check for shared:
 
@@ -81,9 +89,9 @@ Check for shared:
 
 Keep shared-contract and migration ownership in one coordinating lane. Do not parallelize conflicting issues merely because their GitHub issues are separate.
 
-### 8. Approval checkpoint
+### 9. Approval checkpoint
 
-Before creating branches, worktrees, or implementation agents, present and obtain explicit approval for:
+Before creating branches, worktrees, or handing work to `$openspec-orchestrator`, present and obtain explicit approval for:
 
 - dependency order and parallel groups;
 - issue, story ID, delivery shape, owner, and scope per lane;
@@ -91,19 +99,19 @@ Before creating branches, worktrees, or implementation agents, present and obtai
 - conflict risks and the coordinating lane; and
 - verification commands and remaining readiness gaps.
 
-### 9. Create isolated implementation work
+### 10. Create isolated implementation work
 
-After approval, create one isolated branch or worktree per non-conflicting issue:
+After approval, create one isolated branch or worktree per non-conflicting issue, before the OpenSpec implementation handoff:
 
-- branch: `codex/<story-id>-<slug>-<timestamp>`;
-- worktree: `.worktrees/<story-id>-<slug>`; and
+- branch: `openspec/gh-<issue-number>-<short-kebab-slug>`;
+- worktree: `.worktrees/gh-<issue-number>-<short-kebab-slug>`; and
 - base branch: the repository's actual default branch, normalized in the story frontmatter.
 
 Update only the source story frontmatter needed for implementation tracking (`status: In_Progress`, `branch`, `worktree_path`, `base_branch`, `updated`). Preserve the story body and unrelated changes.
 
-### 10. Implement and verify
+### 11. Implement and verify
 
-Hand each issue, source story pack, issue references, ownership boundaries, and relevant skills to its assigned agent. Require the agent to report touched areas, acceptance-criteria coverage, verification commands actually run, blockers, and PR readiness.
+Hand each prepared worktree, issue, source story pack, OpenSpec change, task state, issue references, ownership boundaries, and relevant skills to `$openspec-orchestrator`. Require the coordinator to report touched areas, acceptance-criteria coverage, verification commands actually run, blockers, and PR readiness.
 
 Use proportionate project checks:
 
@@ -113,7 +121,7 @@ Use proportionate project checks:
 
 Do not claim a check passed unless it ran successfully. Keep source issue references in commits and PR descriptions.
 
-### 11. Track implementation status
+### 12. Track implementation status
 
 - `In_Progress` — implementation is active.
 - `Blocked` — a dependency, decision, environment, or approval prevents progress; record the blocker.

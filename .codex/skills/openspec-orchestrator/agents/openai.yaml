@@ -1,0 +1,4 @@
+interface:
+  display_name: "openspec Orchestrator"
+  short_description: "Coordinate approved development handoffs"
+  default_prompt: "Use $openspec-orchestrator to route and hand off approved ResumeEnhancer development work."

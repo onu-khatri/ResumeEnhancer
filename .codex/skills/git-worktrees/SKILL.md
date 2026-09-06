@@ -41,7 +41,7 @@ git rev-parse --show-toplevel
 git branch --show-current
 ```
 
-2. Choose a project-local `.worktrees/<story-id>-<slug>` directory and verify that the directory itself is ignored:
+2. Choose the canonical project-local `.worktrees/gh-<issue-number>-<short-kebab-slug>` directory and verify that the directory itself is ignored:
 
 ```bash
 git check-ignore -q .worktrees
@@ -52,7 +52,7 @@ If it is not ignored, stop and request or apply the repository-approved ignore c
 3. Verify the base branch exists and is current enough for the issue plan, then create the worktree with a new branch:
 
 ```bash
-git worktree add .worktrees/<feature> -b codex/<feature>-<timestamp>
+git worktree add .worktrees/gh-<issue-number>-<short-kebab-slug> -b openspec/gh-<issue-number>-<short-kebab-slug>
 ```
 
 Use `--` for path boundaries where applicable. Do not use `-B` or force an existing branch unless the user explicitly requests recovery and the target has been verified.
@@ -60,9 +60,9 @@ Use `--` for path boundaries where applicable. Do not use `-B` or force an exist
 4. Validate the new worktree before implementation:
 
 ```bash
-git -C .worktrees/<feature> status --short
-git -C .worktrees/<feature> branch --show-current
-git -C .worktrees/<feature> log -1 --oneline
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> status --short
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> branch --show-current
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> log -1 --oneline
 ```
 
 Then run the smallest relevant baseline checks:
@@ -100,6 +100,6 @@ If removal reports uncommitted changes, stop and show the path and status. Do no
 ## Definition of Done
 
 - Repository, branch, path, and existing worktree state were verified before mutation.
-- Worktree was created under an ignored directory with a fresh deterministic `codex/` branch.
+- Worktree was created under an ignored directory with a fresh deterministic `openspec/` branch.
 - Baseline checks and the initial branch/worktree identity were recorded before implementation starts.
 - Worktree is removed only after branch completion and clean status, or the remaining changes are explicitly handed off.
