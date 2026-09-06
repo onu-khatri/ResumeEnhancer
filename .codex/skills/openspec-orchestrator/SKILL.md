@@ -91,18 +91,19 @@ For work without an issue, use a concise kebab-case change name and branch
 
 Before changing anything, reconstruct the workflow state.
 
-1. Resolve the repository and default/base branch.
+1. Resolve the GitHub repository and default/base branch needed for delivery.
 2. If an issue or PR is provided, fetch it and relevant comments/reviews.
 3. Inspect the repository for:
    - `openspec/config.yaml`,
    - `openspec/changes/`,
    - matching active or archived change folders,
    - planning artifacts and `tasks.md`,
-   - project instructions such as `AGENTS.md`, `CONTRIBUTING.md`, and relevant
-     test/build configuration.
+   - OpenSpec configuration, changes, schemas, and task artifacts;
+   - project instructions needed to interpret the OpenSpec artifacts.
 4. Search for an existing matching branch and PR.
 5. If a PR exists, inspect changed files, review threads, and CI/workflow state.
-6. Classify the next safe state transition. Do not repeat completed transitions.
+6. Classify the next OpenSpec/GitHub state transition. Do not repeat completed
+   transitions.
 
 ## Routing policy
 
@@ -110,7 +111,8 @@ Choose the OpenSpec workflow from observed state and user intent.
 
 ### A. Ambiguous problem, no settled implementation direction
 
-Use `openspec-explore`.
+Use `openspec-explore` for uncertainty about OpenSpec artifacts, intended
+change structure, or plausible implementation direction.
 
 Exit when the problem, scope, constraints, and plausible approach are clear.
 If the user asked for end-to-end execution, continue automatically into the
@@ -124,9 +126,9 @@ For issue-driven work, incorporate the issue's requirements, acceptance
 criteria, constraints, relevant discussion, and links/references into the
 proposal context.
 
-Stop before coding only if the user requested planning/review only. Otherwise
-continue to implementation after the planning artifacts are coherent and the
-applicable implementation approval is recorded.
+Stop before coding if the user requested planning/review only or applicable
+implementation approval is missing. Otherwise continue after the planning
+artifacts are coherent.
 
 ### C. Matching active change exists but requirements changed
 
@@ -144,12 +146,14 @@ Do not patch code first and leave the specification stale.
 
 ### D. Planning is complete and tasks remain
 
-Ensure the canonical feature branch/worktree exists. For issue work, validate the branch created by `$issues-kickoff`; for direct OpenSpec work, create it through `$git-worktrees` only after the applicable approval gate. Then use `openspec-apply-change`.
+Ensure the canonical feature branch/worktree exists. For issue work, validate the branch created by `$issues-kickoff`; for direct OpenSpec work, create it through `$git-worktrees` after the applicable implementation approval. Then use `openspec-apply-change`.
 
-Apply the smallest code changes required by the tasks. Preserve OpenSpec's task
-checkboxes as the implementation progress record. Run relevant tests, lint,
-type checks, builds, or project validation after meaningful increments and at
-completion.
+Invoke `openspec-apply-change` with the OpenSpec context, current task, issue or
+change references, branch/worktree, and any ownership or verification
+information already established by the upstream workflow. Preserve OpenSpec's
+task checkboxes as the implementation progress record. The apply workflow owns
+code changes and task-level execution; this coordinator tracks its result and
+state.
 
 If blocked because artifacts are missing, use `openspec status` and
 `openspec instructions` to identify and create the next required artifact, then
@@ -256,15 +260,17 @@ On every invocation:
 
 ## Failure handling
 
-When a step fails:
+When an OpenSpec or GitHub step fails:
 
 1. Preserve the current resumable state.
 2. Identify whether the failure is specification, implementation, GitHub,
    permission, CI, or tool availability related.
 3. Fix reversible local problems automatically when the requested task permits.
-4. Do not bypass failing validation by weakening tests, deleting checks, or
+4. If the failure prevents implementation, stop before retrying and report the
+   exact evidence, decision, dependency, approval, or capability gap.
+5. Do not bypass failing validation by weakening tests, deleting checks, or
    editing requirements merely to make the workflow green.
-5. If blocked by permission or a genuinely user-owned decision, stop with the
+6. If blocked by permission or a genuinely user-owned decision, stop with the
    exact blocker and the next action needed.
 
 ## Output format
@@ -285,7 +291,7 @@ run.
 
 ### Validation
 - OpenSpec tasks: `<done>/<total>`
-- OpenSpec verification: `<ready|blocked|warnings|unavailable>`
+- OpenSpec verification: `<ready|blocked|warnings>`
 - Tests/CI: `<passing|failing|pending|not available>`
 - Review threads: `<resolved/unresolved summary>`
 
@@ -296,6 +302,8 @@ State exactly one next safe action. If no further action is needed, say
 ## Rules
 
 - OpenSpec artifacts govern intended behavior; GitHub state governs delivery.
+- This coordinator owns OpenSpec/GitHub state transitions, task sequencing, and
+  actual evidence reconciliation.
 - Never skip proposal/update work when behavior or requirements change.
 - Never use `openspec-explore`, `openspec-propose`, or
   `openspec-update-change` to write production code.

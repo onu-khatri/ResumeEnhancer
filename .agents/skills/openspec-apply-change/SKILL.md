@@ -113,12 +113,9 @@ workflow and never marks OpenSpec tasks complete.
    one implementation owner per workstream. Do not invoke implementation
    agents directly from the gate.
 
-   Before editing code, synthesize the change into an implementation map:
-   - Which tasks are frontend, backend, full-stack, research-heavy, or
-     security-sensitive
-   - Which code areas, contracts, migrations, shared UI surfaces, or
-     cross-module boundaries are likely to move
-   - What verification is needed before a task can be marked complete
+   Use the gate-provided delivery shape, affected ownership, specialist route,
+   and verification plan as the implementation map. Do not reclassify the work,
+   select a competing owner, or redesign the verification plan here.
 
    When repository-local Codex helpers exist, load or delegate the smallest
    matching set returned by the gate instead of solving every slice generically:
