@@ -5,11 +5,11 @@ description: Safely create, validate, operate, and clean up isolated Git worktre
 
 # Git Worktrees
 
-Use this skill to create reproducible isolated workspaces without stashing or switching the primary checkout. It is the worktree authority for `$issues-kickoff`; use `$git-workflows` for history surgery and `$git-commit` for commits.
+Use this skill to create reproducible isolated workspaces without stashing or switching the primary checkout. It is the worktree authority for `$openspec-workflow`; use `$git-workflows` for history surgery and `$git-commit` for commits. It may create a worktree only from an explicit implementation handoff that proves proposal validation, Definition-of-Ready completion, user implementation approval, canonical issue/change identity, base branch, and owning agent.
 
 ## Use this skill when
 
-- implementing multiple handed-off GitHub issues in parallel (see `issues-kickoff` and `story-orchestrator`)
+- implementing multiple handed-off GitHub issues in parallel (see `openspec-workflow`, `issues-kickoff`, and `story-orchestrator`)
 - a feature needs a clean checkout separate from your current working tree
 - you want to keep an in-progress change while starting unrelated work
 
@@ -30,9 +30,11 @@ git worktree list --porcelain
 git remote -v
 ```
 
-Confirm the requested issue/story ID, target base branch, worktree path, branch name, and whether the target worktree or branch already exists. Never reuse a worktree for a different issue. Stop if the primary checkout has an unfinished merge, rebase, cherry-pick, or bisect.
+Confirm the requested issue/story ID, target base branch, worktree path, branch name, and whether the target worktree or branch already exists. Never reuse a worktree for a different issue. Treat a prunable, broken, incomplete, untracked, or pre-approval worktree as invalid: report it and stop; do not repair, force, delete, or silently replace it. Stop if the primary checkout has an unfinished merge, rebase, cherry-pick, or bisect.
 
 ## Create workflow
+
+0. Require the caller's implementation-handoff evidence before any filesystem or Git mutation. If proposal validation, Definition of Ready, explicit implementation approval, issue/change identity, base branch, or owner is missing, stop and return the missing evidence. Do not create a worktree for discovery, issue selection, interview, proposal drafting, proposal validation, or readiness review.
 
 1. Confirm the repository and branch with the preflight checks above. Resolve the repository root before interpreting relative paths.
 
@@ -41,7 +43,7 @@ git rev-parse --show-toplevel
 git branch --show-current
 ```
 
-2. Choose a project-local `.worktrees/<story-id>-<slug>` directory and verify that the directory itself is ignored:
+2. Choose the canonical project-local `.worktrees/gh-<issue-number>-<short-kebab-slug>` directory and verify that the directory itself is ignored:
 
 ```bash
 git check-ignore -q .worktrees
@@ -52,7 +54,7 @@ If it is not ignored, stop and request or apply the repository-approved ignore c
 3. Verify the base branch exists and is current enough for the issue plan, then create the worktree with a new branch:
 
 ```bash
-git worktree add .worktrees/<feature> -b codex/<feature>-<timestamp>
+git worktree add .worktrees/gh-<issue-number>-<short-kebab-slug> -b openspec/gh-<issue-number>-<short-kebab-slug>
 ```
 
 Use `--` for path boundaries where applicable. Do not use `-B` or force an existing branch unless the user explicitly requests recovery and the target has been verified.
@@ -60,9 +62,9 @@ Use `--` for path boundaries where applicable. Do not use `-B` or force an exist
 4. Validate the new worktree before implementation:
 
 ```bash
-git -C .worktrees/<feature> status --short
-git -C .worktrees/<feature> branch --show-current
-git -C .worktrees/<feature> log -1 --oneline
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> status --short
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> branch --show-current
+   git -C .worktrees/gh-<issue-number>-<short-kebab-slug> log -1 --oneline
 ```
 
 Then run the smallest relevant baseline checks:
@@ -100,6 +102,6 @@ If removal reports uncommitted changes, stop and show the path and status. Do no
 ## Definition of Done
 
 - Repository, branch, path, and existing worktree state were verified before mutation.
-- Worktree was created under an ignored directory with a fresh deterministic `codex/` branch.
+- Worktree was created under an ignored directory with a fresh deterministic `openspec/` branch.
 - Baseline checks and the initial branch/worktree identity were recorded before implementation starts.
 - Worktree is removed only after branch completion and clean status, or the remaining changes are explicitly handed off.

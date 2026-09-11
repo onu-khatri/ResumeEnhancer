@@ -8,9 +8,10 @@ public sealed class CreateBillingSubscriptionRequest
     public int BillingAccountId { get; set; }
 
     [Required]
-    public int BillingPlanId { get; set; }
+    public int UserId { get; set; }
 
-    public int? ResumeId { get; set; }
+    [Required]
+    public int BillingPlanId { get; set; }
 
     [Required]
     [MaxLength(50)]
@@ -27,9 +28,10 @@ public sealed class UpdateBillingSubscriptionRequest
     public int BillingAccountId { get; set; }
 
     [Required]
-    public int BillingPlanId { get; set; }
+    public int UserId { get; set; }
 
-    public int? ResumeId { get; set; }
+    [Required]
+    public int BillingPlanId { get; set; }
 
     [Required]
     [MaxLength(50)]

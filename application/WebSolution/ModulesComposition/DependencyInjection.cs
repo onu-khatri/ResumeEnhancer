@@ -1,7 +1,8 @@
 using EmptyProjectTesting.Middleware;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using ResumeEnhancer.AuthModule.PL;
+using ResumeEnhancer.AuthModule.Web;
 using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.BillingModule.Web;
 using ResumeEnhancer.BillingModule.Web.MiniApis;
@@ -23,6 +24,8 @@ public static class DependencyInjection
     public static IServiceCollection AddApplicationModules(this IServiceCollection services)
     {
         services.AddApplicationMediator();
+        services.AddAuthModulePersistence();
+        services.AddAuthModuleWeb();
 
         services.AddProfilingModulePersistence();
         services.AddProfilingModuleWeb();
@@ -37,9 +40,12 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IEndpointRouteBuilder MapApplicationModuleApis(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapApplicationModuleApis(
+        this IEndpointRouteBuilder endpoints
+    )
     {
         ProfilingMinimalApis.MapProfilingModuleApis(endpoints);
+        AuthMinimalApis.MapAuthModuleApis(endpoints);
         BillingMinimalApis.MapBillingModuleApis(endpoints);
         TemplateMinimalApis.MapTemplateModuleApis(endpoints);
         ResumeMinimalApis.MapResumeModuleApis(endpoints);
@@ -47,4 +53,3 @@ public static class DependencyInjection
         return endpoints;
     }
 }
-

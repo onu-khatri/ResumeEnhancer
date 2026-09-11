@@ -14,7 +14,8 @@ public sealed class BillingAccountConfiguration : IEntityTypeConfiguration<Billi
 
         builder.HasIndex(entity => entity.AccountNumber).IsUnique();
 
-        builder.HasOne(entity => entity.User)
+        builder
+            .HasOne(entity => entity.User)
             .WithMany()
             .HasForeignKey(entity => entity.UserId)
             .OnDelete(DeleteBehavior.Restrict);
@@ -40,19 +41,28 @@ public sealed class BillingSubscriptionConfiguration : IEntityTypeConfiguration<
     {
         builder.Property(entity => entity.Status).HasMaxLength(50).IsRequired();
 
-        builder.HasOne(entity => entity.BillingAccount)
+        builder
+            .HasOne(entity => entity.BillingAccount)
             .WithMany(account => account.Subscriptions)
             .HasForeignKey(entity => entity.BillingAccountId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(entity => entity.BillingPlan)
+        builder
+            .HasOne(entity => entity.BillingPlan)
             .WithMany(plan => plan.Subscriptions)
             .HasForeignKey(entity => entity.BillingPlanId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(entity => entity.Resume)
+        builder
+            .HasOne(entity => entity.User)
             .WithMany()
-            .HasForeignKey(entity => entity.ResumeId)
+            .HasForeignKey(entity => entity.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(entity => entity.AccessProfile)
+            .WithMany()
+            .HasForeignKey(entity => entity.AccessProfileId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

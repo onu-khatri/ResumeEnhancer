@@ -1,5 +1,5 @@
-using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
+using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ResumeModule.DM.Entities;
@@ -7,27 +7,25 @@ using ResumeEnhancer.ResumeModule.SL.Abstractions.Persistence;
 
 namespace ResumeEnhancer.ResumeModule.PL.Repositories;
 
-public sealed class ResumeRepository : IResumeRepository
+public sealed class ResumeRepository(
+    IUnitOfWork<AppDbContext> unitOfWork,
+    ICacheProvider cacheProvider
+) : IResumeRepository
 {
     private const int MaxPageSize = 100;
     private static readonly string[] SetupCacheKeys =
     [
-        ResumeSetupDataRepository.ResumeSectionsCacheKey
+        ResumeSetupDataRepository.ResumeSectionsCacheKey,
     ];
 
-    private readonly IUnitOfWork<AppDbContext> _unitOfWork;
-    private readonly ICacheProvider _cacheProvider;
-
-    public ResumeRepository(IUnitOfWork<AppDbContext> unitOfWork, ICacheProvider cacheProvider)
-    {
-        _unitOfWork = unitOfWork;
-        _cacheProvider = cacheProvider;
-    }
+    private readonly IUnitOfWork<AppDbContext> _unitOfWork = unitOfWork;
+    private readonly ICacheProvider _cacheProvider = cacheProvider;
 
     public async Task<Resume> AddAsync(
         Resume resume,
         int? auditUserId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(resume);
 
@@ -41,7 +39,8 @@ public sealed class ResumeRepository : IResumeRepository
         int resumeId,
         int? userId = null,
         bool track = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         EnsurePositiveId(resumeId, nameof(resumeId));
 
@@ -64,7 +63,8 @@ public sealed class ResumeRepository : IResumeRepository
 
     public async Task<ResumeSearchResult> SearchAsync(
         ResumeSearchCriteria criteria,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(criteria);
         ValidatePaging(criteria.PageNumber, criteria.PageSize);
@@ -80,7 +80,8 @@ public sealed class ResumeRepository : IResumeRepository
                 [],
                 criteria.PageNumber,
                 criteria.PageSize,
-                totalCount: 0);
+                totalCount: 0
+            );
         }
 
         if (ids is not null)
@@ -150,25 +151,68 @@ public sealed class ResumeRepository : IResumeRepository
             .AsSplitQuery()
             .ToListAsync(cancellationToken);
 
-        return new ResumeSearchResult(
-            items,
-            criteria.PageNumber,
-            criteria.PageSize,
-            totalCount);
+        return new ResumeSearchResult(items, criteria.PageNumber, criteria.PageSize, totalCount);
     }
 
     public void Remove(AuditEntity entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        _unitOfWork.DbContext.Remove(entity);
+        switch (entity)
+        {
+            case Address value:
+                _unitOfWork.GetRepo<Address>().Delete(value);
+                break;
+            case Award value:
+                _unitOfWork.GetRepo<Award>().Delete(value);
+                break;
+            case Certification value:
+                _unitOfWork.GetRepo<Certification>().Delete(value);
+                break;
+            case Education value:
+                _unitOfWork.GetRepo<Education>().Delete(value);
+                break;
+            case Hobby value:
+                _unitOfWork.GetRepo<Hobby>().Delete(value);
+                break;
+            case Language value:
+                _unitOfWork.GetRepo<Language>().Delete(value);
+                break;
+            case PersonalInformation value:
+                _unitOfWork.GetRepo<PersonalInformation>().Delete(value);
+                break;
+            case Project value:
+                _unitOfWork.GetRepo<Project>().Delete(value);
+                break;
+            case Resume value:
+                _unitOfWork.GetRepo<Resume>().Delete(value);
+                break;
+            case Skill value:
+                _unitOfWork.GetRepo<Skill>().Delete(value);
+                break;
+            case SocialMediaLink value:
+                _unitOfWork.GetRepo<SocialMediaLink>().Delete(value);
+                break;
+            case WorkExperience value:
+                _unitOfWork.GetRepo<WorkExperience>().Delete(value);
+                break;
+            default:
+                throw new ArgumentException(
+                    $"Unsupported resume entity type '{entity.GetType().Name}'.",
+                    nameof(entity)
+                );
+        }
     }
 
     public async Task<int> SaveAsync(
         int? auditUserId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var affectedCount = await _unitOfWork.SaveAsync(new RepositoryAudit(auditUserId), cancellationToken);
+        var affectedCount = await _unitOfWork.SaveAsync(
+            new RepositoryAudit(auditUserId),
+            cancellationToken
+        );
         await InvalidateSetupCacheAsync(cancellationToken);
         return affectedCount;
     }
@@ -177,7 +221,8 @@ public sealed class ResumeRepository : IResumeRepository
         IReadOnlyList<int> resumeIds,
         int? auditUserId,
         int? userId = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(resumeIds);
 
@@ -188,15 +233,16 @@ public sealed class ResumeRepository : IResumeRepository
             return new ResumeDeleteResult([], [], [], []);
         }
 
-        var resumes = await _unitOfWork.GetRepo<Resume>()
-            .GetQuery(requestedIds.ToList())
+        var resumes = await _unitOfWork
+            .GetRepo<Resume>()
+            .GetQuery([.. requestedIds])
             .ToListAsync(cancellationToken);
 
         var loadedIds = resumes.Select(resume => resume.Id).ToHashSet();
         var notFoundIds = requestedIds.Where(id => !loadedIds.Contains(id)).ToArray();
         var allowedResumes = userId is null
             ? resumes
-            : resumes.Where(resume => resume.UserId == userId.Value).ToList();
+            : [.. resumes.Where(resume => resume.UserId == userId.Value)];
         var allowedIds = allowedResumes.Select(resume => resume.Id).ToHashSet();
         var forbiddenIds = userId is null
             ? []
@@ -215,25 +261,31 @@ public sealed class ResumeRepository : IResumeRepository
             requestedIds,
             allowedIds.ToArray(),
             notFoundIds,
-            forbiddenIds);
+            forbiddenIds
+        );
     }
 
     public async Task<bool> ExistsAsync(
         int resumeId,
         int? userId = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         EnsurePositiveId(resumeId, nameof(resumeId));
 
         return userId is null
             ? await _unitOfWork.GetRepo<Resume>().ExistsAsync(resumeId, cancellationToken)
-            : await _unitOfWork.GetRepo<Resume>().ExistsAsync(
-                resume => resume.Id == resumeId && resume.UserId == userId.Value,
-                cancellationToken);
+            : await _unitOfWork
+                .GetRepo<Resume>()
+                .ExistsAsync(
+                    resume => resume.Id == resumeId && resume.UserId == userId.Value,
+                    cancellationToken
+                );
     }
 
-    private static IQueryable<Resume> ApplyResumeGraphIncludes(IQueryable<Resume> query) =>
-        query
+    private static IQueryable<Resume> ApplyResumeGraphIncludes(IQueryable<Resume> query)
+    {
+        return query
             .Include(resume => resume.PersonalInformation)
                 .ThenInclude(personalInformation => personalInformation!.Address)
             .Include(resume => resume.PersonalInformation)
@@ -250,57 +302,72 @@ public sealed class ResumeRepository : IResumeRepository
             .Include(resume => resume.WorkExperiences)
             .Include(resume => resume.Projects)
             .AsSplitQuery();
+    }
 
-    private static IQueryable<Resume> ApplySearchText(
-        IQueryable<Resume> query,
-        string searchText) =>
-        query.Where(resume =>
+    private static IQueryable<Resume> ApplySearchText(IQueryable<Resume> query, string searchText)
+    {
+        return query.Where(resume =>
             resume.Title.Contains(searchText)
-            || (resume.Summary != null && resume.Summary.Contains(searchText))
-            || (resume.ResumeTemplate != null && resume.ResumeTemplate.Contains(searchText))
-            || (resume.PersonalInformation != null
-                && ((resume.PersonalInformation.Email != null
-                        && resume.PersonalInformation.Email.Contains(searchText))
-                    || (resume.PersonalInformation.PhoneNumber != null
-                        && resume.PersonalInformation.PhoneNumber.Contains(searchText))))
+            || resume.Summary != null && resume.Summary.Contains(searchText)
+            || resume.ResumeTemplate != null && resume.ResumeTemplate.Contains(searchText)
+            || resume.PersonalInformation != null
+                && (
+                    resume.PersonalInformation.Email != null
+                        && resume.PersonalInformation.Email.Contains(searchText)
+                    || resume.PersonalInformation.PhoneNumber != null
+                        && resume.PersonalInformation.PhoneNumber.Contains(searchText)
+                )
             || resume.Skills.Any(skill => skill.SkillName.Contains(searchText))
             || resume.WorkExperiences.Any(workExperience =>
-                (workExperience.JobTitle != null && workExperience.JobTitle.Contains(searchText))
-                || (workExperience.CompanyName != null && workExperience.CompanyName.Contains(searchText)))
+                workExperience.JobTitle != null && workExperience.JobTitle.Contains(searchText)
+                || workExperience.CompanyName != null
+                    && workExperience.CompanyName.Contains(searchText)
+            )
             || resume.Projects.Any(project =>
                 project.ProjectName.Contains(searchText)
-                || (project.TechnologiesUsed != null
-                    && project.TechnologiesUsed.Contains(searchText))));
+                || project.TechnologiesUsed != null && project.TechnologiesUsed.Contains(searchText)
+            )
+        );
+    }
 
     private static IQueryable<Resume> ApplySort(
         IQueryable<Resume> query,
         ResumeSortBy sortBy,
-        ResumeSortDirection direction) =>
-        (sortBy, direction) switch
+        ResumeSortDirection direction
+    )
+    {
+        return (sortBy, direction) switch
         {
-            (ResumeSortBy.Title, ResumeSortDirection.Ascending) =>
-                query.OrderBy(resume => resume.Title).ThenBy(resume => resume.Id),
-            (ResumeSortBy.Title, ResumeSortDirection.Descending) =>
-                query.OrderByDescending(resume => resume.Title).ThenByDescending(resume => resume.Id),
-            (ResumeSortBy.CreatedDate, ResumeSortDirection.Ascending) =>
-                query.OrderBy(resume => resume.App_CreateDate).ThenBy(resume => resume.Id),
-            (ResumeSortBy.CreatedDate, ResumeSortDirection.Descending) =>
-                query.OrderByDescending(resume => resume.App_CreateDate).ThenByDescending(resume => resume.Id),
-            (ResumeSortBy.ResumeTemplate, ResumeSortDirection.Ascending) =>
-                query.OrderBy(resume => resume.ResumeTemplate).ThenBy(resume => resume.Id),
-            (ResumeSortBy.ResumeTemplate, ResumeSortDirection.Descending) =>
-                query.OrderByDescending(resume => resume.ResumeTemplate).ThenByDescending(resume => resume.Id),
-            (ResumeSortBy.Id, ResumeSortDirection.Ascending) =>
-                query.OrderBy(resume => resume.Id),
-            (ResumeSortBy.Id, ResumeSortDirection.Descending) =>
-                query.OrderByDescending(resume => resume.Id),
-            (_, ResumeSortDirection.Ascending) =>
-                query.OrderBy(resume => resume.App_UpdateDate ?? resume.App_CreateDate)
-                    .ThenBy(resume => resume.Id),
-            _ =>
-                query.OrderByDescending(resume => resume.App_UpdateDate ?? resume.App_CreateDate)
-                    .ThenByDescending(resume => resume.Id)
+            (ResumeSortBy.Title, ResumeSortDirection.Ascending) => query
+                .OrderBy(resume => resume.Title)
+                .ThenBy(resume => resume.Id),
+            (ResumeSortBy.Title, ResumeSortDirection.Descending) => query
+                .OrderByDescending(resume => resume.Title)
+                .ThenByDescending(resume => resume.Id),
+            (ResumeSortBy.CreatedDate, ResumeSortDirection.Ascending) => query
+                .OrderBy(resume => resume.App_CreateDate)
+                .ThenBy(resume => resume.Id),
+            (ResumeSortBy.CreatedDate, ResumeSortDirection.Descending) => query
+                .OrderByDescending(resume => resume.App_CreateDate)
+                .ThenByDescending(resume => resume.Id),
+            (ResumeSortBy.ResumeTemplate, ResumeSortDirection.Ascending) => query
+                .OrderBy(resume => resume.ResumeTemplate)
+                .ThenBy(resume => resume.Id),
+            (ResumeSortBy.ResumeTemplate, ResumeSortDirection.Descending) => query
+                .OrderByDescending(resume => resume.ResumeTemplate)
+                .ThenByDescending(resume => resume.Id),
+            (ResumeSortBy.Id, ResumeSortDirection.Ascending) => query.OrderBy(resume => resume.Id),
+            (ResumeSortBy.Id, ResumeSortDirection.Descending) => query.OrderByDescending(resume =>
+                resume.Id
+            ),
+            (_, ResumeSortDirection.Ascending) => query
+                .OrderBy(resume => resume.App_UpdateDate ?? resume.App_CreateDate)
+                .ThenBy(resume => resume.Id),
+            _ => query
+                .OrderByDescending(resume => resume.App_UpdateDate ?? resume.App_CreateDate)
+                .ThenByDescending(resume => resume.Id),
         };
+    }
 
     private static void ValidatePaging(int pageNumber, int pageSize)
     {
@@ -309,7 +376,8 @@ public sealed class ResumeRepository : IResumeRepository
             throw new ArgumentOutOfRangeException(
                 nameof(pageNumber),
                 pageNumber,
-                "Page number must be greater than or equal to 1.");
+                "Page number must be greater than or equal to 1."
+            );
         }
 
         if (pageSize < 1 || pageSize > MaxPageSize)
@@ -317,7 +385,8 @@ public sealed class ResumeRepository : IResumeRepository
             throw new ArgumentOutOfRangeException(
                 nameof(pageSize),
                 pageSize,
-                $"Page size must be between 1 and {MaxPageSize}.");
+                $"Page size must be between 1 and {MaxPageSize}."
+            );
         }
     }
 
@@ -325,8 +394,7 @@ public sealed class ResumeRepository : IResumeRepository
     {
         if (from is not null && to is not null && from > to)
         {
-            throw new ArgumentException(
-                $"{label} start date cannot be later than end date.");
+            throw new ArgumentException($"{label} start date cannot be later than end date.");
         }
     }
 
@@ -337,18 +405,17 @@ public sealed class ResumeRepository : IResumeRepository
             throw new ArgumentOutOfRangeException(
                 fieldName,
                 id,
-                $"{fieldName} must be greater than 0.");
+                $"{fieldName} must be greater than 0."
+            );
         }
     }
 
-    private static int[]? NormalizeIdsForSearch(IEnumerable<int>? ids) =>
-        ids is null
-            ? null
-            : NormalizeIdsForRequiredOperation(ids, nameof(ids));
+    private static int[]? NormalizeIdsForSearch(IEnumerable<int>? ids)
+    {
+        return ids is null ? null : NormalizeIdsForRequiredOperation(ids, nameof(ids));
+    }
 
-    private static int[] NormalizeIdsForRequiredOperation(
-        IEnumerable<int> ids,
-        string fieldName)
+    private static int[] NormalizeIdsForRequiredOperation(IEnumerable<int> ids, string fieldName)
     {
         var normalizedIds = ids.Distinct().ToArray();
         var invalidId = normalizedIds.FirstOrDefault(id => id <= 0);
@@ -358,20 +425,16 @@ public sealed class ResumeRepository : IResumeRepository
             throw new ArgumentOutOfRangeException(
                 fieldName,
                 invalidId,
-                $"{fieldName} cannot contain zero or negative ids.");
+                $"{fieldName} cannot contain zero or negative ids."
+            );
         }
 
         return normalizedIds;
     }
 
-    private sealed class RepositoryAudit : IAudit
+    private sealed class RepositoryAudit(int? userId) : IAudit
     {
-        public RepositoryAudit(int? userId)
-        {
-            UserId = userId;
-        }
-
-        public int? UserId { get; }
+        public int? UserId { get; } = userId;
     }
 
     private async Task InvalidateSetupCacheAsync(CancellationToken cancellationToken)
@@ -382,4 +445,3 @@ public sealed class ResumeRepository : IResumeRepository
         }
     }
 }
-

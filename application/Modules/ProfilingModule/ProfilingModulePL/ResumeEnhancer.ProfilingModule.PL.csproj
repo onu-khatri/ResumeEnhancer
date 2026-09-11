@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\..\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\ProfilingModuleDM\ResumeEnhancer.ProfilingModule.DM.csproj" />
     <ProjectReference Include="..\ProfilingModelSL\ResumeEnhancer.ProfilingModule.SL.csproj" />
+    <ProjectReference Include="..\..\BillingModule\BillingModuleDM\ResumeEnhancer.BillingModule.DM.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSpecWorkflow"
+  short_description: "Coordinate OpenSpec planning, implementation, and closeout"
+  default_prompt: "Use $openspec-workflow to manage OpenSpec proposal approval, worktree handoff, implementation, verification, and closeout."

@@ -13,6 +13,7 @@ using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.DM.Entities;
 using ResumeEnhancer.TemplateModule.PL;
+using ResumeEnhancer.AuthModule.PL;
 
 namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
@@ -39,6 +40,7 @@ internal sealed class SqliteAppDbContextScope : IDisposable
         services.TryAddTransient(typeof(IModelLoader<>), typeof(ModelLoader<>));
         services.TryAddSingleton(CreateCacheProvider());
         services.AddResumeModulePersistence();
+        services.AddAuthModulePersistence();
 
         Services = services.BuildServiceProvider();
 
@@ -99,6 +101,7 @@ internal sealed class SqliteAppDbContextScope : IDisposable
             options,
             [
                 new BillingModuleDbContextModelConfiguration(),
+                new AuthModuleDbContextModelConfiguration(),
                 new ProfilingModuleDbContextModelConfiguration(),
                 new ResumeModuleDbContextModelConfiguration(),
                 new TemplateModuleDbContextModelConfiguration()

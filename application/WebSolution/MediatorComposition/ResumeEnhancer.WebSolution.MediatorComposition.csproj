@@ -23,6 +23,8 @@
     <ProjectReference Include="..\..\Modules\ResumeModule\ResumeModuleWeb\ResumeEnhancer.ResumeModule.Web.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModelSL\ResumeEnhancer.TemplateModule.SL.csproj" />
     <ProjectReference Include="..\..\Modules\TemplateModule\TemplateModuleWeb\ResumeEnhancer.TemplateModule.Web.csproj" />
+    <ProjectReference Include="..\..\Modules\AuthModule\AuthModuleSL\ResumeEnhancer.AuthModule.SL.csproj" />
+    <ProjectReference Include="..\..\Modules\AuthModule\AuthModuleWeb\ResumeEnhancer.AuthModule.Web.csproj" />
   </ItemGroup>
 
 </Project>

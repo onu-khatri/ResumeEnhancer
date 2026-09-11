@@ -3,54 +3,45 @@ using ResumeEnhancer.BillingModule.AM.Responses;
 using ResumeEnhancer.BillingModule.SL.Abstractions.Persistence;
 using ResumeEnhancer.BillingModule.SL.Contracts;
 using ResumeEnhancer.BillingModule.SL.Mapping;
-using ResumeEnhancer.ResumeModule.SL.Integrations;
 
 namespace ResumeEnhancer.BillingModule.SL.Handlers;
 
-public sealed class CreateBillingSubscriptionCommandHandler : ICommandHandler<CreateBillingSubscriptionCommand, BillingSubscriptionDetailResponse?>
+public sealed class CreateBillingSubscriptionCommandHandler(IBillingRepository repository)
+    : ICommandHandler<CreateBillingSubscriptionCommand, BillingSubscriptionDetailResponse?>
 {
-    private readonly IBillingRepository _repository;
-    private readonly IResumeLookupService _resumeLookupService;
+    private readonly IBillingRepository _repository = repository;
 
-    public CreateBillingSubscriptionCommandHandler(IBillingRepository repository, IResumeLookupService resumeLookupService)
+    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(
+        CreateBillingSubscriptionCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        _repository = repository;
-        _resumeLookupService = resumeLookupService;
-    }
-
-    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(CreateBillingSubscriptionCommand request, CancellationToken cancellationToken)
-    {
-        if (request.Request.ResumeId is int resumeId && !await _resumeLookupService.ResumeExistsAsync(resumeId, cancellationToken))
-        {
-            return null;
-        }
-
         var entity = BillingModelMapper.CreateBillingSubscription(request.Request);
-        await _repository.AddBillingSubscriptionAsync(entity, request.AuditUserId, cancellationToken);
+        await _repository.AddBillingSubscriptionAsync(
+            entity,
+            request.AuditUserId,
+            cancellationToken
+        );
         return BillingModelMapper.MapBillingSubscriptionDetail(entity);
     }
 }
 
-public sealed class UpdateBillingSubscriptionCommandHandler : ICommandHandler<UpdateBillingSubscriptionCommand, BillingSubscriptionDetailResponse?>
+public sealed class UpdateBillingSubscriptionCommandHandler(IBillingRepository repository)
+    : ICommandHandler<UpdateBillingSubscriptionCommand, BillingSubscriptionDetailResponse?>
 {
-    private readonly IBillingRepository _repository;
-    private readonly IResumeLookupService _resumeLookupService;
+    private readonly IBillingRepository _repository = repository;
 
-    public UpdateBillingSubscriptionCommandHandler(IBillingRepository repository, IResumeLookupService resumeLookupService)
+    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(
+        UpdateBillingSubscriptionCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        _repository = repository;
-        _resumeLookupService = resumeLookupService;
-    }
-
-    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(UpdateBillingSubscriptionCommand request, CancellationToken cancellationToken)
-    {
-        var entity = await _repository.GetBillingSubscriptionAsync(request.BillingSubscriptionId, track: true, cancellationToken);
+        var entity = await _repository.GetBillingSubscriptionAsync(
+            request.BillingSubscriptionId,
+            track: true,
+            cancellationToken
+        );
         if (entity is null)
-        {
-            return null;
-        }
-
-        if (request.Request.ResumeId is int resumeId && !await _resumeLookupService.ResumeExistsAsync(resumeId, cancellationToken))
         {
             return null;
         }
@@ -61,45 +52,66 @@ public sealed class UpdateBillingSubscriptionCommandHandler : ICommandHandler<Up
     }
 }
 
-public sealed class DeleteBillingSubscriptionCommandHandler : ICommandHandler<DeleteBillingSubscriptionCommand, bool>
+public sealed class DeleteBillingSubscriptionCommandHandler(IBillingRepository repository)
+    : ICommandHandler<DeleteBillingSubscriptionCommand, bool>
 {
-    private readonly IBillingRepository _repository;
+    private readonly IBillingRepository _repository = repository;
 
-    public DeleteBillingSubscriptionCommandHandler(IBillingRepository repository) => _repository = repository;
-
-    public async ValueTask<bool> Handle(DeleteBillingSubscriptionCommand request, CancellationToken cancellationToken)
+    public async ValueTask<bool> Handle(
+        DeleteBillingSubscriptionCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var entity = await _repository.GetBillingSubscriptionAsync(request.BillingSubscriptionId, track: true, cancellationToken);
+        var entity = await _repository.GetBillingSubscriptionAsync(
+            request.BillingSubscriptionId,
+            track: true,
+            cancellationToken
+        );
         if (entity is null)
         {
             return false;
         }
 
-        await _repository.DeleteBillingSubscriptionAsync(entity, request.AuditUserId, cancellationToken);
+        await _repository.DeleteBillingSubscriptionAsync(
+            entity,
+            request.AuditUserId,
+            cancellationToken
+        );
         return true;
     }
 }
 
-public sealed class GetBillingSubscriptionQueryHandler : IQueryHandler<GetBillingSubscriptionQuery, BillingSubscriptionDetailResponse?>
+public sealed class GetBillingSubscriptionQueryHandler(IBillingRepository repository)
+    : IQueryHandler<GetBillingSubscriptionQuery, BillingSubscriptionDetailResponse?>
 {
-    private readonly IBillingRepository _repository;
+    private readonly IBillingRepository _repository = repository;
 
-    public GetBillingSubscriptionQueryHandler(IBillingRepository repository) => _repository = repository;
-
-    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(GetBillingSubscriptionQuery request, CancellationToken cancellationToken)
+    public async ValueTask<BillingSubscriptionDetailResponse?> Handle(
+        GetBillingSubscriptionQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var entity = await _repository.GetBillingSubscriptionAsync(request.BillingSubscriptionId, false, cancellationToken);
+        var entity = await _repository.GetBillingSubscriptionAsync(
+            request.BillingSubscriptionId,
+            false,
+            cancellationToken
+        );
         return entity is null ? null : BillingModelMapper.MapBillingSubscriptionDetail(entity);
     }
 }
 
-public sealed class ListBillingSubscriptionsQueryHandler : IQueryHandler<ListBillingSubscriptionsQuery, IReadOnlyList<BillingSubscriptionListItemResponse>>
+public sealed class ListBillingSubscriptionsQueryHandler(IBillingRepository repository)
+    : IQueryHandler<
+        ListBillingSubscriptionsQuery,
+        IReadOnlyList<BillingSubscriptionListItemResponse>
+    >
 {
-    private readonly IBillingRepository _repository;
+    private readonly IBillingRepository _repository = repository;
 
-    public ListBillingSubscriptionsQueryHandler(IBillingRepository repository) => _repository = repository;
-
-    public async ValueTask<IReadOnlyList<BillingSubscriptionListItemResponse>> Handle(ListBillingSubscriptionsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<IReadOnlyList<BillingSubscriptionListItemResponse>> Handle(
+        ListBillingSubscriptionsQuery request,
+        CancellationToken cancellationToken
+    )
     {
         var entities = await _repository.ListBillingSubscriptionsAsync(cancellationToken);
         return entities.Select(BillingModelMapper.MapBillingSubscriptionListItem).ToArray();

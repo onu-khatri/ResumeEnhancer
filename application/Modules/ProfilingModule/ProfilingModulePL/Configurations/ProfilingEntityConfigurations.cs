@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ResumeEnhancer.BillingModule.DM.Entities;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
-using ResumeEnhancer.ProfilingModule.DM.Enums;
 
 namespace ResumeEnhancer.ProfilingModule.PL.Configurations;
 
@@ -18,6 +18,57 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
     }
 }
 
+public sealed class UserPreferenceConfiguration : IEntityTypeConfiguration<UserPreference>
+{
+    public void Configure(EntityTypeBuilder<UserPreference> builder)
+    {
+        builder.Property(x => x.Locale).HasMaxLength(10).IsRequired();
+        builder.HasIndex(x => x.UserId).IsUnique();
+        builder
+            .HasOne(x => x.User)
+            .WithMany(x => x.Preferences)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class UserEntitlementConfiguration : IEntityTypeConfiguration<UserEntitlement>
+{
+    public void Configure(EntityTypeBuilder<UserEntitlement> builder)
+    {
+        builder.Property(x => x.Source).HasMaxLength(30).IsRequired();
+        builder
+            .HasIndex(x => new
+            {
+                x.UserId,
+                x.BillingSubscriptionId,
+                x.AccessProfileId,
+            })
+            .IsUnique();
+        builder.HasIndex(x => new
+        {
+            x.UserId,
+            x.Enabled,
+            x.ExpiresAtUtc,
+        });
+        builder
+            .HasOne(x => x.User)
+            .WithMany(x => x.Entitlements)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasOne(x => x.AccessProfile)
+            .WithMany()
+            .HasForeignKey(x => x.AccessProfileId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder
+            .HasOne<BillingSubscription>()
+            .WithMany()
+            .HasForeignKey(x => x.BillingSubscriptionId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
 public sealed class UserAddressConfiguration : IEntityTypeConfiguration<UserAddress>
 {
     public void Configure(EntityTypeBuilder<UserAddress> builder)
@@ -29,19 +80,22 @@ public sealed class UserAddressConfiguration : IEntityTypeConfiguration<UserAddr
 
         builder.HasIndex(address => new { address.UserId, address.AddressTypeId }).IsUnique();
 
-        builder.HasOne(address => address.User)
+        builder
+            .HasOne(address => address.User)
             .WithMany(user => user.UserAddresses)
             .HasForeignKey(address => address.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(address => address.AddressType)
+        builder
+            .HasOne(address => address.AddressType)
             .WithMany(addressType => addressType.UserAddresses)
             .HasForeignKey(address => address.AddressTypeId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
 
-public sealed class UserAddressTypeSetupConfiguration : IEntityTypeConfiguration<UserAddressTypeSetup>
+public sealed class UserAddressTypeSetupConfiguration
+    : IEntityTypeConfiguration<UserAddressTypeSetup>
 {
     public void Configure(EntityTypeBuilder<UserAddressTypeSetup> builder)
     {
@@ -58,6 +112,7 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
+        builder.Property(entity => entity.Capability).HasMaxLength(100).IsRequired();
         builder.Property(role => role.DisplayName).HasMaxLength(200).IsRequired();
         builder.Property(role => role.Order).IsRequired();
     }
@@ -78,12 +133,14 @@ public sealed class UserAccessProfileConfiguration : IEntityTypeConfiguration<Us
     {
         builder.HasIndex(item => new { item.UserId, item.AccessProfileId }).IsUnique();
 
-        builder.HasOne(item => item.User)
+        builder
+            .HasOne(item => item.User)
             .WithMany(user => user.UserAccessProfiles)
             .HasForeignKey(item => item.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(item => item.AccessProfile)
+        builder
+            .HasOne(item => item.AccessProfile)
             .WithMany(accessProfile => accessProfile.UserAccessProfiles)
             .HasForeignKey(item => item.AccessProfileId)
             .OnDelete(DeleteBehavior.Restrict);
@@ -96,12 +153,14 @@ public sealed class AccessProfileRoleConfiguration : IEntityTypeConfiguration<Ac
     {
         builder.HasIndex(item => new { item.AccessProfileId, item.RoleId }).IsUnique();
 
-        builder.HasOne(item => item.AccessProfile)
+        builder
+            .HasOne(item => item.AccessProfile)
             .WithMany(accessProfile => accessProfile.AccessProfileRoles)
             .HasForeignKey(item => item.AccessProfileId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(item => item.Role)
+        builder
+            .HasOne(item => item.Role)
             .WithMany(role => role.AccessProfileRoles)
             .HasForeignKey(item => item.RoleId)
             .OnDelete(DeleteBehavior.Restrict);

@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using Shouldly;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
@@ -13,7 +13,7 @@ public sealed partial class ResumeQueryIntegrationTests
     {
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "owner can get own resume graph",
                 HttpMethod.Get,
                 "/api/resumes/0",
@@ -23,12 +23,14 @@ public sealed partial class ResumeQueryIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 71,
                         accessProfileId: 901,
-                        "resume.read");
+                        "resume.read"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Readable Resume",
                         auditUserId: 31,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}";
                 },
@@ -36,18 +38,20 @@ public sealed partial class ResumeQueryIntegrationTests
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDetailResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     response.Title.ShouldBe("Readable Resume");
                     response.PersonalInformation.ShouldNotBeNull();
                     response.Skills.Count.ShouldBe(2);
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(1);
-                })
+                }
+            ),
         ];
 
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "different active user receives not found for owned resume",
                 HttpMethod.Get,
                 "/api/resumes/0",
@@ -57,12 +61,14 @@ public sealed partial class ResumeQueryIntegrationTests
                         ResumeApiTestData.IntruderUserId,
                         auditUserId: 72,
                         accessProfileId: 902,
-                        "resume.read");
+                        "resume.read"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Hidden Resume",
                         auditUserId: 32,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}";
                 },
@@ -70,7 +76,8 @@ public sealed partial class ResumeQueryIntegrationTests
                 {
                     responseMessage.StatusCode.ShouldBe(HttpStatusCode.NotFound);
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(1);
-                })
+                }
+            ),
         ];
     }
 
@@ -78,7 +85,7 @@ public sealed partial class ResumeQueryIntegrationTests
     {
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "owner existence check returns true",
                 HttpMethod.Get,
                 "/api/resumes/0/exists",
@@ -88,28 +95,33 @@ public sealed partial class ResumeQueryIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 73,
                         accessProfileId: 903,
-                        "resume.read");
+                        "resume.read"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Exists Resume",
                         auditUserId: 33,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}/exists";
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     responseMessage.StatusCode.ShouldBe(HttpStatusCode.OK);
-                    var exists = await responseMessage.Content.ReadFromJsonAsync<bool>(cancellationToken);
+                    var exists = await responseMessage.Content.ReadFromJsonAsync<bool>(
+                        cancellationToken
+                    );
 
                     exists.ShouldBeTrue();
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(1);
-                })
+                }
+            ),
         ];
 
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "different active user existence check returns false",
                 HttpMethod.Get,
                 "/api/resumes/0/exists",
@@ -119,23 +131,28 @@ public sealed partial class ResumeQueryIntegrationTests
                         ResumeApiTestData.IntruderUserId,
                         auditUserId: 74,
                         accessProfileId: 904,
-                        "resume.read");
+                        "resume.read"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Exists Hidden Resume",
                         auditUserId: 34,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}/exists";
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     responseMessage.StatusCode.ShouldBe(HttpStatusCode.OK);
-                    var exists = await responseMessage.Content.ReadFromJsonAsync<bool>(cancellationToken);
+                    var exists = await responseMessage.Content.ReadFromJsonAsync<bool>(
+                        cancellationToken
+                    );
 
                     exists.ShouldBeFalse();
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(1);
-                })
+                }
+            ),
         ];
     }
 
@@ -144,11 +161,12 @@ public sealed partial class ResumeQueryIntegrationTests
         var platformSearch = ResumeApiTestData.SearchRequest(
             searchText: "Platform",
             template: "Modern",
-            hasPhoto: true);
+            hasPhoto: true
+        );
 
         yield return
         [
-            new ResumeEndpointSetup<ResumeSearchRequest>(
+            new EndpointSetup<ResumeSearchRequest>(
                 "search filters by user search text template and photo",
                 HttpMethod.Post,
                 "/api/resumes/search",
@@ -158,23 +176,26 @@ public sealed partial class ResumeQueryIntegrationTests
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeSearchResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     response.TotalCount.ShouldBe(1);
                     response.Items.ShouldHaveSingleItem().Title.ShouldBe("Platform Engineer");
                     response.Items.Single().SkillCount.ShouldBe(2);
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(3);
-                })
+                }
+            ),
         ];
 
         var noPhotoSearch = ResumeApiTestData.SearchRequest(
             searchText: "No Photo",
             template: "Classic",
-            hasPhoto: false);
+            hasPhoto: false
+        );
 
         yield return
         [
-            new ResumeEndpointSetup<ResumeSearchRequest>(
+            new EndpointSetup<ResumeSearchRequest>(
                 "search can return owner resumes without photo",
                 HttpMethod.Post,
                 "/api/resumes/search",
@@ -184,48 +205,53 @@ public sealed partial class ResumeQueryIntegrationTests
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeSearchResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     response.TotalCount.ShouldBe(1);
                     response.Items.ShouldHaveSingleItem().Title.ShouldBe("No Photo Resume");
                     response.Items.Single().Photo.ShouldBeNull();
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(3);
-                })
+                }
+            ),
         ];
     }
 
     private static async Task ArrangeSearchGraphAsync(
         ISetupper setupper,
-        ResumeEndpointSetup<ResumeSearchRequest> _,
-        CancellationToken cancellationToken)
+        EndpointSetup<ResumeSearchRequest> _,
+        CancellationToken cancellationToken
+    )
     {
         await setupper.SetupAccessAsync(
             ResumeApiTestData.OwnerUserId,
             auditUserId: 75,
             accessProfileId: 905,
-            "resume.search");
+            "resume.search"
+        );
         await setupper.GenerateResumeAsync(
             ResumeApiTestData.OwnerUserId,
             "Platform Engineer",
             "Modern",
             "https://example.com/platform.png",
             auditUserId: 35,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
         await setupper.GenerateResumeAsync(
             ResumeApiTestData.OwnerUserId,
             "No Photo Resume",
             "Classic",
             photo: null,
             auditUserId: 36,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
         await setupper.GenerateResumeAsync(
             ResumeApiTestData.OtherUserId,
             "Platform Engineer Other",
             "Modern",
             "https://example.com/other.png",
             auditUserId: 37,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
     }
 }
-
-

@@ -1,14 +1,14 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.Infrastructure.Persistence;
-using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.TestUtilities.IntegrationSupport;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
-[Collection("Sequential_ResumeModul")]
-public sealed partial class ResumeCommandIntegrationTests : IClassFixture<ResumeModuleIntegrationTestFixture>
+[Collection("Sequential_ResumeModule")]
+public sealed partial class ResumeCommandIntegrationTests
 {
     private readonly ResumeModuleIntegrationTestFixture _fixture;
 
@@ -20,7 +20,8 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
     [Theory]
     [MemberData(nameof(CreateResumeSetups))]
     public async Task CreateResumeAsync_SetupObject_ExercisesRealHttpBoundary(
-        ResumeEndpointSetup<CreateResumeRequest> setup)
+        EndpointSetup<CreateResumeRequest> setup
+    )
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -37,7 +38,8 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
     [Theory]
     [MemberData(nameof(UpdateResumeSetups))]
     public async Task UpdateResumeAsync_SetupObject_ExercisesRealHttpBoundary(
-        ResumeEndpointSetup<UpdateResumeRequest> setup)
+        EndpointSetup<UpdateResumeRequest> setup
+    )
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -53,7 +55,7 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
 
     [Theory]
     [MemberData(nameof(DeleteResumeSetups))]
-    public async Task DeleteResumeAsync_SetupObject_ExercisesRealHttpBoundary(ResumeEndpointSetup setup)
+    public async Task DeleteResumeAsync_SetupObject_ExercisesRealHttpBoundary(EndpointSetup setup)
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -70,7 +72,8 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
     [Theory]
     [MemberData(nameof(BulkDeleteResumeSetups))]
     public async Task DeleteResumesAsync_SetupObject_ExercisesRealHttpBoundary(
-        ResumeEndpointSetup<DeleteResumesRequest> setup)
+        EndpointSetup<DeleteResumesRequest> setup
+    )
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -86,8 +89,9 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
 
     private static async Task<HttpResponseMessage> SendAsync<TRequest>(
         HttpClient client,
-        ResumeEndpointSetup<TRequest> setup,
-        CancellationToken cancellationToken)
+        EndpointSetup<TRequest> setup,
+        CancellationToken cancellationToken
+    )
     {
         if (setup.Method == HttpMethod.Post)
         {
@@ -99,12 +103,15 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
             return await client.PutAsJsonAsync(setup.Route, setup.Input, cancellationToken);
         }
 
-        throw new NotSupportedException($"HTTP method '{setup.Method}' is not supported by this test helper.");
+        throw new NotSupportedException(
+            $"HTTP method '{setup.Method}' is not supported by this test helper."
+        );
     }
 
     private static async Task<int> CountResumesAsync(
         ISetupper setupper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var dbContext = (AppDbContext)setupper.GetFreshDbContext();
 
@@ -113,23 +120,24 @@ public sealed partial class ResumeCommandIntegrationTests : IClassFixture<Resume
 
     private static async Task<List<int>> ResumeIdsAsync(
         ISetupper setupper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var dbContext = (AppDbContext)setupper.GetFreshDbContext();
 
-        return await dbContext.Set<Resume>()
+        return await dbContext
+            .Set<Resume>()
             .Select(resume => resume.Id)
             .ToListAsync(cancellationToken);
     }
 
     private static async Task<Resume> SingleResumeAsync(
         ISetupper setupper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var dbContext = (AppDbContext)setupper.GetFreshDbContext();
 
         return await dbContext.Set<Resume>().SingleAsync(cancellationToken);
     }
 }
-
-

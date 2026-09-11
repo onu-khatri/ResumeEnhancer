@@ -22,6 +22,404 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthAuditEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetadataJson")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "EventType");
+
+                    b.ToTable("B_AuthAuditEvent", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthConsentVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("ObsoleteFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("VersionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Guid")
+                        .IsUnique();
+
+                    b.HasIndex("Type", "VersionId")
+                        .IsUnique();
+
+                    b.ToTable("S_AuthConsentVersion", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthOutboxMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AvailableAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ProcessedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LeaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("LeaseExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedAtUtc", "AvailableAtUtc", "LeaseExpiresAtUtc");
+
+                    b.ToTable("B_AuthOutboxMessage", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthRegistrationIdempotency", b =>
+                {
+                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("App_CreateDate").ValueGeneratedOnAdd().HasColumnType("datetime2").HasDefaultValueSql("SYSUTCDATETIME()");
+                    b.Property<int?>("App_CreateUserId").HasColumnType("int");
+                    b.Property<DateTime?>("App_UpdateDate").HasColumnType("datetime2");
+                    b.Property<int?>("App_UpdateUserId").HasColumnType("int");
+                    b.Property<byte[]>("App_Version").IsConcurrencyToken().IsRequired().ValueGeneratedOnAddOrUpdate().HasColumnType("rowversion");
+                    b.Property<string>("IdempotencyKey").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
+                    b.Property<string>("NormalizedEmail").IsRequired().HasMaxLength(320).HasColumnType("nvarchar(320)");
+                    b.Property<string>("RequestHash").IsRequired().HasMaxLength(64).HasColumnType("nvarchar(64)");
+                    b.Property<string>("ResponseJson").IsRequired().HasMaxLength(12000).HasColumnType("nvarchar(12000)");
+                    b.HasKey("Id");
+                    b.HasIndex("NormalizedEmail", "IdempotencyKey").IsUnique();
+                    b.ToTable("B_AuthRegistrationIdempotency", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthenticationIdentity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("EmailVerifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("B_AuthenticationIdentity", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.ConsentRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("AcceptedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid?>("AuditEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VersionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Type", "VersionId")
+                        .IsUnique();
+
+                    b.ToTable("B_ConsentRecord", "auth");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.RefreshSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FamilyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("RevokedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RotatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("SessionKey")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAtUtc");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "FamilyId", "RevokedAtUtc");
+
+                    b.ToTable("B_RefreshSession", "auth");
+                });
+
             modelBuilder.Entity("ResumeEnhancer.BillingModule.DM.Entities.BillingAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -168,6 +566,9 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AccessProfileId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("App_CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -197,9 +598,6 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     b.Property<DateTime?>("EndDateUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ResumeId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDateUtc")
                         .HasColumnType("datetime2");
 
@@ -208,13 +606,18 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AccessProfileId");
 
                     b.HasIndex("BillingAccountId");
 
                     b.HasIndex("BillingPlanId");
 
-                    b.HasIndex("ResumeId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("BR_BillingSubscription", "billing");
                 });
@@ -379,6 +782,11 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<string>("Capability")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -639,6 +1047,115 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("S_UserAddressTypeSetup", "profiling");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.UserEntitlement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("BillingSubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccessProfileId");
+
+                    b.HasIndex("BillingSubscriptionId");
+
+                    b.HasIndex("UserId", "BillingSubscriptionId", "AccessProfileId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "Enabled", "ExpiresAtUtc");
+
+                    b.ToTable("B_UserEntitlement", "profiling");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.UserPreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("App_CreateDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int?>("App_CreateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("App_UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("App_UpdateUserId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("App_Version")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("OnboardingCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("B_UserPreference", "profiling");
                 });
 
             modelBuilder.Entity("ResumeEnhancer.ResumeModule.DM.Entities.Address", b =>
@@ -1635,6 +2152,17 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                     b.ToTable("S_TemplateRenderTypeSetup", "template");
                 });
 
+            modelBuilder.Entity("ResumeEnhancer.AuthModule.DM.Entities.AuthenticationIdentity", b =>
+                {
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ResumeEnhancer.BillingModule.DM.Entities.BillingAccount", b =>
                 {
                     b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.User", "User")
@@ -1648,6 +2176,11 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
             modelBuilder.Entity("ResumeEnhancer.BillingModule.DM.Entities.BillingSubscription", b =>
                 {
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.AccessProfile", "AccessProfile")
+                        .WithMany()
+                        .HasForeignKey("AccessProfileId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ResumeEnhancer.BillingModule.DM.Entities.BillingAccount", "BillingAccount")
                         .WithMany("Subscriptions")
                         .HasForeignKey("BillingAccountId")
@@ -1660,16 +2193,19 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ResumeEnhancer.ResumeModule.DM.Entities.Resume", "Resume")
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("ResumeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AccessProfile");
 
                     b.Navigation("BillingAccount");
 
                     b.Navigation("BillingPlan");
 
-                    b.Navigation("Resume");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.AccessProfileRole", b =>
@@ -1725,6 +2261,42 @@ namespace ResumeEnhancer.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("AddressType");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.UserEntitlement", b =>
+                {
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.AccessProfile", "AccessProfile")
+                        .WithMany()
+                        .HasForeignKey("AccessProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ResumeEnhancer.BillingModule.DM.Entities.BillingSubscription", null)
+                        .WithMany()
+                        .HasForeignKey("BillingSubscriptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.User", "User")
+                        .WithMany("Entitlements")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccessProfile");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.UserPreference", b =>
+                {
+                    b.HasOne("ResumeEnhancer.ProfilingModule.DM.Entities.User", "User")
+                        .WithMany("Preferences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1911,6 +2483,10 @@ namespace ResumeEnhancer.Infrastructure.Migrations
 
             modelBuilder.Entity("ResumeEnhancer.ProfilingModule.DM.Entities.User", b =>
                 {
+                    b.Navigation("Entitlements");
+
+                    b.Navigation("Preferences");
+
                     b.Navigation("UserAccessProfiles");
 
                     b.Navigation("UserAddresses");
