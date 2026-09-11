@@ -23,8 +23,8 @@ The `.US.md` frontmatter carries the delivery state and must be kept current:
 id: RES-BE-001
 title: <story title>
 status:            # Ready_To_Implement | Move_To_GitHub_Issue | In_Progress | Blocked | PR_Open | Done
-branch:            # codex/<story-id>-<slug>-<timestamp>
-worktree_path:     # .worktrees/<story-id>-<slug>
+branch:            # openspec/gh-<issue-number>-<short-kebab-slug>
+worktree_path:     # .worktrees/gh-<issue-number>-<short-kebab-slug>
 base_branch: main  # normalize from `master` to the repo's actual default
 pr_url:
 is_architectural:  # true when the story changes module boundaries/contracts
@@ -37,8 +37,8 @@ updated:
 
 Before planning, verify each candidate story against its `Definition Of Ready For Engineering` section and these gates:
 
-- `status` is `Ready_To_Implement` (or approved equivalent).
-- Every `Dependency:` reference is either resolved or has a sequenced owner.
+- `status` is `Ready_To_Implement`; `approved` is narrative readiness only, not a lifecycle value.
+- Every `Depends on` reference is either resolved or has a sequenced owner.
 - Cross-layer contracts and schemas referenced by the story are approved.
 - Acceptance criteria are concrete and testable.
 - The story has a clear delivery shape (frontend, backend, full-stack, architecture, or research).
@@ -53,7 +53,7 @@ Read the selected `.US.md`, `.SI.md`, and `.Research.md` files plus any linked `
 
 ### 2. Resolve dependencies and handoff order
 
-Build a dependency graph from each story's `Dependency:` field (e.g., frontend `RES-FE-001` depends on backend `RES-BE-001`). Topologically order the slices; mark cross-layer frontend/backend pairs so the backend slice is handed off first. Preserve the order and references in the resulting GitHub issues.
+Build a dependency graph from each story's `Depends on` field (legacy `Dependency:` is accepted only as an input alias). Topologically order the slices; mark cross-layer frontend/backend pairs so the backend slice is handed off first. Preserve `Depends on`, `Blocks`, `Related to`, and `Pick order` references in the resulting GitHub issues.
 
 ### 3. Classify delivery shape
 

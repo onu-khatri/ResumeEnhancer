@@ -1,0 +1,4 @@
+interface:
+  display_name: "Development Entry Gate"
+  short_description: "Route and gate ResumeEnhancer development work"
+  default_prompt: "Use $development-entry-gate before starting any ResumeEnhancer development work."

@@ -1,43 +1,67 @@
 ---
 name: plan-writing
-description: Write clear, phased implementation plans for ResumeEnhancer changes, connecting story intent to code, tests, and verification. Use when a task is large enough to need a plan before coding.
+description: Write clear, actionable plans for complex work across product, business, research, design, content, operations, and technical domains. Use when sequencing decisions, activities, dependencies, and validation will reduce execution risk.
 ---
 
 # Plan Writing
 
-Use this skill to turn a ResumeEnhancer user story or change request into a reviewable implementation plan.
+Use this skill to turn an idea, request, decision, or approved outcome into a practical plan that another person or agent can understand, review, execute, and resume.
 
 ## Use this skill when
 
-- a change spans multiple layers or files and benefits from a plan before coding
-- you need to sequence frontend, backend, persistence, and test work
-- the plan must be durable enough to resume after a context gap
+- the work has multiple activities, decisions, deliverables, or dependencies;
+- sequencing or ownership will reduce risk or coordination cost;
+- the plan needs explicit assumptions, evidence, milestones, or decision points;
+- the work may pause and resume later; or
+- a stakeholder needs a reviewable path from intent to outcome.
 
 ## Do not use this skill when
 
-- the task is a single, obvious edit
-- a plan would add process without reducing risk
+- the task is a single obvious action with no meaningful choices or dependencies; or
+- a plan would add ceremony without improving clarity, safety, or execution.
+
+## Planning workflow
+
+1. **Clarify the outcome** — state what success means, who it serves, and the boundary of the work.
+2. **Establish the current state** — summarize relevant facts, existing work, constraints, evidence, and known gaps. Do not invent missing information.
+3. **Choose the work structure** — identify workstreams, deliverables, milestones, decision points, owners, and the order in which they should proceed.
+4. **Define the phases** — write ordered, reviewable steps with concrete outputs and completion conditions. Keep independent work parallel only when ownership and dependencies permit it.
+5. **Handle uncertainty** — distinguish confirmed facts, assumptions, recommendations, open questions, and blockers. Identify which decisions require approval or further research.
+6. **Plan validation** — define how each important output, decision, or acceptance condition will be checked. Use domain-appropriate evidence rather than forcing software tests onto non-technical work.
+7. **Define completion and follow-up** — state the final handoff, rollout or adoption actions, residual risks, and the next safe action.
 
 ## Plan structure
 
-1. **Goal** — one or two sentences on the outcome and the story/requirement it serves.
-2. **Current behavior** — the relevant request flow (`endpoint -> validator -> handler -> mapper -> repository`).
-3. **Impacted layers** — frontend features, `ResumeEnhancer.<ModuleName>.Web`, `ResumeEnhancer.<ModuleName>.AM`, `ResumeEnhancer.<ModuleName>.SL`, `ResumeEnhancer.<ModuleName>.PL`, `ResumeEnhancer.<ModuleName>.DM`, tests.
-4. **Phases** — ordered, reviewable steps with the files each step touches.
-5. **Risks and dependencies** — contract changes, migrations, shared files, or rollout concerns.
-6. **Verification** — the exact commands and tests that prove completion.
-7. **Rollout** — migration/seeding notes and any manual steps.
+Use the sections that materially apply; do not add empty ceremony.
 
-## ResumeEnhancer rules
+1. **Goal and success criteria** — desired outcome, audience, scope, and measurable or observable completion conditions.
+2. **Current state and context** — relevant evidence, existing assets, constraints, assumptions, and unresolved gaps.
+3. **Scope and boundaries** — included work, excluded work, and conditions that would require replanning.
+4. **Workstreams and ownership** — deliverables, responsible people or roles, collaborators, and handoff points.
+5. **Phases and actions** — ordered steps, dependencies, outputs, decision gates, and completion criteria.
+6. **Risks, dependencies, and decisions** — impact, mitigation, external dependencies, approval needs, and fallback paths.
+7. **Validation and evidence** — reviews, demonstrations, experiments, inspections, tests, metrics, or other appropriate checks.
+8. **Rollout and completion** — launch, adoption, communication, maintenance, handoff, and remaining follow-up.
 
-- Start from the user story and any linked business requirement.
-- Keep contract changes additive unless a breaking change is explicitly required.
-- Call out migration and seed-data impact before implementation.
-- Keep the plan proportional to the change; do not inflate small tasks.
+## Planning rules
 
-## Definition of Done
+- Match the plan to the domain and scale; use technical layers only for technical work.
+- Prefer the smallest sequence that safely reaches the outcome.
+- Make dependencies directional and explicit. Do not claim parallelism when work shares an unresolved dependency or ownership boundary.
+- Keep assumptions visible and assign an action to validate material ones.
+- Separate required work from optional recommendations and future improvements.
+- Preserve user decisions and approval gates; do not silently resolve material ambiguity.
+- Use concrete outputs and observable completion conditions instead of vague verbs such as “handle” or “improve.”
+- Make the plan resumable: identify the current phase, completed outputs, blockers, and the next safe action.
+- If the plan is based on external or changing information, record the source and date or identify what must be refreshed.
+- Keep the plan proportional; omit sections that do not reduce execution risk.
 
-- The plan is concrete enough that another agent could execute it.
-- Verification commands are explicit (`dotnet build`, `dotnet test`, `npm run check`).
-- Risks and rollout steps are stated up front.
+## Definition of done
+
+- The outcome and completion conditions are clear.
+- Current-state evidence, assumptions, and unknowns are distinguished.
+- Scope, ownership, sequencing, dependencies, and decision gates are explicit.
+- Each phase has a concrete output and completion condition.
+- Validation is appropriate to the domain and can be reported honestly.
+- Risks, rollout or handoff actions, residual work, and one next safe action are stated.
 

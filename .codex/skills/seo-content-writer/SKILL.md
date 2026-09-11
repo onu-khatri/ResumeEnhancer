@@ -1,6 +1,6 @@
 ---
 name: seo-content-writer
-description: Write SEO-optimized content for ResumeEnhancer public pages: landing, marketing, public resume discovery, and help documentation. Use when creating content that needs search visibility.
+description: "Write SEO-optimized content for ResumeEnhancer public pages: landing, marketing, public resume discovery, and help documentation. Use when creating content that needs search visibility."
 ---
 
 # SEO Content Writer

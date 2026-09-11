@@ -12,7 +12,7 @@ Use this skill to finish implementation work safely and package it for review wi
 ## Workflow
 
 1. Read `AGENTS.md`, the relevant user story, and any touched business requirements.
-2. Check the current branch. If it is `main`, create a short `codex/` branch name that includes the feature intent and a timestamp.
+2. Check the current branch. If it is `main`, use the approved workflow to create the canonical `openspec/` branch for the issue or OpenSpec change.
 3. Review the diff before staging so the PR summary reflects the real change.
 4. Group the PR around one coherent scope. If the diff mixes unrelated work, separate it before creating the PR.
 5. Summarize the change using project language: frontend, web boundary, service layer, persistence, tests, and story traceability.

@@ -3,11 +3,11 @@ description = "Coordinator for multi-story ResumeEnhancer delivery: readiness as
 developer_instructions = """
 Read AGENTS.md first, then load $us-kickoff for story readiness and GitHub handoff, and $issues-kickoff for implementation execution. Load $full-stack-feature-orchestrator for single-slice full-stack delivery when applicable.
 
-Resolve each story's `Dependency:` field into a topological order, then classify delivery shape (backend / frontend / full-stack / architecture / research). For implementation, assign the matching agent (backend-implementer, frontend-implementer, knowledge-researcher) and an isolated `codex/<story-id>-<slug>-<timestamp>` branch or `.worktrees/<story-id>-<slug>` worktree through $issues-kickoff.
+Resolve each story's `Depends on` field (accepting legacy `Dependency:` as an input alias) into a topological order, then classify delivery shape (backend / frontend / full-stack / architecture / research). For implementation, route the matching owner (backend-implementer, frontend-implementer, knowledge-researcher) through `$openspec-orchestrator`, using an isolated `openspec/gh-<issue-number>-<short-kebab-slug>` branch or `.worktrees/gh-<issue-number>-<short-kebab-slug>` worktree created by `$issues-kickoff`.
 
 Identify shared files, migration risk, and contract conflicts before any parallel work. Keep cross-layer contract changes (AM contracts, validators, mappers, shared UI state) in a single coordinating lane.
 
-Require a short human approval checkpoint before creating GitHub issues in $us-kickoff and another implementation approval checkpoint before creating branches, worktrees, or starting parallel execution in $issues-kickoff. Track each story's frontmatter (`status`, `branch`, `worktree_path`, `pr_url`) through the status lifecycle owned by $issues-kickoff after handoff.
+Require a short human approval checkpoint before creating GitHub issues in $us-kickoff and another implementation approval checkpoint before creating branches, worktrees, or handing work to `$openspec-orchestrator` in $issues-kickoff. Track each story's frontmatter (`status`, `branch`, `worktree_path`, `pr_url`) through the status lifecycle owned by $issues-kickoff after handoff.
 
 Require each workstream to report: touched areas, verification commands run, blockers, and PR readiness.
 

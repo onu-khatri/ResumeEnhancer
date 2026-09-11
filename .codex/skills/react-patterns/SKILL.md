@@ -1,6 +1,6 @@
 ---
 name: react-patterns
-description: Apply production-grade React and TypeScript patterns for ResumeEnhancer: component structure, state management, data fetching, forms, routing, and performance. Use when implementing or reviewing frontend code in the React/Vite client.
+description: "Apply production-grade React and TypeScript patterns for ResumeEnhancer: component structure, state management, data fetching, forms, routing, and performance. Use when implementing or reviewing frontend code in the React/Vite client."
 ---
 
 # React Patterns

@@ -3,7 +3,6 @@ name: openspec-apply-change
 description: Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.
 allowed-tools: Bash(openspec:*)
 license: MIT
-compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
@@ -17,6 +16,14 @@ repository, use them to improve implementation quality and validation. Keep
 this skill as the OpenSpec coordinator: it still owns change selection, CLI
 state handling, task sequencing, pause decisions, checkbox updates, and the
 final completion summary.
+
+Before any development edit, invoke `$development-entry-gate` with the active
+change, CLI status, context files, operation guidance, current task, and
+repository evidence. The gate is mandatory for implementation work; it is not
+an optional helper. Consume its `PASS`/`BLOCKED` handoff and ordered skill
+route, then continue only when the gate is `PASS`. OpenSpec remains the
+coordinator and task-checkbox authority; the entry gate routes the engineering
+workflow and never marks OpenSpec tasks complete.
 
 **Store selection:** If the user names a store (a store is a standalone OpenSpec repo registered on this machine) or the work lives in one, run `openspec store list --json` to discover registered store ids, then pass `--store <id>` on the commands that read or write specs and changes (`new change`, `status`, `instructions`, `list`, `show`, `validate`, `archive`, `doctor`, `context`, `schemas`, `view`). Once selected, treat `--store <id>` as sticky for the rest of the workflow. Every unscoped example of those commands below is shorthand: before running it, append the flag. For example, run `openspec status --change "<name>" --json --store "<id>"`, not the unscoped form shown below. Other commands do not take the flag. Hints printed by commands already carry the flag; keep it on follow-ups. Without a store, commands act on the nearest local `openspec/` root.
 
@@ -32,6 +39,8 @@ final completion summary.
    - If ambiguous, run `openspec list --json` to get available changes and ask the user to select one
 
    Always announce: "Using change: <name>" and how to override (e.g., `$openspec-apply-change (Codex) or /openspec-apply-change (other agents) <other>`).
+
+   For issue-driven work, require the canonical `openspec/gh-<issue-number>-<short-kebab-slug>` branch/worktree and the implementation approval supplied by `$issues-kickoff`. For direct OpenSpec work, require the applicable user approval before editing.
 
 2. **Check status to understand the schema**
    ```bash
@@ -57,7 +66,7 @@ final completion summary.
    - Optional `operationGuidance`: current advisory guidance for apply
 
    **Handle states:**
-   - If `state: "blocked"` (missing artifacts): show message, suggest using `$openspec-continue-change (Codex) or /openspec-continue-change (other agents)` (if it is not installed, run `openspec status --change "<name>" --json` to see the next artifact and `openspec instructions <artifact-id> --change "<name>" --json` for how to create it)
+   - If `state: "blocked"` (missing artifacts): run `openspec status --change "<name>" --json` to identify the next artifact and `openspec instructions <artifact-id> --change "<name>" --json` for how to create it; pause before implementation.
    - If `state: "all_done"`: congratulate, suggest archive
    - Otherwise: proceed to implementation
 
@@ -86,17 +95,30 @@ final completion summary.
    Do not copy `context` or `operationGuidance` verbatim into implementation
    files or planning artifacts unless the user separately asks for that content.
 
-5. **Reason about the implementation shape and load only the needed helpers**
+5. **Run the development entry gate and load only the needed helpers**
 
-   Before editing code, synthesize the change into an implementation map:
-   - Which tasks are frontend, backend, full-stack, research-heavy, or
-     security-sensitive
-   - Which code areas, contracts, migrations, shared UI surfaces, or
-     cross-module boundaries are likely to move
-   - What verification is needed before a task can be marked complete
+   Invoke `$development-entry-gate` before editing the first task. Pass the
+   actual change name, schema, current task, context-file paths, CLI state,
+   affected files discovered so far, and any existing branch/worktree or
+   verification evidence. If it returns `BLOCKED`, pause and report the exact
+   missing decision, evidence, dependency, approval, or capability.
+
+   If implementation of a later task reveals a different delivery shape,
+   shared contract, migration, security boundary, or material design issue,
+   re-run the gate for that transition before continuing. Do not use a prior
+   PASS as proof that a changed task remains ready.
+
+   The gate's primary workflow and specialist route are the implementation
+   plan for this change. Load the routed skills as bounded guidance and keep
+   one implementation owner per workstream. Do not invoke implementation
+   agents directly from the gate.
+
+   Use the gate-provided delivery shape, affected ownership, specialist route,
+   and verification plan as the implementation map. Do not reclassify the work,
+   select a competing owner, or redesign the verification plan here.
 
    When repository-local Codex helpers exist, load or delegate the smallest
-   matching set instead of solving every slice generically:
+   matching set returned by the gate instead of solving every slice generically:
    - **Frontend-focused work**: load `$frontend-dev-guidelines` and
      `$frontend-developer`, or delegate the implementation slice to
      `frontend-implementer`
@@ -113,7 +135,7 @@ final completion summary.
      and use `story-orchestrator` only when the change can be cleanly split
      into independent lanes and the added coordination overhead is justified
 
-   Delegation is optional and scoped:
+   Delegation is scoped and remains subordinate to this OpenSpec workflow:
    - Do not hand off change selection, OpenSpec CLI interpretation, or task-file
      ownership
    - Do not delegate two helpers into the same contract, migration, or shared UI
