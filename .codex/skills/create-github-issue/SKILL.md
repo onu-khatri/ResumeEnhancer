@@ -15,7 +15,7 @@ This skill is a handoff workflow, not a story-authoring workflow. Use `user-stor
 2. Confirm that the file is a user-story file, has frontmatter, and contains a stable `id`, `title`, user story, requirements or scope, and acceptance criteria. If a required element is missing, stop and report the missing item.
 3. Read the repository `AGENTS.md` and `KnowledgeBase/INDEX.md` before acting. Use linked story or GitHub knowledge only when the index identifies it as relevant.
 4. Check the current worktree and source file status. Preserve unrelated changes; do not reset, stash, or overwrite them.
-5. Do not proceed when `status` is already `Move_To_GitHub_Issue` unless the user explicitly asks to reconcile or recreate the handoff. This prevents accidental duplicate issues.
+5. Require `status: Ready_To_Implement`. Do not proceed when `status` is already `Move_To_GitHub_Issue` unless the user explicitly asks to reconcile or recreate the handoff. This prevents accidental duplicate issues.
 
 ### GitHub MCP Requirement
 
@@ -49,7 +49,7 @@ The following repository is explicitly approved for publishing user stories:
 
 - `onu-khatri/ResumeEnhancer`
 
-When the source story has `status: approved`, the agent may create an issue in this repository without requesting additional publication confirmation.
+When the source story has `status: Ready_To_Implement`, the story's prior approval permits issue creation in this repository without requesting additional publication confirmation.
 
 Do not publish to any other repository without explicit user authorization. The repository must still be resolved from the local Git remote and duplicate-checked before any issue is created.
 
@@ -105,6 +105,8 @@ Treat an existing issue as a likely duplicate when it has the same story ID and 
 ### 5. Create the issues in dependency order
 
 Create the planned issues sequentially in the selected order using the issue creation/write tool exposed by the project-configured MCP server named `github`. Use the resolved `repository_full_name`, extracted title, and one source-backed body per slice. Do not create more than the planned number of issues. Do not add labels, assignees, milestones, links, or requirements that are not present in the source or explicitly requested by the user. Labels are governed by the repository-label procedure below.
+
+After each successfully created and read-back-verified issue, persist its canonical number, URL, title, date, labels, slice, and dependency references in the story's `## GitHub Issues` register while leaving the lifecycle status as `Ready_To_Implement`. This creates a resumable partial-handoff record; only the fully reconciled set may transition the story to `Move_To_GitHub_Issue`.
 
 ### Repository label discovery and selection
 
@@ -163,7 +165,7 @@ As a <persona>, I want <capability>, so that <outcome>.
 - **Pick order:** <N> of <total planned issues>
 - **Depends on:** <`None`, or links to already-created prerequisite issues such as `#123`>
 - **Blocks:** <planned downstream slice labels, or `None` when no downstream issue is known>
-- **Related:** <source story ID and related issue links, or `None`>
+- **Related to:** <source story ID and related issue links, or `None`>
 
 ## Source
 
@@ -176,7 +178,7 @@ Omit empty sections except `Delivery Order and References` and `Source`, which a
 
 ### 6. Verify the created issues
 
-Require a successful MCP response containing an issue number and canonical URL for every planned issue. Record the current `YYYY-MM-DD` creation date for each verified issue. Verify that every selected label is present on the created issue; if label application is missing or ambiguous, stop and report the handoff as incomplete without retrying issue creation. If any response is ambiguous or missing the issue number, URL, or required labels, stop creating issues, do not update the source status or issue register, and report that the handoff is incomplete. Do not retry an unknown create operation automatically because GitHub may already contain the issue. If downstream references were initially slice labels, use the issue-update tool exposed by the project-configured MCP server named `github` to replace them with actual issue references before changing the source status.
+Require a successful MCP response containing an issue number and canonical URL for every planned issue. Record the current `YYYY-MM-DD` creation date for each verified issue. Verify that every selected label is present on the created issue; if label application is missing or ambiguous, stop and report the handoff as incomplete without retrying issue creation. If any response is ambiguous or missing the issue number, URL, or required labels, stop creating issues and report the exact reconciliation state; do not retry an unknown create operation automatically because GitHub may already contain the issue. Preserve any already-verified register rows and keep the source status `Ready_To_Implement`. If downstream references were initially slice labels, use the issue-update tool exposed by the project-configured MCP server named `github` to replace them with actual issue references before changing the source status.
 
 ### 7. Move the source story to the GitHub handoff status
 
@@ -201,7 +203,7 @@ Add or update this story-body section after the frontmatter. Keep one row per cr
 
 For split stories, record all created issues in dependency order. Preserve the rest of the story body and any unrelated user changes. This register is the durable link from the local user story to its hosted issue and must be present before the handoff is reported complete.
 
-If any issue has been created but a later issue, cross-reference update, issue-register update, or source update fails, do not retry issue creation automatically. Report every created issue and the required local reconciliation (`status: Move_To_GitHub_Issue` plus the `## GitHub Issues` register); the handoff is only partially complete and the source status/register remain unchanged unless successfully updated.
+If any issue has been created but a later issue, cross-reference update, issue-register update, or source update fails, do not retry issue creation automatically. Reconcile by searching for every planned slice, verifying existing issue bodies and labels, completing missing cross-references, and updating the register. Keep status `Ready_To_Implement` until the complete set is reconciled; then transition to `Move_To_GitHub_Issue`. Report every created issue, the remote reconciliation state, and the exact next action.
 
 ## Issue body rules
 

@@ -1,6 +1,6 @@
 ---
 name: documentation-generator
-description: Generate accurate, project-grounded documentation for ResumeEnhancer: code explainers, API references, module guides, ADRs, and onboarding notes. Use when creating or updating docs from repository evidence.
+description: "Generate accurate, project-grounded documentation for ResumeEnhancer: code explainers, API references, module guides, ADRs, and onboarding notes. Use when creating or updating docs from repository evidence."
 ---
 
 # Documentation Generator

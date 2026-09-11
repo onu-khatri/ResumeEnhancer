@@ -19,7 +19,7 @@ Use this skill to finish implementation work safely and raise it for review with
 
 1. Inspect status and history with the preflight commands from `$git-commit`, then review both `git diff -- .` and `git diff --cached -- .`.
 2. Establish the branch:
-   - If on `main` with a clean worktree, use `$git-worktrees` to create and validate an isolated `codex/<feature-intent>-<timestamp>` branch/worktree.
+    - If on `main` with a clean worktree, use the already-approved `$issues-kickoff` worktree, or `$git-worktrees` for a direct OpenSpec workflow, using the canonical `openspec/...` branch/worktree.
    - If on `main` with uncommitted changes, stop and report the user-owned changes; do not move them implicitly.
    - If already on a non-main feature branch/worktree, keep using it after validating its base and ownership.
 3. Confirm the diff is one coherent delivery scope. If unrelated files or changes are mixed in, stop and identify the exact separation needed; do not silently discard or split user work.

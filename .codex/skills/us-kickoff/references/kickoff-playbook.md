@@ -13,11 +13,11 @@ Operational reference for running `us-kickoff`. Use these templates and conventi
 | `PR_Open` | Branch pushed, PR created for review | `status: PR_Open` |
 | `Done` | Merged and verified | `status: Done` |
 
-`us-kickoff` may transition `Ready_To_Implement` to `Move_To_GitHub_Issue` only through a successful `$create-github-issue` handoff. `issues-kickoff` owns later status transitions and branch/worktree fields.
+`us-kickoff` may transition `Ready_To_Implement` to `Move_To_GitHub_Issue` only through a successful `$create-github-issue` handoff. `approved` is not a lifecycle value. `issues-kickoff` owns later status transitions and branch/worktree fields, using the canonical `openspec/...` branch convention.
 
 ## Dependency rules
 
-- Frontend slices (`.1`) usually declare the backend slice (`.2`) as `Dependency:`.
+- Frontend slices (`.1`) usually declare the backend slice (`.2`) as `Depends on` (legacy `Dependency:` is an input alias).
 - Backend slices declare their own upstream dependency (e.g., `AUTH-BE-001`).
 - A slice is only parallelizable when its full dependency chain is resolved or owned in a sequenced lane.
 

@@ -37,7 +37,7 @@ Identify whether the branch is local, shared, or pushed, record the target commi
 ## ResumeEnhancer conventions
 
 - The primary branch is `main`; never commit directly to it.
-- Feature branches use a `codex/<feature-intent>-<timestamp>` shape (see `pr-creator`).
+- Feature branches use the canonical `openspec/gh-<issue-number>-<short-kebab-slug>` shape for issue work, or `openspec/<change-name>` without an issue.
 - Prefer `--force-with-lease` over `--force`.
 - Rebase only local, unpushed commits; merge or update from the remote for shared branches.
 - Use stable story/issue IDs in branch names, commits, and PR references.
