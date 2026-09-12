@@ -4,15 +4,16 @@ using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
+using ResumeEnhancer.Tests.Integration.TestSupport;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
-[Collection("Sequential_ResumeModule")]
+[Collection("Sequential_Integration")]
 public sealed partial class ResumeCommandIntegrationTests
 {
-    private readonly ResumeModuleIntegrationTestFixture _fixture;
+    private readonly IntegrationTestAssemblyFixture _fixture;
 
-    public ResumeCommandIntegrationTests(ResumeModuleIntegrationTestFixture fixture)
+    public ResumeCommandIntegrationTests(IntegrationTestAssemblyFixture fixture)
     {
         _fixture = fixture;
     }

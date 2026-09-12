@@ -1,13 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
 using ResumeEnhancer.Tests.Integration.Modules.AuthModule.TestSupport;
+using ResumeEnhancer.Tests.Integration.TestSupport;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using Shouldly;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.AuthModule;
 
-[Collection("Sequential_AuthModule")]
-public sealed class AuthHttpIntegrationTests(AuthModuleIntegrationTestFixture fixture)
+[Collection("Sequential_Integration")]
+public sealed class AuthHttpIntegrationTests(IntegrationTestAssemblyFixture fixture)
 {
     [Theory]
     [MemberData(nameof(AuthApiTestData.BootstrapSetups), MemberType = typeof(AuthApiTestData))]

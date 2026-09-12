@@ -6,7 +6,7 @@ using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
-public sealed class IntegrationTestUtilities<TProgram> : IDisposable
+public sealed class IntegrationTestUtilities<TProgram>
     where TProgram : class
 {
     private readonly WebApplicationFactory<TProgram> _factory;
@@ -99,9 +99,4 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
         dbContext.ChangeTracker.Clear();
     }
 
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _sqliteConnection?.Dispose();
-    }
 }

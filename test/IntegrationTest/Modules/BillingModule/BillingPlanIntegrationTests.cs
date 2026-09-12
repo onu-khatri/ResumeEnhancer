@@ -3,12 +3,12 @@ using System.Net.Http.Json;
 using ResumeEnhancer.BillingModule.AM.Requests;
 using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using Shouldly;
-using ResumeEnhancer.Tests.Integration.Modules.BillingModule.TestSupport;
+using ResumeEnhancer.Tests.Integration.TestSupport;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.BillingModule;
 
-[Collection("Sequential_BillingModule")]
-public sealed class BillingPlanIntegrationTests(BillingModuleIntegrationTestFixture fixture)
+[Collection("Sequential_Integration")]
+public sealed class BillingPlanIntegrationTests(IntegrationTestAssemblyFixture fixture)
 {
     public static TheoryData<string, string?, bool, HttpStatusCode> PlanUpdateCases => new()
     {
