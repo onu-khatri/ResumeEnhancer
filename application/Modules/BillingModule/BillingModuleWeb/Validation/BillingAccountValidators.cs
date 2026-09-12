@@ -9,7 +9,7 @@ public sealed class CreateBillingAccountRequestValidator : AbstractValidator<Cre
     {
         RuleFor(request => request.UserId).GreaterThan(0);
         RuleFor(request => request.AccountNumber).NotEmpty().MaximumLength(50);
-        RuleFor(request => request.Status).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.StatusId).GreaterThan(0);
         RuleFor(request => request.ExternalReference).MaximumLength(100);
     }
 }
@@ -20,7 +20,7 @@ public sealed class UpdateBillingAccountRequestValidator : AbstractValidator<Upd
     {
         RuleFor(request => request.UserId).GreaterThan(0);
         RuleFor(request => request.AccountNumber).NotEmpty().MaximumLength(50);
-        RuleFor(request => request.Status).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.StatusId).GreaterThan(0);
         RuleFor(request => request.ExternalReference).MaximumLength(100);
     }
 }

@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using System.Text;
-using ResumeEnhancer.BillingModule.PL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ResumeEnhancer.Infrastructure.Persistence;
+using ResumeEnhancer.AuthModule.PL;
+using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.Infrastructure.DatabaseMigration;
+using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ProfilingModule.PL;
 using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.PL;
@@ -15,15 +16,16 @@ return await MigrationConsole.RunAsync(args);
 internal static class MigrationConsole
 {
     private const string DefaultConnectionString =
-      "Server=MONTU-KHARB-DES;Integrated Security=True;Persist Security Info=False;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
-    private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName =
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-            "main",
-            "dev",
-            "test"
-        };
-    private static readonly object ConsoleSync = new();
+        "Server=MONTU-KHARB-DES;Integrated Security=True;Persist Security Info=False;Encrypt=True;TrustServerCertificate=True;Initial Catalog=ResumeEnhancer";
+    private static readonly HashSet<string> BranchesThatRequireExplicitMigrationName = new(
+        StringComparer.OrdinalIgnoreCase
+    )
+    {
+        "main",
+        "dev",
+        "test",
+    };
+    private static readonly Lock ConsoleSync = new();
 
     public static async Task<int> RunAsync(string[] args)
     {
@@ -94,29 +96,38 @@ internal static class MigrationConsole
 
         services.AddProfilingModulePersistence();
         services.AddBillingModulePersistence();
+        services.AddAuthModulePersistence();
         services.AddTemplateModulePersistence();
         services.AddResumeModulePersistence();
-        services.AddAppDbContext((_, options) =>
-        {
-            options.EnableDetailedErrors();
-            options.LogTo(WriteEfLog, LogLevel.Debug);
-            options.UseSqlServer(connectionString, sqlServerOptions =>
+        services.AddAppDbContext(
+            (_, options) =>
             {
-                sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
-            });
-        });
+                options.EnableDetailedErrors();
+                options.LogTo(WriteEfLog, LogLevel.Debug);
+                options.UseSqlServer(
+                    connectionString,
+                    sqlServerOptions =>
+                    {
+                        sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
+                    }
+                );
+            }
+        );
 
         return services.BuildServiceProvider(validateScopes: true);
     }
 
     private static async Task ApplyMigrationsAsync(
         IServiceProvider serviceProvider,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var databaseProvider = dbContext.Database.ProviderName ?? "unknown provider";
-        var pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
+        var pendingMigrations = (
+            await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)
+        ).ToList();
 
         WriteStep("Checking pending EF Core migrations.");
         WriteInfo($"Database provider: {databaseProvider}");
@@ -142,13 +153,12 @@ internal static class MigrationConsole
 
     private static async Task SeedDataAsync(
         IServiceProvider serviceProvider,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var seeders = scope.ServiceProvider
-            .GetServices<IAppDbContextSeeder>()
-            .ToList();
+        var seeders = scope.ServiceProvider.GetServices<IAppDbContextSeeder>().ToList();
 
         WriteStep("Checking registered seeders.");
 
@@ -177,11 +187,15 @@ internal static class MigrationConsole
 
     private static async Task CreateMigrationAsync(
         MigrationCommandLine options,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var projectPath = FindMigrationProjectPath();
-        var projectDirectory = Path.GetDirectoryName(projectPath)
-            ?? throw new InvalidOperationException("Unable to resolve the migration project directory.");
+        var projectDirectory =
+            Path.GetDirectoryName(projectPath)
+            ?? throw new InvalidOperationException(
+                "Unable to resolve the migration project directory."
+            );
         var migrationName = ResolveMigrationName(options.MigrationName, projectDirectory);
 
         WriteStep("Creating EF Core migration.");
@@ -193,7 +207,7 @@ internal static class MigrationConsole
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            WorkingDirectory = projectDirectory
+            WorkingDirectory = projectDirectory,
         };
 
         processStartInfo.ArgumentList.Add("ef");
@@ -222,8 +236,10 @@ internal static class MigrationConsole
 
         using var process = new Process { StartInfo = processStartInfo };
 
-        process.OutputDataReceived += (_, eventArgs) => WriteLineIfPresent(Console.Out, eventArgs.Data);
-        process.ErrorDataReceived += (_, eventArgs) => WriteLineIfPresent(Console.Error, eventArgs.Data);
+        process.OutputDataReceived += (_, eventArgs) =>
+            WriteLineIfPresent(Console.Out, eventArgs.Data);
+        process.ErrorDataReceived += (_, eventArgs) =>
+            WriteLineIfPresent(Console.Error, eventArgs.Data);
 
         process.Start();
         process.BeginOutputReadLine();
@@ -242,7 +258,8 @@ internal static class MigrationConsole
         if (process.ExitCode != 0)
         {
             throw new InvalidOperationException(
-                $"Migration creation failed with exit code {process.ExitCode}. Command: {FormatCommand(processStartInfo)}");
+                $"Migration creation failed with exit code {process.ExitCode}. Command: {FormatCommand(processStartInfo)}"
+            );
         }
 
         WriteSuccess("Migration files have been created.");
@@ -258,7 +275,8 @@ internal static class MigrationConsole
         if (string.IsNullOrWhiteSpace(normalizedName))
         {
             throw new InvalidOperationException(
-                "Unable to resolve a valid migration name. Provide one with -c <name> or -n <name>.");
+                "Unable to resolve a valid migration name. Provide one with -c <name> or -n <name>."
+            );
         }
 
         return EnsureUniqueMigrationName(normalizedName, projectDirectory);
@@ -271,13 +289,15 @@ internal static class MigrationConsole
         if (string.IsNullOrWhiteSpace(branchName))
         {
             throw new InvalidOperationException(
-                "A migration name is required because the current Git branch could not be resolved.");
+                "A migration name is required because the current Git branch could not be resolved."
+            );
         }
 
         if (BranchesThatRequireExplicitMigrationName.Contains(branchName))
         {
             throw new InvalidOperationException(
-                $"A migration name is required on the '{branchName}' branch. Example: dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields");
+                $"A migration name is required on the '{branchName}' branch. Example: dotnet run --project <path-to>/Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj -- -c AddResumeFields"
+            );
         }
 
         return branchName;
@@ -347,9 +367,7 @@ internal static class MigrationConsole
                 continue;
             }
 
-            normalizedName.Append(capitalizeNext
-                ? char.ToUpperInvariant(character)
-                : character);
+            normalizedName.Append(capitalizeNext ? char.ToUpperInvariant(character) : character);
             capitalizeNext = false;
         }
 
@@ -361,8 +379,10 @@ internal static class MigrationConsole
         return normalizedName.ToString();
     }
 
-    private static bool IsValidIdentifierFirstCharacter(char character) =>
-        char.IsLetter(character) || character == '_';
+    private static bool IsValidIdentifierFirstCharacter(char character)
+    {
+        return char.IsLetter(character) || character == '_';
+    }
 
     private static string EnsureUniqueMigrationName(string migrationName, string projectDirectory)
     {
@@ -398,8 +418,10 @@ internal static class MigrationConsole
         {
             var fileName = Path.GetFileNameWithoutExtension(migrationFile);
 
-            if (fileName.Equals("AppDbContextModelSnapshot", StringComparison.Ordinal)
-                || fileName.EndsWith(".Designer", StringComparison.Ordinal))
+            if (
+                fileName.Equals("AppDbContextModelSnapshot", StringComparison.Ordinal)
+                || fileName.EndsWith(".Designer", StringComparison.Ordinal)
+            )
             {
                 continue;
             }
@@ -417,11 +439,7 @@ internal static class MigrationConsole
 
     private static string FindMigrationProjectPath()
     {
-        var roots = new[]
-        {
-            Directory.GetCurrentDirectory(),
-            AppContext.BaseDirectory
-        };
+        var roots = new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory };
 
         foreach (var root in roots)
         {
@@ -429,7 +447,10 @@ internal static class MigrationConsole
 
             while (directory is not null)
             {
-                var directProject = Path.Combine(directory.FullName, "ResumeEnhancer.Infrastructure.Migration.csproj");
+                var directProject = Path.Combine(
+                    directory.FullName,
+                    "ResumeEnhancer.Infrastructure.Migration.csproj"
+                );
 
                 if (File.Exists(directProject))
                 {
@@ -440,7 +461,8 @@ internal static class MigrationConsole
                     directory.FullName,
                     "Infrastructure",
                     "Migration",
-                    "ResumeEnhancer.Infrastructure.Migration.csproj");
+                    "ResumeEnhancer.Infrastructure.Migration.csproj"
+                );
 
                 if (File.Exists(infrastructureProject))
                 {
@@ -452,7 +474,8 @@ internal static class MigrationConsole
                     "application",
                     "Infrastructure",
                     "Migration",
-                    "ResumeEnhancer.Infrastructure.DatabaseMigration.csproj");
+                    "ResumeEnhancer.Infrastructure.DatabaseMigration.csproj"
+                );
 
                 if (File.Exists(applicationProject))
                 {
@@ -463,7 +486,9 @@ internal static class MigrationConsole
             }
         }
 
-        throw new InvalidOperationException("Unable to locate Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj.");
+        throw new InvalidOperationException(
+            "Unable to locate Infrastructure/Migration/ResumeEnhancer.Infrastructure.Migration.csproj."
+        );
     }
 
     private static void WriteLineIfPresent(TextWriter writer, string? value)
@@ -483,28 +508,44 @@ internal static class MigrationConsole
         }
     }
 
-    private static void WriteStep(string message) =>
-        WriteMessage(ConsoleMessageSeverity.Step, $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}] {message}");
+    private static void WriteStep(string message)
+    {
+        WriteMessage(
+            ConsoleMessageSeverity.Step,
+            $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}] {message}"
+        );
+    }
 
-    private static void WriteDebug(string message) =>
+    private static void WriteDebug(string message)
+    {
         WriteMessage(ConsoleMessageSeverity.Debug, message);
+    }
 
-    private static void WriteInfo(string message) =>
+    private static void WriteInfo(string message)
+    {
         WriteMessage(ConsoleMessageSeverity.Info, message);
+    }
 
-    private static void WriteSuccess(string message) =>
+    private static void WriteSuccess(string message)
+    {
         WriteMessage(ConsoleMessageSeverity.Success, message);
+    }
 
-    private static void WriteWarning(string message) =>
+    private static void WriteWarning(string message)
+    {
         WriteMessage(ConsoleMessageSeverity.Warning, message, Console.Error);
+    }
 
-    private static void WriteError(string message) =>
+    private static void WriteError(string message)
+    {
         WriteMessage(ConsoleMessageSeverity.Error, message, Console.Error);
+    }
 
     private static void WriteMessage(
         ConsoleMessageSeverity severity,
         string message,
-        TextWriter? writer = null)
+        TextWriter? writer = null
+    )
     {
         if (string.IsNullOrWhiteSpace(message))
         {
@@ -518,8 +559,8 @@ internal static class MigrationConsole
         lock (ConsoleSync)
         {
             var useColor =
-                (writer == Console.Out && !Console.IsOutputRedirected)
-                || (writer == Console.Error && !Console.IsErrorRedirected);
+                writer == Console.Out && !Console.IsOutputRedirected
+                || writer == Console.Error && !Console.IsErrorRedirected;
             var originalColor = Console.ForegroundColor;
 
             try
@@ -541,8 +582,9 @@ internal static class MigrationConsole
         }
     }
 
-    private static ConsoleColor GetColor(ConsoleMessageSeverity severity) =>
-        severity switch
+    private static ConsoleColor GetColor(ConsoleMessageSeverity severity)
+    {
+        return severity switch
         {
             ConsoleMessageSeverity.Debug => ConsoleColor.DarkGray,
             ConsoleMessageSeverity.Info => ConsoleColor.Gray,
@@ -550,21 +592,32 @@ internal static class MigrationConsole
             ConsoleMessageSeverity.Success => ConsoleColor.Green,
             ConsoleMessageSeverity.Warning => ConsoleColor.Yellow,
             ConsoleMessageSeverity.Error => ConsoleColor.Red,
-            _ => Console.ForegroundColor
+            _ => Console.ForegroundColor,
         };
+    }
 
     private static ConsoleMessageSeverity ClassifyLogMessage(string message, bool isErrorStream)
     {
         var normalizedMessage = message.TrimStart();
 
-        if (StartsWithAny(normalizedMessage, "fail:", "fatal:", "crit:", "critical:", "error:")
-            || ContainsAny(normalizedMessage, "Unhandled exception", "System.Exception", "SqlException", "ERROR "))
+        if (
+            StartsWithAny(normalizedMessage, "fail:", "fatal:", "crit:", "critical:", "error:")
+            || ContainsAny(
+                normalizedMessage,
+                "Unhandled exception",
+                "System.Exception",
+                "SqlException",
+                "ERROR "
+            )
+        )
         {
             return ConsoleMessageSeverity.Error;
         }
 
-        if (StartsWithAny(normalizedMessage, "warn:", "warning:")
-            || ContainsAny(normalizedMessage, " warning ", "Warning:", "NU190"))
+        if (
+            StartsWithAny(normalizedMessage, "warn:", "warning:")
+            || ContainsAny(normalizedMessage, " warning ", "Warning:", "NU190")
+        )
         {
             return ConsoleMessageSeverity.Warning;
         }
@@ -579,16 +632,20 @@ internal static class MigrationConsole
             return ConsoleMessageSeverity.Info;
         }
 
-        return isErrorStream
-            ? ConsoleMessageSeverity.Error
-            : ConsoleMessageSeverity.Info;
+        return isErrorStream ? ConsoleMessageSeverity.Error : ConsoleMessageSeverity.Info;
     }
 
-    private static bool StartsWithAny(string value, params string[] prefixes) =>
-        prefixes.Any(prefix => value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+    private static bool StartsWithAny(string value, params string[] prefixes)
+    {
+        return prefixes.Any(prefix => value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+    }
 
-    private static bool ContainsAny(string value, params string[] fragments) =>
-        fragments.Any(fragment => value.Contains(fragment, StringComparison.OrdinalIgnoreCase));
+    private static bool ContainsAny(string value, params string[] fragments)
+    {
+        return fragments.Any(fragment =>
+            value.Contains(fragment, StringComparison.OrdinalIgnoreCase)
+        );
+    }
 
     private static string FormatCommand(ProcessStartInfo processStartInfo)
     {
@@ -598,20 +655,26 @@ internal static class MigrationConsole
         foreach (var argument in processStartInfo.ArgumentList)
         {
             command.Append(' ');
-            command.Append(redactNextArgument
-                ? QuoteArgument("<connection-string>")
-                : QuoteArgument(argument));
-            redactNextArgument = argument.Equals("--connection", StringComparison.OrdinalIgnoreCase)
+            command.Append(
+                redactNextArgument ? QuoteArgument("<connection-string>") : QuoteArgument(argument)
+            );
+            redactNextArgument =
+                argument.Equals("--connection", StringComparison.OrdinalIgnoreCase)
                 || argument.Equals("--connection-string", StringComparison.OrdinalIgnoreCase);
         }
 
         return command.ToString();
     }
 
-    private static string QuoteArgument(string argument) =>
-        string.IsNullOrEmpty(argument) || argument.Any(char.IsWhiteSpace) || argument.Contains('"')
+    private static string QuoteArgument(string argument)
+    {
+        return
+            string.IsNullOrEmpty(argument)
+            || argument.Any(char.IsWhiteSpace)
+            || argument.Contains('"')
             ? $"\"{argument.Replace("\"", "\\\"", StringComparison.Ordinal)}\""
             : argument;
+    }
 }
 
 internal enum ConsoleMessageSeverity
@@ -621,7 +684,7 @@ internal enum ConsoleMessageSeverity
     Step,
     Success,
     Warning,
-    Error
+    Error,
 }
 
 internal sealed class MigrationCommandLine
@@ -677,9 +740,7 @@ internal sealed class MigrationCommandLine
             actions.Add("seed data");
         }
 
-        return actions.Count == 0
-            ? "none"
-            : string.Join(", ", actions);
+        return actions.Count == 0 ? "none" : string.Join(", ", actions);
     }
 
     public static MigrationCommandLine Parse(string[] args)
@@ -725,23 +786,33 @@ internal sealed class MigrationCommandLine
                     break;
 
                 default:
-                    if (TryReadInlineValue(argument, "-c:", out var inlineCreateName)
-                        || TryReadInlineValue(argument, "--create=", out inlineCreateName))
+                    if (
+                        TryReadInlineValue(argument, "-c:", out var inlineCreateName)
+                        || TryReadInlineValue(argument, "--create=", out inlineCreateName)
+                    )
                     {
                         options.CreateMigration = true;
                         options.MigrationName = inlineCreateName;
                         break;
                     }
 
-                    if (TryReadInlineValue(argument, "-n:", out var inlineMigrationName)
-                        || TryReadInlineValue(argument, "--name=", out inlineMigrationName))
+                    if (
+                        TryReadInlineValue(argument, "-n:", out var inlineMigrationName)
+                        || TryReadInlineValue(argument, "--name=", out inlineMigrationName)
+                    )
                     {
                         options.MigrationName = inlineMigrationName;
                         break;
                     }
 
-                    if (TryReadInlineValue(argument, "--connection=", out var inlineConnection)
-                        || TryReadInlineValue(argument, "--connection-string=", out inlineConnection))
+                    if (
+                        TryReadInlineValue(argument, "--connection=", out var inlineConnection)
+                        || TryReadInlineValue(
+                            argument,
+                            "--connection-string=",
+                            out inlineConnection
+                        )
+                    )
                     {
                         options.ConnectionString = inlineConnection;
                         break;
@@ -776,12 +847,17 @@ internal sealed class MigrationCommandLine
         return args[index];
     }
 
-    private static bool IsOption(string argument) => argument.StartsWith('-');
+    private static bool IsOption(string argument)
+    {
+        return argument.StartsWith('-');
+    }
 
     private static bool TryReadInlineValue(string argument, string prefix, out string? value)
     {
-        if (argument.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-            && argument.Length > prefix.Length)
+        if (
+            argument.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+            && argument.Length > prefix.Length
+        )
         {
             value = argument[prefix.Length..];
             return true;
@@ -791,5 +867,3 @@ internal sealed class MigrationCommandLine
         return false;
     }
 }
-
-

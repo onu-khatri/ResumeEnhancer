@@ -11,7 +11,7 @@ description: >-
 
 # OpenSpec GitHub Orchestrator
 
-Act as a resumable state-machine coordinator between OpenSpec and GitHub. For issue execution, `$issues-kickoff` must provide the approved issue, canonical branch/worktree, dependency handoff, and implementation owner before this coordinator starts implementation.
+Act as a resumable state-machine coordinator between OpenSpec and GitHub. For issue execution, `$openspec-workflow` must provide the approved issue, canonical branch/worktree, dependency handoff, and implementation owner before this coordinator starts implementation.
 OpenSpec is the source of truth for planned behavior; GitHub is the source of
 truth for repository, issue, branch, pull-request, review, and CI state.
 
@@ -146,7 +146,7 @@ Do not patch code first and leave the specification stale.
 
 ### D. Planning is complete and tasks remain
 
-Ensure the canonical feature branch/worktree exists. For issue work, validate the branch created by `$issues-kickoff`; for direct OpenSpec work, create it through `$git-worktrees` after the applicable implementation approval. Then use `openspec-apply-change`.
+Ensure the canonical feature branch/worktree exists. For issue work, validate the branch created by `$openspec-workflow`; for direct OpenSpec work, create it through `$git-worktrees` after the applicable implementation approval. Then use `openspec-apply-change`.
 
 Invoke `openspec-apply-change` with the OpenSpec context, current task, issue or
 change references, branch/worktree, and any ownership or verification

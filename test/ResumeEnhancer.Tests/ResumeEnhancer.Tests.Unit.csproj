@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\application\Modules\AuthModule\AuthModuleAM\ResumeEnhancer.AuthModule.AM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\AuthModule\AuthModuleDM\ResumeEnhancer.AuthModule.DM.csproj" />
+    <ProjectReference Include="..\..\application\Modules\AuthModule\AuthModulePL\ResumeEnhancer.AuthModule.PL.csproj" />
+    <ProjectReference Include="..\..\application\Modules\AuthModule\AuthModuleWeb\ResumeEnhancer.AuthModule.Web.csproj" />
     <None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

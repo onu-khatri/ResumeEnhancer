@@ -50,8 +50,8 @@ public sealed class BillingSubscriptionDetailResponse
 {
     public int Id { get; set; }
     public int BillingAccountId { get; set; }
+    public int UserId { get; set; }
     public int BillingPlanId { get; set; }
-    public int? ResumeId { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime StartDateUtc { get; set; }
     public DateTime? EndDateUtc { get; set; }
@@ -64,7 +64,7 @@ public sealed class BillingSubscriptionListItemResponse
 {
     public int Id { get; set; }
     public int BillingAccountId { get; set; }
+    public int UserId { get; set; }
     public int BillingPlanId { get; set; }
-    public int? ResumeId { get; set; }
     public string Status { get; set; } = string.Empty;
 }

@@ -16,7 +16,8 @@ public sealed class User : BusinessEntity, IDeactivateable
 
     public bool IsDeactivated { get; set; } = false;
 
-    public ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
+    public ICollection<UserAddress> UserAddresses { get; set; } = [];
 
-    public ICollection<UserAccessProfile> UserAccessProfiles { get; set; } = new List<UserAccessProfile>();
+    public ICollection<UserAccessProfile> UserAccessProfiles { get; set; } = [];
+    public ICollection<UserPreference> Preferences { get; set; } = [];
 }

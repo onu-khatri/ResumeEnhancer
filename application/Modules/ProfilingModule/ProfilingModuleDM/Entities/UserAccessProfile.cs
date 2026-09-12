@@ -12,5 +12,16 @@ public sealed class UserAccessProfile : BusinessRelation
 
     public AccessProfile? AccessProfile { get; set; }
 
+    public int AccessProfileSourceId { get; set; }
+
+    public AccessProfileSource? AccessProfileSource { get; set; }
+
     public DateTime AssignedOnUtc { get; set; } = DateTime.UtcNow;
+
+    public DateTime? ValidTillUtc { get; set; }
+
+    public bool Enabled { get; set; } = true;
+
+    public int? BillingSubscriptionId { get; set; }
+
 }

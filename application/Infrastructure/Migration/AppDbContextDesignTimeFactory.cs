@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using ResumeEnhancer.AuthModule.PL;
 using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.Infrastructure.DatabaseMigration;
 using ResumeEnhancer.Infrastructure.Persistence;
@@ -22,13 +23,25 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
             ?? DefaultConnectionString;
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlServer(connectionString, sqlServerOptions =>
-            {
-                sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
-            })
+            .UseSqlServer(
+                connectionString,
+                sqlServerOptions =>
+                {
+                    sqlServerOptions.MigrationsAssembly(MigrationAssembly.AssemblyName);
+                }
+            )
             .Options;
 
-        return new AppDbContext(options, [new ResumeModuleDbContextModelConfiguration(), new BillingModuleDbContextModelConfiguration(), new ProfilingModuleDbContextModelConfiguration(), new TemplateModuleDbContextModelConfiguration()]);
+        return new AppDbContext(
+            options,
+            [
+                new ResumeModuleDbContextModelConfiguration(),
+                new BillingModuleDbContextModelConfiguration(),
+                new ProfilingModuleDbContextModelConfiguration(),
+                new TemplateModuleDbContextModelConfiguration(),
+                new AuthModuleDbContextModelConfiguration(),
+            ]
+        );
     }
 
     private static string? GetConnectionStringFromArgs(string[] args)
@@ -44,4 +57,3 @@ public sealed class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<
         return null;
     }
 }
-

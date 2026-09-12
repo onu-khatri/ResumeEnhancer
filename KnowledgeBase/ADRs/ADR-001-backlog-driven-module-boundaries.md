@@ -1,6 +1,6 @@
 ---
 title: Backlog-Driven Business Module Boundaries
-status: proposed
+status: accepted
 date: 2026-08-16
 ---
 
@@ -119,7 +119,7 @@ These proposed modules are justified by the backlog because they introduce one o
 - distinct operational or compliance workflows
 - distinct internal-operator versus end-user boundaries
 
-`IdentityModule` is intentionally narrow. It should own only authentication and authenticated runtime concerns such as:
+`AuthModule` is intentionally narrow. It replaces the earlier `IdentityModule` name for the approved account-registration implementation and should own only authentication and authenticated runtime concerns such as:
 
 - authentication flows
 - session issuance and validation
@@ -127,7 +127,7 @@ These proposed modules are justified by the backlog because they introduce one o
 - authentication middleware
 - request identity resolution
 
-`IdentityModule` should not own user master data, roles, claims, access profiles, or user address data.
+`AuthModule` should not own user master data, roles, claims, access profiles, or user address data.
 
 `ProfilingModule` is the owner of user and authorization-profile data. It should own:
 
@@ -193,9 +193,9 @@ These areas should be treated as one of the following unless later implementatio
 
 # Identity And Profiling Boundary Rules
 
-## `IdentityModule`
+## `AuthModule`
 
-`IdentityModule` owns authentication-only concerns:
+`AuthModule` owns authentication-only concerns:
 
 - authentication
 - session handling

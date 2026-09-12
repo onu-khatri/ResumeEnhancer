@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ResumeEnhancer.BillingModule.PL.Integrations;
 using ResumeEnhancer.BillingModule.PL.Repositories;
 using ResumeEnhancer.BillingModule.PL.Seeding;
 using ResumeEnhancer.BillingModule.SL.Abstractions.Persistence;
+using ResumeEnhancer.BillingModule.SL.Integrations;
 using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.BillingModule.PL;
@@ -14,22 +16,38 @@ public static class DependencyInjection
         return services.AddBillingModulePersistence(rootEntitySchema: null);
     }
 
-    public static IServiceCollection AddBillingModulePersistence(this IServiceCollection services, string? rootEntitySchema)
+    public static IServiceCollection AddBillingModulePersistence(
+        this IServiceCollection services,
+        string? rootEntitySchema
+    )
     {
         if (!services.Any(IsBillingModuleModelConfigurationRegistered))
         {
-            services.AddSingleton<IAppDbContextModelConfiguration>(new BillingModuleDbContextModelConfiguration(rootEntitySchema));
+            services.AddSingleton<IAppDbContextModelConfiguration>(
+                new BillingModuleDbContextModelConfiguration(rootEntitySchema)
+            );
         }
 
-        services.TryAddEnumerable(ServiceDescriptor.Scoped<IAppDbContextSeeder, BillingModuleSeeder>());
+        services.TryAddEnumerable(
+            ServiceDescriptor.Scoped<IAppDbContextSeeder, BillingModuleSeeder>()
+        );
         services.TryAddScoped<IBillingRepository, BillingRepository>();
         services.TryAddScoped<IBillingSetupDataRepository, BillingSetupDataRepository>();
+        services.TryAddScoped<IBillingRegistrationService, BillingRegistrationService>();
 
         return services;
     }
 
-    private static bool IsBillingModuleModelConfigurationRegistered(ServiceDescriptor serviceDescriptor) =>
-        serviceDescriptor.ServiceType == typeof(IAppDbContextModelConfiguration)
-        && (serviceDescriptor.ImplementationType == typeof(BillingModuleDbContextModelConfiguration)
-            || serviceDescriptor.ImplementationInstance is BillingModuleDbContextModelConfiguration);
+    private static bool IsBillingModuleModelConfigurationRegistered(
+        ServiceDescriptor serviceDescriptor
+    )
+    {
+        return serviceDescriptor.ServiceType == typeof(IAppDbContextModelConfiguration)
+            && (
+                serviceDescriptor.ImplementationType
+                    == typeof(BillingModuleDbContextModelConfiguration)
+                || serviceDescriptor.ImplementationInstance
+                    is BillingModuleDbContextModelConfiguration
+            );
+    }
 }

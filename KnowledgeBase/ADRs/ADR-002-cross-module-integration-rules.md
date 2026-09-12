@@ -144,6 +144,41 @@ This is acceptable when:
 
 This is not an excuse to merge domains mentally. It only means the data relationship is real.
 
+### Rule 1a: ProfilingModule is the foundational identity and access-profile module
+
+`ProfilingModule` is a base module. Other business modules may reference its DM
+entities when they have an explicit business relationship, but `ProfilingModule`
+must not depend on another business module's DM, SL, PL, or Web project.
+
+This makes the dependency direction explicit:
+
+```text
+OtherModule DM -> ProfilingModule DM
+ProfilingModule -> no other business module
+```
+
+`AccessProfile` is owned exclusively by `ProfilingModule`. A consuming module may
+therefore keep an `AccessProfileId` and, when the domain relationship requires it,
+an `AccessProfile` navigation property in its DM entity. The consuming module's
+PL may configure and load that navigation. `ProfilingModule` must not add a
+reverse navigation or project reference to the consuming module merely to model
+the relationship.
+
+For example, `BillingPlan` may contain:
+
+```csharp
+public int AccessProfileId { get; set; }
+public AccessProfile? AccessProfile { get; set; }
+```
+
+The Billing module owns the plan and its relationship to the user-facing access
+profile, while Profiling remains the owner of the `AccessProfile` aggregate and
+its user assignments. Cross-module business validation or assignment workflows
+must still use narrow SL integration contracts and snapshots where appropriate.
+
+This rule prevents dependency cycles while allowing the domain model to express
+that a billing plan grants a specific access profile.
+
 ## Rule 2: PL owns EF Core `Include`, `ThenInclude`, and relational query shaping
 
 If a module is loading its own aggregate or query result and needs related data from another module, that loading belongs in `PL`.

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Library</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\AuthModuleAM\ResumeEnhancer.AuthModule.AM.csproj" /><ProjectReference Include="..\AuthModuleSL\ResumeEnhancer.AuthModule.SL.csproj" /><ProjectReference Include="..\..\..\Core\WebLibrary\ResumeEnhancer.Core.WebLibrary.csproj" /></ItemGroup>
+  <ItemGroup><PackageReference Include="FluentValidation" Version="12.1.1" /><PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" /><PackageReference Include="Mediator.Abstractions" Version="3.0.2" /></ItemGroup>
+</Project>

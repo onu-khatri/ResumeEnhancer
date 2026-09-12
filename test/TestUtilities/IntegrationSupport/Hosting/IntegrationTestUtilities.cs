@@ -6,7 +6,7 @@ using ResumeEnhancer.Infrastructure.Persistence;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
-public sealed class IntegrationTestUtilities<TProgram> : IDisposable
+public sealed class IntegrationTestUtilities<TProgram>
     where TProgram : class
 {
     private readonly WebApplicationFactory<TProgram> _factory;
@@ -16,7 +16,8 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
     internal IntegrationTestUtilities(
         WebApplicationFactory<TProgram> factory,
         TestAuthenticationState authenticationState,
-        SqliteConnection? sqliteConnection)
+        SqliteConnection? sqliteConnection
+    )
     {
         _factory = factory;
         _authenticationState = authenticationState;
@@ -27,13 +28,17 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
 
     internal TestAuthenticationState AuthenticationState => _authenticationState;
 
+    public void ClearAuthentication() => _authenticationState.Clear();
+
     public HttpClient CreateClient()
     {
-        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false,
-            BaseAddress = new Uri("https://localhost")
-        });
+        var client = _factory.CreateClient(
+            new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false,
+                BaseAddress = new Uri("https://localhost"),
+            }
+        );
 
         if (_authenticationState.AuditUserId is { } auditUserId)
         {
@@ -53,7 +58,8 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
     public async Task<HttpResponseMessage> PostJsonAsync<TRequest>(
         string requestUri,
         TRequest request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         using var client = CreateClient();
 
@@ -63,7 +69,8 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
     public async Task<HttpResponseMessage> PutJsonAsync<TRequest>(
         string requestUri,
         TRequest request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         using var client = CreateClient();
 
@@ -72,7 +79,8 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
 
     public async Task<HttpResponseMessage> DeleteAsync(
         string requestUri,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         using var client = CreateClient();
 
@@ -91,10 +99,4 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
         dbContext.ChangeTracker.Clear();
     }
 
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _sqliteConnection?.Dispose();
-    }
 }
-

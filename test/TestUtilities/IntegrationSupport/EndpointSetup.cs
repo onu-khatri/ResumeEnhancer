@@ -1,19 +1,20 @@
 using System.Net;
 using System.Net.Http.Json;
-using ResumeEnhancer.TestUtilities.IntegrationSupport;
+using System.Text.Json;
 using Shouldly;
 
-namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
+namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
-public sealed class ResumeEndpointSetup<TRequest>
+public sealed class EndpointSetup<TRequest>
 {
-    public ResumeEndpointSetup(
+    public EndpointSetup(
         string description,
         HttpMethod method,
         string route,
         TRequest input,
-        Func<ISetupper, ResumeEndpointSetup<TRequest>, CancellationToken, Task>? arrangeAsync,
-        Func<ISetupper, HttpResponseMessage, CancellationToken, Task> assertAsync)
+        Func<ISetupper, EndpointSetup<TRequest>, CancellationToken, Task>? arrangeAsync,
+        Func<ISetupper, HttpResponseMessage, CancellationToken, Task> assertAsync
+    )
     {
         Description = description;
         Method = method;
@@ -24,63 +25,67 @@ public sealed class ResumeEndpointSetup<TRequest>
     }
 
     public string Description { get; }
-
     public HttpMethod Method { get; }
-
     public string Route { get; set; }
-
     public TRequest Input { get; }
-
-    public Func<ISetupper, ResumeEndpointSetup<TRequest>, CancellationToken, Task> ArrangeAsync { get; }
-
+    public Func<ISetupper, EndpointSetup<TRequest>, CancellationToken, Task> ArrangeAsync { get; }
     public Func<ISetupper, HttpResponseMessage, CancellationToken, Task> AssertAsync { get; }
 
     public override string ToString() => Description;
 }
 
-public sealed class ResumeEndpointSetup
+public sealed class EndpointSetup
 {
-    public ResumeEndpointSetup(
+    public EndpointSetup(
         string description,
         HttpMethod method,
         string route,
-        Func<ISetupper, ResumeEndpointSetup, CancellationToken, Task> arrangeAsync,
-        Func<ISetupper, HttpResponseMessage, CancellationToken, Task> assertAsync)
+        Func<ISetupper, EndpointSetup, CancellationToken, Task>? arrangeAsync,
+        Func<ISetupper, HttpResponseMessage, CancellationToken, Task> assertAsync
+    )
     {
         Description = description;
         Method = method;
         Route = route;
-        ArrangeAsync = arrangeAsync;
+        ArrangeAsync = arrangeAsync ?? ((_, _, _) => Task.CompletedTask);
         AssertAsync = assertAsync;
     }
 
     public string Description { get; }
-
     public HttpMethod Method { get; }
-
     public string Route { get; set; }
-
-    public Func<ISetupper, ResumeEndpointSetup, CancellationToken, Task> ArrangeAsync { get; }
-
+    public Func<ISetupper, EndpointSetup, CancellationToken, Task> ArrangeAsync { get; }
     public Func<ISetupper, HttpResponseMessage, CancellationToken, Task> AssertAsync { get; }
 
     public override string ToString() => Description;
 }
 
-internal static class ResumeEndpointAssertions
+public static class EndpointAssertions
 {
     public static async Task<TResponse> ReadSuccessJsonAsync<TResponse>(
         this HttpResponseMessage response,
-        HttpStatusCode statusCode,
-        CancellationToken cancellationToken)
+        HttpStatusCode expectedStatus,
+        CancellationToken cancellationToken
+    )
         where TResponse : class
     {
-        response.StatusCode.ShouldBe(statusCode);
+        response.StatusCode.ShouldBe(
+            expectedStatus,
+            await response.Content.ReadAsStringAsync(cancellationToken)
+        );
         var body = await response.Content.ReadFromJsonAsync<TResponse>(cancellationToken);
-
         body.ShouldNotBeNull();
-
         return body;
     }
-}
 
+    public static async Task<JsonDocument> ReadJsonAsync(
+        this HttpResponseMessage response,
+        HttpStatusCode expectedStatus,
+        CancellationToken cancellationToken
+    )
+    {
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        response.StatusCode.ShouldBe(expectedStatus, body);
+        return JsonDocument.Parse(body);
+    }
+}

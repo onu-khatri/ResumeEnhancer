@@ -19,13 +19,14 @@ public sealed class CreateBillingPlanRequest
     [Range(0, double.MaxValue)]
     public decimal Price { get; set; }
 
-    [Required]
-    [MaxLength(10)]
-    public string Currency { get; set; } = "USD";
+    [Range(1, int.MaxValue)]
+    public int CurrencyId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public string BillingInterval { get; set; } = "Monthly";
+    [Range(1, int.MaxValue)]
+    public int BillingIntervalId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int AccessProfileId { get; set; }
 
     public bool IsDeactivated { get; set; } = false;
 }
@@ -47,14 +48,17 @@ public sealed class UpdateBillingPlanRequest
     [Range(0, double.MaxValue)]
     public decimal Price { get; set; }
 
-    [Required]
-    [MaxLength(10)]
-    public string Currency { get; set; } = "USD";
+    [Range(1, int.MaxValue)]
+    public int CurrencyId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public string BillingInterval { get; set; } = "Monthly";
+    [Range(1, int.MaxValue)]
+    public int BillingIntervalId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int AccessProfileId { get; set; }
 
     public bool IsDeactivated { get; set; }
     public bool ObsoleteFlag { get; set; }
+
+    public bool CascadeExistingSubscriptions { get; set; }
 }

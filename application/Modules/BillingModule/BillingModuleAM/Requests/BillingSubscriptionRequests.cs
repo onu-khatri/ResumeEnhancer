@@ -8,13 +8,13 @@ public sealed class CreateBillingSubscriptionRequest
     public int BillingAccountId { get; set; }
 
     [Required]
-    public int BillingPlanId { get; set; }
-
-    public int? ResumeId { get; set; }
+    public int UserId { get; set; }
 
     [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    public int BillingPlanId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     public DateTime StartDateUtc { get; set; } = DateTime.UtcNow;
 
@@ -27,13 +27,13 @@ public sealed class UpdateBillingSubscriptionRequest
     public int BillingAccountId { get; set; }
 
     [Required]
-    public int BillingPlanId { get; set; }
-
-    public int? ResumeId { get; set; }
+    public int UserId { get; set; }
 
     [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    public int BillingPlanId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     public DateTime StartDateUtc { get; set; } = DateTime.UtcNow;
 

@@ -1,5 +1,6 @@
-using Mediator;
 using Microsoft.Extensions.DependencyInjection;
+using ResumeEnhancer.AuthModule.SL;
+using ResumeEnhancer.AuthModule.Web;
 using ResumeEnhancer.BillingModule.SL;
 using ResumeEnhancer.BillingModule.Web;
 using ResumeEnhancer.ProfilingModule.SL;
@@ -27,7 +28,9 @@ public static class DependencyInjection
                 typeof(TemplateModuleWebAssembly),
                 typeof(TemplateModuleSLAssembly),
                 typeof(ResumeModuleWebAssembly),
-                typeof(ResumeModuleSLAssembly)
+                typeof(ResumeModuleSLAssembly),
+                typeof(AuthModuleWebAssembly),
+                typeof(AuthModuleSLAssembly),
             ];
         });
 

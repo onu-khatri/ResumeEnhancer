@@ -1,25 +1,26 @@
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.Infrastructure.Persistence;
-using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.DM.Entities;
+using ResumeEnhancer.TestUtilities.IntegrationSupport;
+using ResumeEnhancer.Tests.Integration.TestSupport;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
 
-[Collection("Sequential_ResumeModul")]
-public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeModuleIntegrationTestFixture>
+[Collection("Sequential_Integration")]
+public sealed partial class ResumeQueryIntegrationTests
 {
-    private readonly ResumeModuleIntegrationTestFixture _fixture;
+    private readonly IntegrationTestAssemblyFixture _fixture;
 
-    public ResumeQueryIntegrationTests(ResumeModuleIntegrationTestFixture fixture)
+    public ResumeQueryIntegrationTests(IntegrationTestAssemblyFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Theory]
     [MemberData(nameof(GetResumeSetups))]
-    public async Task GetResumeAsync_SetupObject_ExercisesRealHttpBoundary(ResumeEndpointSetup setup)
+    public async Task GetResumeAsync_SetupObject_ExercisesRealHttpBoundary(EndpointSetup setup)
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -35,7 +36,7 @@ public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeMo
 
     [Theory]
     [MemberData(nameof(ResumeExistsSetups))]
-    public async Task ResumeExistsAsync_SetupObject_ExercisesRealHttpBoundary(ResumeEndpointSetup setup)
+    public async Task ResumeExistsAsync_SetupObject_ExercisesRealHttpBoundary(EndpointSetup setup)
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -52,7 +53,8 @@ public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeMo
     [Theory]
     [MemberData(nameof(SearchResumeSetups))]
     public async Task SearchResumesAsync_SetupObject_ExercisesRealHttpBoundary(
-        ResumeEndpointSetup<ResumeSearchRequest> setup)
+        EndpointSetup<ResumeSearchRequest> setup
+    )
     {
         using var setupper = _fixture.CreateSetupper();
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -68,12 +70,11 @@ public sealed partial class ResumeQueryIntegrationTests : IClassFixture<ResumeMo
 
     private static async Task<int> CountResumesAsync(
         ISetupper setupper,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         var dbContext = (AppDbContext)setupper.GetFreshDbContext();
 
         return await dbContext.Set<Resume>().CountAsync(cancellationToken);
     }
 }
-
-

@@ -2,6 +2,9 @@
 
 This folder contains the xUnit.net test suite for ResumeEnhancer. The suite is organized to keep tests fast, isolated, readable, and useful during refactoring.
 
+- [Unit tests](ResumeEnhancer.Tests/README.md) — fast isolated tests for shared code and modules.
+- [Integration tests](IntegrationTest/README.md) — HTTP-boundary tests for the Auth and Resume modules.
+
 ## Project Structure
 
 ```text
@@ -10,6 +13,12 @@ test/
 |-- coverlet.runsettings
 |-- .gitignore
 |-- README.md
+`-- ResumeEnhancer.Tests/
+|-- IntegrationTest/
+|   |-- Modules/
+|   |-- TestSupport/
+|   |-- ResumeEnhancer.Tests.Integration.csproj
+|   `-- README.md
 `-- ResumeEnhancer.Tests/
     |-- Composition/
     |-- Core/
@@ -33,6 +42,8 @@ test/
 ```
 
 ## How To Run
+
+See the project-specific READMEs for module and individual-test filters.
 
 Fast local test run:
 
@@ -262,15 +273,10 @@ public async Task CreateItemAsync_ValidRequest_SendsCommandAndReturnsCreated()
 - Microsoft.EntityFrameworkCore.Sqlite for relational in-memory persistence tests.
 - coverlet collector for coverage.
 
-## Coverage Summary
+## Coverage
 
-Generated: 2026-08-09 17:03:54 +05:30
-
-Latest coverage run:
-
-- Line coverage: 96.47% (`2546/2639`)
-- Branch coverage: 83.06% (`471/567`)
-- Test count: 213 passing
+- Line coverage should be > 92.00%
+- Branch coverage should be > 80.00%
 - Coverage settings: `test/coverlet.runsettings`
 - AM and DM model assemblies: excluded with `[ExcludeFromCodeCoverage]`
 

@@ -40,7 +40,7 @@ workflow and never marks OpenSpec tasks complete.
 
    Always announce: "Using change: <name>" and how to override (e.g., `$openspec-apply-change (Codex) or /openspec-apply-change (other agents) <other>`).
 
-   For issue-driven work, require the canonical `openspec/gh-<issue-number>-<short-kebab-slug>` branch/worktree and the implementation approval supplied by `$issues-kickoff`. For direct OpenSpec work, require the applicable user approval before editing.
+   For issue-driven work, require the canonical `openspec/gh-<issue-number>-<short-kebab-slug>` branch/worktree and the implementation approval supplied by `$openspec-workflow`. Confirm that the path is a live Git worktree on the canonical branch; if it is missing, prunable, broken, incomplete, untracked, or pre-approval, do not create, repair, replace, or use it—return the blocker to `$openspec-workflow`. For direct OpenSpec work, require the applicable user approval before editing.
 
 2. **Check status to understand the schema**
    ```bash

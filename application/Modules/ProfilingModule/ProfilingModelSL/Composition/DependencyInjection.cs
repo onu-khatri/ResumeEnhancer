@@ -10,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddProfilingModuleApplication(this IServiceCollection services)
     {
         services.TryAddScoped<IUserLookupService, UserLookupService>();
+        services.TryAddScoped<IProfilingRegistrationService, ProfilingRegistrationService>();
 
         return services;
     }

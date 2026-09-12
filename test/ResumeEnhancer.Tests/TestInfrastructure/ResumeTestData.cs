@@ -269,8 +269,9 @@ internal static class ResumeTestData
             Guid = DeterministicGuid($"billing-plan-{id}"),
             Order = order,
             Price = 0,
-            Currency = "USD",
-            BillingInterval = "Monthly"
+            CurrencyId = 1,
+            BillingIntervalId = 1,
+            AccessProfileId = AccessProfileId
         };
 
     public static TemplateCategory TemplateCategory(

@@ -1,8 +1,8 @@
 using System.Net;
 using MoreLinq;
-using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.AM.Responses;
+using ResumeEnhancer.TestUtilities.IntegrationSupport;
 using Shouldly;
 
 namespace ResumeEnhancer.Tests.Integration.Modules.ResumeModule;
@@ -14,7 +14,7 @@ public sealed partial class ResumeCommandIntegrationTests
         var fullGraphRequest = ResumeApiTestData.CreateResumeRequest(seed: 101);
         yield return
         [
-            new ResumeEndpointSetup<CreateResumeRequest>(
+            new EndpointSetup<CreateResumeRequest>(
                 "authenticated owner creates a full resume graph",
                 HttpMethod.Post,
                 "/api/resumes/",
@@ -26,16 +26,20 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 41,
                         accessProfileId: 601,
-                        "resume.create");
+                        "resume.create"
+                    );
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDetailResponse>(
                         HttpStatusCode.Created,
-                        cancellationToken);
+                        cancellationToken
+                    );
                     var saved = await setupper.FindResumeGraphAsync(response.Id, cancellationToken);
 
-                    responseMessage.Headers.Location!.ToString().ShouldBe($"/api/resumes/{response.Id}");
+                    responseMessage
+                        .Headers.Location!.ToString()
+                        .ShouldBe($"/api/resumes/{response.Id}");
                     response.Title.ShouldBe(fullGraphRequest.Title.Trim());
                     response.UserId.ShouldBe(ResumeApiTestData.OwnerUserId);
                     response.PersonalInformation.ShouldNotBeNull();
@@ -60,13 +64,17 @@ public sealed partial class ResumeCommandIntegrationTests
                     saved.Skills.Count.ShouldBe(1);
                     saved.WorkExperiences.Count.ShouldBe(1);
                     saved.Projects.Count.ShouldBe(1);
-                })
+                }
+            ),
         ];
 
-        var minimalRequest = ResumeApiTestData.CreateResumeRequest(includeFullGraph: false, seed: 102);
+        var minimalRequest = ResumeApiTestData.CreateResumeRequest(
+            includeFullGraph: false,
+            seed: 102
+        );
         yield return
         [
-            new ResumeEndpointSetup<CreateResumeRequest>(
+            new EndpointSetup<CreateResumeRequest>(
                 "authenticated owner creates a minimal resume",
                 HttpMethod.Post,
                 "/api/resumes/",
@@ -78,13 +86,15 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 42,
                         accessProfileId: 602,
-                        "resume.create");
+                        "resume.create"
+                    );
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDetailResponse>(
                         HttpStatusCode.Created,
-                        cancellationToken);
+                        cancellationToken
+                    );
                     var saved = await setupper.FindResumeGraphAsync(response.Id, cancellationToken);
 
                     response.PersonalInformation.ShouldBeNull();
@@ -102,14 +112,15 @@ public sealed partial class ResumeCommandIntegrationTests
                     saved.WorkExperiences.ShouldBeEmpty();
                     saved.Projects.ShouldBeEmpty();
                     saved.App_CreateUserId.ShouldBe(42);
-                })
+                }
+            ),
         ];
 
         var invalidRequest = ResumeApiTestData.CreateResumeRequest(seed: 103);
         invalidRequest.Title = string.Empty;
         yield return
         [
-            new ResumeEndpointSetup<CreateResumeRequest>(
+            new EndpointSetup<CreateResumeRequest>(
                 "invalid request returns validation problem without persisting",
                 HttpMethod.Post,
                 "/api/resumes/",
@@ -121,15 +132,19 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 43,
                         accessProfileId: 603,
-                        "resume.create");
+                        "resume.create"
+                    );
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     responseMessage.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-                    var payload = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+                    var payload = await responseMessage.Content.ReadAsStringAsync(
+                        cancellationToken
+                    );
                     payload.ShouldContain("Title");
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(0);
-                })
+                }
+            ),
         ];
     }
 
@@ -138,7 +153,7 @@ public sealed partial class ResumeCommandIntegrationTests
         var updateRequest = ResumeApiTestData.UpdateResumeRequest(seed: 201);
         yield return
         [
-            new ResumeEndpointSetup<UpdateResumeRequest>(
+            new EndpointSetup<UpdateResumeRequest>(
                 "owner updates scalar fields and synchronizes owned graph",
                 HttpMethod.Put,
                 "/api/resumes/0",
@@ -149,28 +164,34 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 51,
                         accessProfileId: 701,
-                        "resume.update");
+                        "resume.update"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Original Integration Resume",
                         auditUserId: 11,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     updateRequest.PersonalInformation!.Id = seeded.PersonalInformation!.Id;
-                    updateRequest.Skills![0].Id = seeded.Skills.Single(skill => skill.SkillName == "C#").Id;
+                    updateRequest.Skills![0].Id = seeded
+                        .Skills.Single(skill => skill.SkillName == "C#")
+                        .Id;
                     setup.Route = $"/api/resumes/{seeded.Id}";
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDetailResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
                     var saved = await setupper.FindResumeGraphAsync(response.Id, cancellationToken);
 
                     response.Title.ShouldBe("Updated Integration Resume");
                     response.PersonalInformation.ShouldNotBeNull();
                     response.PersonalInformation!.Address.ShouldBeNull();
-                    response.Skills.Select(skill => skill.SkillName)
+                    response
+                        .Skills.Select(skill => skill.SkillName)
                         .ShouldBe(["Updated C#", "Distributed Systems"], ignoreOrder: true);
                     response.Education.ShouldBeEmpty();
 
@@ -184,16 +205,18 @@ public sealed partial class ResumeCommandIntegrationTests
                     saved.PersonalInformation!.Email.ShouldBe("updated-201@example.com");
                     saved.PersonalInformation.Address.ShouldBeNull();
                     saved.Education.ShouldBeEmpty();
-                    saved.Skills.Select(skill => skill.SkillName)
+                    saved
+                        .Skills.Select(skill => skill.SkillName)
                         .ShouldBe(["Updated C#", "Distributed Systems"], ignoreOrder: true);
                     saved.Skills.ShouldNotContain(skill => skill.SkillName == "Legacy Skill");
-                })
+                }
+            ),
         ];
 
         var forbiddenRequest = new UpdateResumeRequest { Title = "Forbidden Update" };
         yield return
         [
-            new ResumeEndpointSetup<UpdateResumeRequest>(
+            new EndpointSetup<UpdateResumeRequest>(
                 "different active user receives forbidden and cannot update",
                 HttpMethod.Put,
                 "/api/resumes/0",
@@ -204,12 +227,14 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.IntruderUserId,
                         auditUserId: 52,
                         accessProfileId: 702,
-                        "resume.update");
+                        "resume.update"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Owned Resume",
                         auditUserId: 12,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}";
                 },
@@ -220,7 +245,8 @@ public sealed partial class ResumeCommandIntegrationTests
 
                     saved.Title.ShouldBe("Owned Resume");
                     saved.App_UpdateUserId.ShouldBe(12);
-                })
+                }
+            ),
         ];
     }
 
@@ -228,7 +254,7 @@ public sealed partial class ResumeCommandIntegrationTests
     {
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "owner deletes a single resume through DELETE route",
                 HttpMethod.Delete,
                 "/api/resumes/0",
@@ -238,12 +264,14 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 61,
                         accessProfileId: 801,
-                        "resume.delete");
+                        "resume.delete"
+                    );
                     var seeded = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Delete Me",
                         auditUserId: 21,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
                     setup.Route = $"/api/resumes/{seeded.Id}";
                 },
@@ -251,17 +279,19 @@ public sealed partial class ResumeCommandIntegrationTests
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDeleteResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     response.DeletedCount.ShouldBe(1);
                     response.HasFailures.ShouldBeFalse();
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(0);
-                })
+                }
+            ),
         ];
 
         yield return
         [
-            new ResumeEndpointSetup(
+            new EndpointSetup(
                 "missing single delete returns not-found ids without side effects",
                 HttpMethod.Delete,
                 "/api/resumes/999999",
@@ -271,19 +301,22 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 62,
                         accessProfileId: 802,
-                        "resume.delete");
+                        "resume.delete"
+                    );
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDeleteResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
 
                     response.DeletedCount.ShouldBe(0);
                     response.NotFoundIds.ShouldBe([999999]);
                     response.HasFailures.ShouldBeTrue();
                     (await CountResumesAsync(setupper, cancellationToken)).ShouldBe(0);
-                })
+                }
+            ),
         ];
     }
 
@@ -293,7 +326,7 @@ public sealed partial class ResumeCommandIntegrationTests
 
         yield return
         [
-            new ResumeEndpointSetup<DeleteResumesRequest>(
+            new EndpointSetup<DeleteResumesRequest>(
                 "bulk delete reports deleted forbidden and missing ids",
                 HttpMethod.Post,
                 "/api/resumes/delete",
@@ -304,37 +337,53 @@ public sealed partial class ResumeCommandIntegrationTests
                         ResumeApiTestData.OwnerUserId,
                         auditUserId: 63,
                         accessProfileId: 803,
-                        "resume.delete");
+                        "resume.delete"
+                    );
                     var ownerResume = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OwnerUserId,
                         "Owner Delete",
                         auditUserId: 22,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
                     var otherResume = await setupper.GenerateResumeAsync(
                         ResumeApiTestData.OtherUserId,
                         "Other Keep",
                         auditUserId: 23,
-                        cancellationToken: cancellationToken);
+                        cancellationToken: cancellationToken
+                    );
 
-                    setup.Input.ResumeIds = [ownerResume.Id, otherResume.Id, 999999, ownerResume.Id];
+                    setup.Input.ResumeIds =
+                    [
+                        ownerResume.Id,
+                        otherResume.Id,
+                        999999,
+                        ownerResume.Id,
+                    ];
                 },
                 async (setupper, responseMessage, cancellationToken) =>
                 {
                     var response = await responseMessage.ReadSuccessJsonAsync<ResumeDeleteResponse>(
                         HttpStatusCode.OK,
-                        cancellationToken);
+                        cancellationToken
+                    );
                     var remainingIds = await ResumeIdsAsync(setupper, cancellationToken);
 
-                    response.RequestedIds.ShouldBe([response.DeletedIds.Single(), response.ForbiddenIds.Single(), 999999]);
+                    response.RequestedIds.ShouldBe([
+                        response.DeletedIds.Single(),
+                        response.ForbiddenIds.Single(),
+                        999999,
+                    ]);
                     response.DeletedCount.ShouldBe(1);
                     response.NotFoundIds.ShouldBe([999999]);
                     response.ForbiddenIds.Count.ShouldBe(1);
                     response.HasFailures.ShouldBeTrue();
-                    MoreEnumerable.ForEach(response.DeletedIds, deletedId => remainingIds.ShouldNotContain(deletedId));
+                    MoreEnumerable.ForEach(
+                        response.DeletedIds,
+                        deletedId => remainingIds.ShouldNotContain(deletedId)
+                    );
                     remainingIds.ShouldContain(response.ForbiddenIds.Single());
-                })
+                }
+            ),
         ];
     }
 }
-
-

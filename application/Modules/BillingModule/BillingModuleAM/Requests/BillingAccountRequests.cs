@@ -11,9 +11,8 @@ public sealed class CreateBillingAccountRequest
     [MaxLength(50)]
     public string AccountNumber { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     [MaxLength(100)]
     public string? ExternalReference { get; set; }
@@ -28,9 +27,8 @@ public sealed class UpdateBillingAccountRequest
     [MaxLength(50)]
     public string AccountNumber { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     [MaxLength(100)]
     public string? ExternalReference { get; set; }
