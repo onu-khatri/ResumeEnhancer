@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenSpec Repository Policy"
+  short_description: "Apply ResumeEnhancer OpenSpec workflow rules"
+  default_prompt: "Use $openspec-repository-policy alongside generated OpenSpec workflows."
