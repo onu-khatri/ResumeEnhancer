@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
@@ -5,6 +6,7 @@ using ResumeEnhancer.ProfilingModule.DM.Enums;
 
 namespace ResumeEnhancer.ProfilingModule.PL.Seeding;
 
+[ExcludeFromCodeCoverage]
 public sealed class ProfilingModuleSeeder : IAppDbContextSeeder
 {
     public async Task SeedAsync(

@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.ResumeModule.DM.Entities;
 
 namespace ResumeEnhancer.ResumeModule.PL.Seeding;
 
+[ExcludeFromCodeCoverage]
 public sealed class ResumeModuleSeeder : IAppDbContextSeeder
 {
     public async Task SeedAsync(AppDbContext dbContext, CancellationToken cancellationToken = default)

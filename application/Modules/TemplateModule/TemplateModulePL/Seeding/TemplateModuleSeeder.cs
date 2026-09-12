@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.Infrastructure.Persistence;
 using ResumeEnhancer.TemplateModule.DM.Entities;
@@ -5,6 +6,7 @@ using ResumeEnhancer.TemplateModule.DM.Enums;
 
 namespace ResumeEnhancer.TemplateModule.PL.Seeding;
 
+[ExcludeFromCodeCoverage]
 public sealed class TemplateModuleSeeder : IAppDbContextSeeder
 {
     public async Task SeedAsync(AppDbContext dbContext, CancellationToken cancellationToken = default)

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.BillingModule.DM.Entities;
 using ResumeEnhancer.Core.DomainLibrary.DomainModel;
@@ -6,6 +7,7 @@ using ResumeEnhancer.ProfilingModule.DM.Entities;
 
 namespace ResumeEnhancer.BillingModule.PL.Seeding;
 
+[ExcludeFromCodeCoverage]
 public sealed class BillingModuleSeeder : IAppDbContextSeeder
 {
     public async Task SeedAsync(AppDbContext dbContext, CancellationToken cancellationToken = default)
