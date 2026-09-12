@@ -3,10 +3,11 @@ name: openspec-archive-change
 description: Archive a completed change in the experimental workflow. Use when the user wants to finalize and archive a change after implementation is complete.
 allowed-tools: Bash(openspec:*)
 license: MIT
+compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.9.0"
+  generatedBy: "1.13.0"
 ---
 
 Archive a completed change in the experimental workflow.

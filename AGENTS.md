@@ -33,6 +33,7 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 - Discover available repository skills under `.codex/skills/<skill-name>/SKILL.md` and custom agents under `.codex/agents/*.toml` before choosing a workflow. Read a selected skill's `SKILL.md` before acting; read only its routed references that apply.
 - Use `AGENTS.md` for durable repository-wide constraints, a skill for reusable task guidance, and a custom agent for a focused delegated workstream. A delegated agent does not replace the main agent's repository inspection or ownership of the final result.
 - Keep these mechanisms separate: skill UI metadata is `.codex/skills/<skill-name>/agents/openai.yaml`; OpenSpec workflows live in `.agents/skills/`; custom-agent definitions live in `.codex/agents/`.
+- OpenSpec workflows under `.agents/skills/` are generator-managed. Do not edit them directly for repository-specific behavior; run `openspec update` to refresh them and keep ResumeEnhancer policy in `$openspec-repository-policy`, `AGENTS.md`, and the other `.codex/skills/` authorities.
 
 ### Skill Selection
 
@@ -41,6 +42,7 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 - Frontend delivery: `$frontend-developer`, `$frontend-dev-guidelines`, `$react-patterns`, `$frontend-design`, `$production-ui-generator`, and `$frontend-security-coder` as applicable.
 - Full-stack and story delivery: `$full-stack-feature-orchestrator`, `$us-kickoff` for readiness and GitHub handoff, `$issues-kickoff` for GitHub issue intake and readiness handoff, `$openspec-workflow` for proposal approval, worktree implementation, verification, and closeout, `$plan-writing`, and the OpenSpec skills in `.agents/skills/` when the workflow applies.
 - Development entry gate: use `$development-entry-gate` before any development-related code, test, configuration, migration, frontend, backend, or architecture implementation; it routes specialist skills and returns readiness, but does not invoke implementation agents.
+- OpenSpec repository policy: use `$openspec-repository-policy` as an overlay with generated OpenSpec workflows. It preserves repository-specific gates, worktree sequencing, and delivery evidence across OpenSpec refreshes.
 - Development handoff: `$openspec-workflow` keeps proposal work in the main checkout, obtains explicit user approval, and creates the canonical branch/worktree only when implementation is about to begin. `$openspec-orchestrator` coordinates approved development work inside that worktree; implementation agents are reached only through the OpenSpec coordinator.
 - Review, quality, and security: `$production-code-reviewer`, `$ai-code-review`, `$code-review-checklist`, `$clean-code`, `$code-refactoring-tech-debt`, `$security-manager`, and `$design-review` as relevant.
 - Research and durable guidance: `$deep-research`, `$project-knowledge-builder`, `$documentation-generator`, `$readme-generator`, `$prd-manager`, and `$user-story-creator`. Use `$project-knowledge-builder` for reusable `KnowledgeBase/` artifacts, not ordinary documentation.

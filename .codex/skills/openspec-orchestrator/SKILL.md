@@ -45,10 +45,46 @@ logic:
 - `openspec-apply-change` — implement tasks and update task checkboxes.
 - `openspec-sync-specs` — merge delta specs into main specs when needed.
 - `openspec-archive-change` — archive a completed change.
+- `openspec-new-change` — start a change through the artifact workflow.
+- `openspec-continue-change` — create the next missing artifact on an existing change.
+- `openspec-ff-change` — create the complete planning artifact set when the user explicitly wants fast-forward planning.
+- `openspec-verify-change` — verify implementation against the change artifacts before archive.
+- `openspec-bulk-archive-change` — archive multiple completed changes with per-change sync decisions.
+- `openspec-onboard` — teach the OpenSpec lifecycle through a guided repository exercise.
 
 If the environment supports explicit skill invocation, invoke the OpenSpec
 skill by name. Otherwise, read/load its installed `SKILL.md` and follow it.
 Do not silently replace an OpenSpec workflow with ad-hoc planning.
+
+### Workflow selection contract
+
+Use the installed workflow whose responsibility matches the observed state:
+
+| State or intent | Workflow |
+| --- | --- |
+| Explore an idea or ambiguity | `openspec-explore` |
+| Start a staged change | `openspec-new-change` |
+| Create all planning artifacts in one approved pass | `openspec-propose` or `openspec-ff-change` |
+| Continue the first missing artifact | `openspec-continue-change` |
+| Implement checked-off planning work | `openspec-apply-change` |
+| Revise an existing plan | `openspec-update-change` |
+| Verify implementation against artifacts | `openspec-verify-change` |
+| Promote delta specs | `openspec-sync-specs` |
+| Archive one completed change | `openspec-archive-change` |
+| Archive several completed changes | `openspec-bulk-archive-change` |
+| Learn the workflow interactively | `openspec-onboard` |
+
+Do not use `apply` to create missing planning artifacts, do not use `update`
+to advance the artifact frontier, and do not treat a passing test run as a
+replacement for `openspec-verify-change`. `openspec` CLI instructions are the
+authority for artifact order, context files, operation guidance, and status.
+
+### Repository overlay
+
+Read `$openspec-repository-policy` with every OpenSpec transition. Generated
+files under `.agents/skills/` provide the OpenSpec command contract; the
+repository overlay supplies ResumeEnhancer-specific gates and must not be
+copied into or patched into generated files.
 
 ## GitHub capability adapter
 
@@ -103,7 +139,9 @@ Before changing anything, reconstruct the workflow state.
 4. Search for an existing matching branch and PR.
 5. If a PR exists, inspect changed files, review threads, and CI/workflow state.
 6. Classify the next OpenSpec/GitHub state transition. Do not repeat completed
-   transitions.
+   transitions. Prefer `openspec context --json` for the authoritative root,
+   then `openspec status --change "<name>" --json` and the matching
+   `openspec instructions <operation> --change "<name>" --json` output.
 
 ## Routing policy
 
@@ -155,9 +193,10 @@ task checkboxes as the implementation progress record. The apply workflow owns
 code changes and task-level execution; this coordinator tracks its result and
 state.
 
-If blocked because artifacts are missing, use `openspec status` and
-`openspec instructions` to identify and create the next required artifact, then
-re-run the planning state checks before resuming apply.
+If blocked because artifacts are missing, route to `openspec-continue-change`
+for one next artifact, or `openspec-ff-change` only when the user explicitly
+requests fast-forward planning. Re-run status after the delegated workflow
+returns before selecting implementation.
 
 ### E. Implementation is complete
 
@@ -172,17 +211,19 @@ Also inspect GitHub-visible implementation evidence:
 Treat any OpenSpec CRITICAL finding, failing required CI, incomplete task, or
 unresolved requirement-level review feedback as not ready.
 
-Perform verification against the proposal/spec/design/tasks and the actual
-implementation evidence. Report OpenSpec verification as `ready`, `blocked`, or
-`warnings`; this built-in verification is the coordinator's responsibility.
+Run `openspec-verify-change` and reconcile its result with tests, review
+findings, acceptance criteria, and CI. Report `ready`, `blocked`, `warnings`,
+or `critical`; never infer readiness from local tests alone.
 
 ### F. Verification finds a plan problem
 
-Use `openspec-update-change`, then `openspec-apply-change`, then verify again.
+Use `openspec-update-change`, then `openspec-apply-change`, then
+`openspec-verify-change` again.
 
 ### G. Verification finds only an implementation problem
 
-Use `openspec-apply-change` to finish/fix the remaining tasks, then verify again.
+Use `openspec-apply-change` to finish/fix the remaining tasks, then
+`openspec-verify-change` again.
 
 ### H. Specs need promotion
 
@@ -191,8 +232,9 @@ required by the archive workflow.
 
 ### I. Change is archive-ready
 
-Use `openspec-archive-change` on the feature branch. Permit its normal spec-sync
-step when needed.
+Use `openspec-archive-change` after `openspec-verify-change` is ready. When
+several independent changes are complete, use `openspec-bulk-archive-change`
+and preserve its per-change sync/skip decisions.
 
 Archive only when planning artifacts are complete, tasks are complete, and
 verification has no blocking findings unless the user explicitly accepts the
@@ -257,6 +299,35 @@ On every invocation:
   invoked again,
 - continue from the first incomplete or invalid state,
 - after every mutation, re-read enough state to verify the mutation succeeded.
+- persist no hidden coordinator state when the CLI status and artifacts already
+  provide the needed state; if an interruption requires state, record only the
+  change name, transition, decision owner, and next command in the approved
+  repository workflow location.
+- treat an unavailable optional workflow as a routing limitation: use the CLI
+  status/instructions fallback only for that missing capability, never invent a
+  replacement command.
+
+## Parallel execution protocol
+
+Parallelize only independent changes after resolving `Depends on`, shared
+contracts, migrations, composition, generated files, and shared test hosts.
+For each lane, record the change, owner, worktree, base branch, allowed paths,
+dependencies, and verification command. Keep one coordinating lane for shared
+contracts, migrations, composition, and final synthesis.
+
+Each delegated lane must return:
+
+- change and branch/worktree identity;
+- artifacts/tasks progress from CLI output;
+- changed paths and any shared-file touch;
+- focused verification and failures;
+- unresolved decisions or review findings; and
+- a safe next transition.
+
+The parent coordinator owns dependency ordering, conflict resolution, task
+checkbox integrity, cross-lane synthesis, and the final readiness decision.
+Never let a delegated agent merge, archive, delete a branch, or rewrite shared
+history unless that operation is explicitly in scope and separately approved.
 
 ## Failure handling
 

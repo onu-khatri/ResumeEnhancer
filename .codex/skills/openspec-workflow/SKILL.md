@@ -7,6 +7,11 @@ description: Coordinate ResumeEnhancer OpenSpec proposal, approval, worktree imp
 
 Use this skill for OpenSpec proposal work, proposal approval, implementation handoff, implementation continuation, verification, synchronization, archiving, and change closeout. It is the OpenSpec lifecycle authority. `$issues-kickoff` supplies issue intake and readiness evidence; `$openspec-orchestrator` and the OpenSpec skills supply the stateful planning and implementation mechanics.
 
+The generated workflows under `.agents/skills/` own their CLI-specific
+operation contracts. Read `$openspec-repository-policy` as the repository
+overlay, and do not edit generated workflow files to restore local policy after
+an OpenSpec refresh.
+
 ## When to Use
 
 - More than one active OpenSpec change exists and the correct change must be selected or coordinated.
@@ -38,6 +43,24 @@ At the start of every invocation, determine the requested lifecycle action and r
 
 Prefer an existing matching OpenSpec change, branch, and worktree. Never create duplicates merely because the skill was invoked again. A prunable, broken, incomplete, untracked, or pre-approval worktree is not reusable; report it and stop without repairing, deleting, or creating a replacement automatically.
 
+## Artifact lifecycle routing
+
+Use the new OpenSpec workflows as distinct transitions:
+
+- `openspec-new-change` for staged creation of a new change;
+- `openspec-continue-change` for exactly the next missing artifact;
+- `openspec-ff-change` for an explicit fast-forward request to create all
+  required artifacts;
+- `openspec-verify-change` for implementation-to-artifact verification;
+- `openspec-bulk-archive-change` for several independently completed changes;
+- `openspec-onboard` only for guided learning, not ordinary delivery.
+
+Use `openspec-propose` when the user wants a complete proposal in one pass.
+Do not use `openspec-update-change` to create missing artifacts, and do not
+use `openspec-apply-change` until the CLI reports planning prerequisites ready.
+After every delegated transition, re-read `openspec status --change "<name>"
+--json` before selecting the next transition.
+
 ## Proposal mode — main checkout only
 
 Use proposal mode when the user asks to propose, plan, explore, or otherwise establish an OpenSpec change without starting implementation.
@@ -67,6 +90,11 @@ When an approved proposal exists and the user asks to implement, write code, con
 
 When implementation is complete, continue from the existing worktree through review, verification, spec synchronization, archive, commit, push, and PR handling as requested. Before each transition re-read current state and avoid repeating completed transitions.
 
+The closeout order is: implementation evidence → `$openspec-verify-change` →
+spec synchronization decision → archive (`$openspec-archive-change`, or
+`$openspec-bulk-archive-change` for a confirmed batch) → commit/push/PR state.
+Do not call a change complete solely because all task checkboxes are marked.
+
 If the user asks to merge, rebase, cherry-pick, clean up, archive, or otherwise finish the change:
 
 - operate from the existing worktree/branch or explicitly supplied checkout;
@@ -88,6 +116,20 @@ Use bulk mode only when at least two active changes remain after applying any ex
 5. Require each subagent to run the targeted `$openspec-apply-change <change>` flow from its worktree and then perform the orchestrator's verification phase (OpenSpec status/validation, acceptance-criteria checks, focused tests, and review evidence). The repository has no separate `/opsx-verify` command; do not invent one.
 6. Normalize one report per candidate with worktree path, apply status (`complete`, `paused`, or `failed`), verification status (`ready`, `warnings`, `critical`, or `failed`), changed-files summary, blockers, and unresolved warnings.
 7. Report the bulk result without merging or auto-archiving. State which changes are ready for human review and that explicit user approval is required before merge.
+
+## Handoff contract for scalable lanes
+
+Before dispatching a lane, provide its owner with only the selected change,
+resolved CLI context files, current artifact/task status, dependency result,
+allowed paths, worktree identity, and required verification. Do not give two
+lanes ownership of the same migration, shared contract, composition root,
+generated file, or integration-host fixture.
+
+Require each lane to return a structured result with `complete`, `paused`, or
+`failed` apply status; `ready`, `warnings`, `critical`, or `failed` verification
+status; changed files; commands/results; and the next safe action. The parent
+owns synthesis and must re-check the filesystem, Git state, OpenSpec status,
+and hosted state before advancing.
 
 ## Handoff output
 
