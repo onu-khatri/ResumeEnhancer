@@ -13,6 +13,50 @@ public sealed class ProfilingModuleSeeder : IAppDbContextSeeder
     )
     {
         await dbContext
+            .Set<AccessProfileSource>()
+            .SeedSetupDataAsync(
+                [
+                    new AccessProfileSource
+                    {
+                        Code = "plan",
+                        Description = "Access profile assigned from a billing plan",
+                        DisplayName = "Billing plan",
+                        Order = 1,
+                        Guid = Guid.Parse("22222222-2222-2222-2222-222222222301"),
+                    },
+                    new AccessProfileSource
+                    {
+                        Code = "admin",
+                        Description = "Access profile assigned by an administrator",
+                        DisplayName = "Administrator",
+                        Order = 2,
+                        Guid = Guid.Parse("22222222-2222-2222-2222-222222222302"),
+                    },
+                ],
+                (existing, seed) =>
+                {
+                    var changed = false;
+                    if (existing.Description != seed.Description)
+                    {
+                        existing.Description = seed.Description;
+                        changed = true;
+                    }
+                    if (existing.DisplayName != seed.DisplayName)
+                    {
+                        existing.DisplayName = seed.DisplayName;
+                        changed = true;
+                    }
+                    if (existing.Order != seed.Order)
+                    {
+                        existing.Order = seed.Order;
+                        changed = true;
+                    }
+                    return changed;
+                },
+                cancellationToken
+            );
+
+        await dbContext
             .Set<UserAddressTypeSetup>()
             .SeedSetupDataAsync(
                 CreateAddressTypes(),

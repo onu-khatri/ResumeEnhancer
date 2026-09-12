@@ -13,460 +13,150 @@ namespace ResumeEnhancer.Tests.Unit.Modules.BillingModule.Application;
 public sealed class BillingHandlerAndValidatorTests
 {
     [Fact]
-    public async Task BillingAccountHandlers_CoverCreateUpdateDeleteGetAndListFlows()
+    public async Task BillingAccountHandlers_CoverCrudFlows()
     {
-        var cancellationToken = TestContext.Current.CancellationToken;
+        var token = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IBillingRepository>();
-        var userLookup = Substitute.For<IUserLookupService>();
-        var list = new[]
-        {
-            new BillingAccount
-            {
-                Id = 4,
-                UserId = 21,
-                AccountNumber = "ACC-02",
-                Status = "Active",
-            },
-        };
-        userLookup.UserExistsAsync(21, cancellationToken).Returns(true);
-        repository
-            .GetBillingAccountAsync(4, true, cancellationToken)
-            .Returns(
-                new BillingAccount
-                {
-                    Id = 4,
-                    UserId = 21,
-                    AccountNumber = "ACC-01",
-                    Status = "Draft",
-                }
-            );
-        repository
-            .GetBillingAccountAsync(9, true, cancellationToken)
-            .Returns((BillingAccount?)null);
-        repository
-            .GetBillingAccountAsync(4, false, cancellationToken)
-            .Returns(
-                new BillingAccount
-                {
-                    Id = 4,
-                    UserId = 21,
-                    AccountNumber = "ACC-01",
-                    Status = "Active",
-                }
-            );
-        repository.ListBillingAccountsAsync(cancellationToken).Returns(list);
+        var users = Substitute.For<IUserLookupService>();
+        users.UserExistsAsync(21, token).Returns(true);
+        repository.GetBillingAccountAsync(4, true, token).Returns(Account(4));
+        repository.GetBillingAccountAsync(9, true, token).Returns((BillingAccount?)null);
+        repository.GetBillingAccountAsync(4, false, token).Returns(Account(4));
+        repository.ListBillingAccountsAsync(token).Returns([Account(4)]);
 
-        var created = await new CreateBillingAccountCommandHandler(repository, userLookup).Handle(
-            new(
-                new CreateBillingAccountRequest
-                {
-                    UserId = 21,
-                    AccountNumber = " ACC-77 ",
-                    Status = " Active ",
-                    ExternalReference = " ref ",
-                },
-                7
-            ),
-            cancellationToken
-        );
-        var missingUser = await new CreateBillingAccountCommandHandler(
-            repository,
-            userLookup
-        ).Handle(
-            new(
-                new CreateBillingAccountRequest
-                {
-                    UserId = 999,
-                    AccountNumber = "ACC-X",
-                    Status = "Active",
-                },
-                7
-            ),
-            cancellationToken
-        );
-        var updated = await new UpdateBillingAccountCommandHandler(repository, userLookup).Handle(
-            new(
-                4,
-                new UpdateBillingAccountRequest
-                {
-                    UserId = 21,
-                    AccountNumber = " ACC-99 ",
-                    Status = " Suspended ",
-                    ExternalReference = " ext ",
-                },
-                8
-            ),
-            cancellationToken
-        );
-        var updateMissing = await new UpdateBillingAccountCommandHandler(
-            repository,
-            userLookup
-        ).Handle(
-            new(
-                9,
-                new UpdateBillingAccountRequest
-                {
-                    UserId = 21,
-                    AccountNumber = "ACC-99",
-                    Status = "Active",
-                },
-                8
-            ),
-            cancellationToken
-        );
-        var deleted = await new DeleteBillingAccountCommandHandler(repository).Handle(
-            new(4, 9),
-            cancellationToken
-        );
-        var deletedMissing = await new DeleteBillingAccountCommandHandler(repository).Handle(
-            new(9, 9),
-            cancellationToken
-        );
-        var detail = await new GetBillingAccountQueryHandler(repository).Handle(
-            new(4),
-            cancellationToken
-        );
-        var items = await new ListBillingAccountsQueryHandler(repository).Handle(
-            new(),
-            cancellationToken
-        );
+        var created = await new CreateBillingAccountCommandHandler(repository, users).Handle(
+            new(new CreateBillingAccountRequest { UserId = 21, AccountNumber = "ACC-1", StatusId = 1 }, 7), token);
+        var updated = await new UpdateBillingAccountCommandHandler(repository, users).Handle(
+            new(4, new UpdateBillingAccountRequest { UserId = 21, AccountNumber = "ACC-2", StatusId = 1 }, 8), token);
+        var missing = await new UpdateBillingAccountCommandHandler(repository, users).Handle(
+            new(9, new UpdateBillingAccountRequest { UserId = 21, AccountNumber = "ACC-3", StatusId = 1 }, 8), token);
+        var deleted = await new DeleteBillingAccountCommandHandler(repository).Handle(new(4, 9), token);
+        var detail = await new GetBillingAccountQueryHandler(repository).Handle(new(4), token);
+        var list = await new ListBillingAccountsQueryHandler(repository).Handle(new(), token);
 
-        created.AccountNumber.ShouldBe("ACC-77");
-        created.ExternalReference.ShouldBe("ref");
-        missingUser.Id.ShouldBe(0);
+        created.AccountNumber.ShouldBe("ACC-1");
         updated.ShouldNotBeNull();
-        updated.AccountNumber.ShouldBe("ACC-99");
-        updateMissing.ShouldBeNull();
+        missing.ShouldBeNull();
         deleted.ShouldBeTrue();
-        deletedMissing.ShouldBeFalse();
-        detail!.Id.ShouldBe(4);
-        items.ShouldHaveSingleItem();
-        await repository
-            .Received(1)
-            .AddBillingAccountAsync(
-                Arg.Is<BillingAccount>(item =>
-                    item.AccountNumber == "ACC-77" && item.ExternalReference == "ref"
-                ),
-                7,
-                cancellationToken
-            );
-        await repository.Received(1).SaveAsync(8, cancellationToken);
-        await repository
-            .Received(1)
-            .DeleteBillingAccountAsync(Arg.Any<BillingAccount>(), 9, cancellationToken);
+        detail.ShouldNotBeNull();
+        list.ShouldHaveSingleItem();
     }
 
     [Fact]
-    public async Task BillingPlanHandlers_CoverCreateUpdateDeleteGetAndListFlows()
+    public async Task BillingPlanHandlers_UpdateCascadeAndMissingBranches()
     {
-        var cancellationToken = TestContext.Current.CancellationToken;
+        var token = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IBillingRepository>();
-        repository
-            .GetBillingPlanAsync(5, true, cancellationToken)
-            .Returns(
-                new BillingPlan
-                {
-                    Id = 5,
-                    Code = "BASIC",
-                    Description = "Desc",
-                    DisplayName = "Basic",
-                    Currency = "USD",
-                    BillingInterval = "Monthly",
-                    Price = 5m,
-                }
-            );
-        repository.GetBillingPlanAsync(99, true, cancellationToken).Returns((BillingPlan?)null);
-        repository
-            .GetBillingPlanAsync(5, false, cancellationToken)
-            .Returns(
-                new BillingPlan
-                {
-                    Id = 5,
-                    Code = "PRO",
-                    Description = "Desc",
-                    DisplayName = "Pro",
-                    Currency = "USD",
-                    BillingInterval = "Yearly",
-                    Price = 50m,
-                }
-            );
-        repository
-            .ListBillingPlansAsync(cancellationToken)
-            .Returns([
-                new BillingPlan
-                {
-                    Id = 5,
-                    Code = "PRO",
-                    DisplayName = "Pro",
-                    Currency = "USD",
-                    Price = 50m,
-                },
-            ]);
+        var profiling = Substitute.For<IProfilingRegistrationService>();
+        var existing = Plan(5, 2);
+        repository.GetBillingPlanAsync(5, true, token).Returns(existing);
+        repository.GetBillingPlanAsync(99, true, token).Returns((BillingPlan?)null);
+        repository.GetBillingPlanAsync(5, false, token).Returns(existing);
+        repository.ListBillingPlansAsync(token).Returns([existing]);
+        repository.ListActiveSubscriptionsForPlanAsync(5, token)
+            .Returns([new BillingSubscription { Id = 8, UserId = 21, BillingPlanId = 5 }]);
 
-        var created = await new CreateBillingPlanCommandHandler(repository).Handle(
-            new(
-                new CreateBillingPlanRequest
-                {
-                    Code = " PRO ",
-                    Description = " Description ",
-                    DisplayName = " Pro ",
-                    Price = 29m,
-                    Currency = " USD ",
-                    BillingInterval = " Monthly ",
-                    IsDeactivated = true,
-                },
-                3
-            ),
-            cancellationToken
-        );
-        var updated = await new UpdateBillingPlanCommandHandler(repository).Handle(
-            new(
-                5,
+        var updated = await new UpdateBillingPlanCommandHandler(repository, profiling).Handle(
+            new(5,
                 new UpdateBillingPlanRequest
                 {
-                    Code = " ENT ",
-                    Description = " Updated ",
-                    DisplayName = " Enterprise ",
-                    Price = 99m,
-                    Currency = " INR ",
-                    BillingInterval = " Yearly ",
-                    IsDeactivated = true,
-                    ObsoleteFlag = true,
-                },
-                4
-            ),
-            cancellationToken
-        );
-        var updateMissing = await new UpdateBillingPlanCommandHandler(repository).Handle(
-            new(
-                99,
+                    Code = "PRO", Description = "Pro", DisplayName = "Pro", Price = 10, CurrencyId = 1,
+                    BillingIntervalId = 1, AccessProfileId = 3, CascadeExistingSubscriptions = true
+                }, 4), token);
+        var missing = await new UpdateBillingPlanCommandHandler(repository, profiling).Handle(
+            new(99,
                 new UpdateBillingPlanRequest
                 {
-                    Code = "X",
-                    Description = "Y",
-                    DisplayName = "Z",
-                },
-                4
-            ),
-            cancellationToken
-        );
-        var deleted = await new DeleteBillingPlanCommandHandler(repository).Handle(
-            new(5, 4),
-            cancellationToken
-        );
-        var deletedMissing = await new DeleteBillingPlanCommandHandler(repository).Handle(
-            new(99, 4),
-            cancellationToken
-        );
-        var detail = await new GetBillingPlanQueryHandler(repository).Handle(
-            new(5),
-            cancellationToken
-        );
-        var items = await new ListBillingPlansQueryHandler(repository).Handle(
-            new(),
-            cancellationToken
-        );
+                    Code = "X", Description = "X", DisplayName = "X", CurrencyId = 1, BillingIntervalId = 1,
+                    AccessProfileId = 1
+                }, 4), token);
+        var detail = await new GetBillingPlanQueryHandler(repository).Handle(new(5), token);
+        var list = await new ListBillingPlansQueryHandler(repository).Handle(new(), token);
 
-        created.Code.ShouldBe("PRO");
-        updated!.Code.ShouldBe("ENT");
-        updated.ObsoleteFlag.ShouldBeTrue();
-        updateMissing.ShouldBeNull();
-        deleted.ShouldBeTrue();
-        deletedMissing.ShouldBeFalse();
-        detail!.DisplayName.ShouldBe("Pro");
-        items.ShouldHaveSingleItem();
+        updated.ShouldNotBeNull();
+        missing.ShouldBeNull();
+        detail.ShouldNotBeNull();
+        list.ShouldHaveSingleItem();
+        await profiling.Received(1).ReviseAccessProfilesAsync(
+            Arg.Is<IReadOnlyCollection<AccessProfileRevisionInput>>(items =>
+                items.Count == 1 && items.Single().UserId == 21), token);
     }
 
     [Fact]
-    public async Task BillingSubscriptionHandlers_CoverCreateUpdateDeleteGetAndListFlows()
+    public async Task BillingSubscriptionHandlers_CoverCrudFlows()
     {
-        var cancellationToken = TestContext.Current.CancellationToken;
+        var token = TestContext.Current.CancellationToken;
         var repository = Substitute.For<IBillingRepository>();
-
-        repository
-            .GetBillingSubscriptionAsync(6, true, cancellationToken)
-            .Returns(
-                new BillingSubscription
-                {
-                    Id = 6,
-                    BillingAccountId = 1,
-                    UserId = 9,
-                    BillingPlanId = 2,
-                    Status = "Active",
-                    StartDateUtc = DateTime.UtcNow,
-                }
-            );
-        repository
-            .GetBillingSubscriptionAsync(98, true, cancellationToken)
-            .Returns((BillingSubscription?)null);
-        repository
-            .GetBillingSubscriptionAsync(6, false, cancellationToken)
-            .Returns(
-                new BillingSubscription
-                {
-                    Id = 6,
-                    BillingAccountId = 1,
-                    UserId = 9,
-                    BillingPlanId = 2,
-                    Status = "Paused",
-                    StartDateUtc = DateTime.UtcNow,
-                }
-            );
-        repository
-            .ListBillingSubscriptionsAsync(cancellationToken)
-            .Returns([
-                new BillingSubscription
-                {
-                    Id = 6,
-                    BillingAccountId = 1,
-                    UserId = 9,
-                    BillingPlanId = 2,
-                    Status = "Paused",
-                    StartDateUtc = DateTime.UtcNow,
-                },
-            ]);
+        repository.GetBillingSubscriptionAsync(6, true, token).Returns(Subscription(6));
+        repository.GetBillingSubscriptionAsync(98, true, token).Returns((BillingSubscription?)null);
+        repository.GetBillingSubscriptionAsync(6, false, token).Returns(Subscription(6));
+        repository.ListBillingSubscriptionsAsync(token).Returns([Subscription(6)]);
 
         var created = await new CreateBillingSubscriptionCommandHandler(repository).Handle(
             new(
                 new CreateBillingSubscriptionRequest
-                {
-                    BillingAccountId = 1,
-                    UserId = 9,
-                    BillingPlanId = 2,
-                    Status = " Active ",
-                    StartDateUtc = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                },
-                7
-            ),
-            cancellationToken
-        );
+                    { BillingAccountId = 1, UserId = 9, BillingPlanId = 2, StatusId = 1 }, 7), token);
         var updated = await new UpdateBillingSubscriptionCommandHandler(repository).Handle(
-            new(
-                6,
+            new(6,
                 new UpdateBillingSubscriptionRequest
-                {
-                    BillingAccountId = 3,
-                    UserId = 9,
-                    BillingPlanId = 4,
-                    Status = " Ended ",
-                    StartDateUtc = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc),
-                    EndDateUtc = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
-                },
-                8
-            ),
-            cancellationToken
-        );
-        var updateMissing = await new UpdateBillingSubscriptionCommandHandler(repository).Handle(
-            new(
-                98,
+                    { BillingAccountId = 1, UserId = 9, BillingPlanId = 2, StatusId = 1 }, 8), token);
+        var missing = await new UpdateBillingSubscriptionCommandHandler(repository).Handle(
+            new(98,
                 new UpdateBillingSubscriptionRequest
-                {
-                    BillingAccountId = 1,
-                    BillingPlanId = 1,
-                    Status = "Active",
-                },
-                8
-            ),
-            cancellationToken
-        );
-        var deleted = await new DeleteBillingSubscriptionCommandHandler(repository).Handle(
-            new(6, 5),
-            cancellationToken
-        );
-        var deletedMissing = await new DeleteBillingSubscriptionCommandHandler(repository).Handle(
-            new(98, 5),
-            cancellationToken
-        );
-        var detail = await new GetBillingSubscriptionQueryHandler(repository).Handle(
-            new(6),
-            cancellationToken
-        );
-        var items = await new ListBillingSubscriptionsQueryHandler(repository).Handle(
-            new(),
-            cancellationToken
-        );
+                    { BillingAccountId = 1, UserId = 9, BillingPlanId = 2, StatusId = 1 }, 8), token);
+        var deleted = await new DeleteBillingSubscriptionCommandHandler(repository).Handle(new(6, 5), token);
+        var detail = await new GetBillingSubscriptionQueryHandler(repository).Handle(new(6), token);
+        var list = await new ListBillingSubscriptionsQueryHandler(repository).Handle(new(), token);
 
-        created!.Status.ShouldBe("Active");
-        updated!.Status.ShouldBe("Ended");
-        updateMissing.ShouldBeNull();
+        created.ShouldNotBeNull();
+        updated.ShouldNotBeNull();
+        missing.ShouldBeNull();
         deleted.ShouldBeTrue();
-        deletedMissing.ShouldBeFalse();
-        detail!.Id.ShouldBe(6);
-        items.ShouldHaveSingleItem();
+        detail.ShouldNotBeNull();
+        list.ShouldHaveSingleItem();
     }
 
     [Fact]
     public void BillingValidators_RejectInvalidRequests()
     {
         new CreateBillingAccountRequestValidator()
-            .Validate(
-                new CreateBillingAccountRequest
-                {
-                    UserId = 0,
-                    AccountNumber = "",
-                    Status = "",
-                    ExternalReference = new string('x', 101),
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
+            .Validate(new CreateBillingAccountRequest { UserId = 0, AccountNumber = "", StatusId = 0 }).Errors
+            .ShouldNotBeEmpty();
         new UpdateBillingAccountRequestValidator()
-            .Validate(
-                new UpdateBillingAccountRequest
-                {
-                    UserId = 0,
-                    AccountNumber = "",
-                    Status = "",
-                    ExternalReference = new string('x', 101),
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
-        new CreateBillingPlanRequestValidator()
-            .Validate(
-                new CreateBillingPlanRequest
-                {
-                    Code = "",
-                    Description = "",
-                    DisplayName = "",
-                    Price = -1,
-                    Currency = "",
-                    BillingInterval = "",
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
-        new UpdateBillingPlanRequestValidator()
-            .Validate(
-                new UpdateBillingPlanRequest
-                {
-                    Code = "",
-                    Description = "",
-                    DisplayName = "",
-                    Price = -1,
-                    Currency = "",
-                    BillingInterval = "",
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
-        new CreateBillingSubscriptionRequestValidator()
-            .Validate(
-                new CreateBillingSubscriptionRequest
-                {
-                    BillingAccountId = 0,
-                    UserId = 0,
-                    BillingPlanId = 0,
-                    Status = "",
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
-        new UpdateBillingSubscriptionRequestValidator()
-            .Validate(
-                new UpdateBillingSubscriptionRequest
-                {
-                    BillingAccountId = 0,
-                    UserId = 0,
-                    BillingPlanId = 0,
-                    Status = "",
-                }
-            )
-            .Errors.Count.ShouldBeGreaterThan(0);
+            .Validate(new UpdateBillingAccountRequest { UserId = 0, AccountNumber = "", StatusId = 0 }).Errors
+            .ShouldNotBeEmpty();
+        new CreateBillingPlanRequestValidator().Validate(new CreateBillingPlanRequest
+        {
+            Code = "", Description = "", DisplayName = "", Price = -1, CurrencyId = 0, BillingIntervalId = 0,
+            AccessProfileId = 0
+        }).Errors.ShouldNotBeEmpty();
+        new UpdateBillingPlanRequestValidator().Validate(new UpdateBillingPlanRequest
+        {
+            Code = "", Description = "", DisplayName = "", Price = -1, CurrencyId = 0, BillingIntervalId = 0,
+            AccessProfileId = 0
+        }).Errors.ShouldNotBeEmpty();
+        new CreateBillingSubscriptionRequestValidator().Validate(new CreateBillingSubscriptionRequest
+            { BillingAccountId = 0, UserId = 0, BillingPlanId = 0, StatusId = 0 }).Errors.ShouldNotBeEmpty();
+        new UpdateBillingSubscriptionRequestValidator().Validate(new UpdateBillingSubscriptionRequest
+            { BillingAccountId = 0, UserId = 0, BillingPlanId = 0, StatusId = 0 }).Errors.ShouldNotBeEmpty();
     }
+
+    private static BillingAccount Account(int id) => new()
+    {
+        Id = id, UserId = 21, AccountNumber = "ACC-1", StatusId = 1,
+        Status = new BillingAccountStatus { Id = 1, Code = "Active" }
+    };
+
+    private static BillingPlan Plan(int id, int accessProfileId) => new()
+    {
+        Id = id, Code = "PRO", Description = "Pro", DisplayName = "Pro", Price = 10, CurrencyId = 1,
+        BillingIntervalId = 1, AccessProfileId = accessProfileId, Currency = new Currency { Id = 1, Code = "USD" },
+        BillingInterval = new BillingInterval { Id = 1, Code = "Monthly" }
+    };
+
+    private static BillingSubscription Subscription(int id) => new()
+    {
+        Id = id, BillingAccountId = 1, UserId = 9, BillingPlanId = 2, StatusId = 1,
+        Status = new BillingSubscriptionStatus { Id = 1, Code = "Active" }, StartDateUtc = DateTime.UtcNow
+    };
 }

@@ -7,7 +7,7 @@ namespace ResumeEnhancer.Tests.Integration.TestSupport;
 
 internal static class IntegrationTestAssemblyFixture
 {
-    internal static IntegrationTestUtilities<global::Program> Utilities { get; } =
+    internal static IntegrationTestUtilities<global::Program> CreateUtilities() =>
         IntegrationTestUtilitiesBuilder
             .Get<global::Program>()
             .WithInMemoryDbContext()

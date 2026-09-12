@@ -111,6 +111,23 @@ public sealed class BillingRepository(
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<BillingSubscription>> ListActiveSubscriptionsForPlanAsync(
+        int billingPlanId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _unitOfWork
+            .GetRepo<BillingSubscription>()
+            .Query()
+            .Where(subscription =>
+                subscription.BillingPlanId == billingPlanId
+                && subscription.Status!.Code == "Active"
+                && (subscription.EndDateUtc == null || subscription.EndDateUtc > DateTime.UtcNow)
+            )
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task DeleteBillingPlanAsync(
         BillingPlan plan,
         int? auditUserId,

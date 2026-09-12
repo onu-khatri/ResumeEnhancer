@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ResumeEnhancer.BillingModule.DM.Entities;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
 
 namespace ResumeEnhancer.ProfilingModule.PL.Configurations;
@@ -29,43 +28,6 @@ public sealed class UserPreferenceConfiguration : IEntityTypeConfiguration<UserP
             .WithMany(x => x.Preferences)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class UserEntitlementConfiguration : IEntityTypeConfiguration<UserEntitlement>
-{
-    public void Configure(EntityTypeBuilder<UserEntitlement> builder)
-    {
-        builder.Property(x => x.Source).HasMaxLength(30).IsRequired();
-        builder
-            .HasIndex(x => new
-            {
-                x.UserId,
-                x.BillingSubscriptionId,
-                x.AccessProfileId,
-            })
-            .IsUnique();
-        builder.HasIndex(x => new
-        {
-            x.UserId,
-            x.Enabled,
-            x.ExpiresAtUtc,
-        });
-        builder
-            .HasOne(x => x.User)
-            .WithMany(x => x.Entitlements)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        builder
-            .HasOne(x => x.AccessProfile)
-            .WithMany()
-            .HasForeignKey(x => x.AccessProfileId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder
-            .HasOne<BillingSubscription>()
-            .WithMany()
-            .HasForeignKey(x => x.BillingSubscriptionId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }
 
@@ -127,11 +89,25 @@ public sealed class AccessProfileConfiguration : IEntityTypeConfiguration<Access
     }
 }
 
+public sealed class AccessProfileSourceConfiguration : IEntityTypeConfiguration<AccessProfileSource>
+{
+    public void Configure(EntityTypeBuilder<AccessProfileSource> builder)
+    {
+        builder.Property(source => source.Code).HasMaxLength(100).IsRequired();
+        builder.Property(source => source.Description).HasMaxLength(1000).IsRequired();
+        builder.Property(source => source.DisplayName).HasMaxLength(200).IsRequired();
+        builder.Property(source => source.Order).IsRequired();
+        builder.HasIndex(source => source.Code).IsUnique();
+    }
+}
+
 public sealed class UserAccessProfileConfiguration : IEntityTypeConfiguration<UserAccessProfile>
 {
     public void Configure(EntityTypeBuilder<UserAccessProfile> builder)
     {
-        builder.HasIndex(item => new { item.UserId, item.AccessProfileId }).IsUnique();
+        builder.Property(item => item.AccessProfileSourceId).IsRequired();
+        builder.HasIndex(item => new { item.UserId, item.AccessProfileId, item.BillingSubscriptionId }).IsUnique();
+        builder.HasIndex(item => new { item.UserId, item.Enabled, item.ValidTillUtc });
 
         builder
             .HasOne(item => item.User)
@@ -144,6 +120,23 @@ public sealed class UserAccessProfileConfiguration : IEntityTypeConfiguration<Us
             .WithMany(accessProfile => accessProfile.UserAccessProfiles)
             .HasForeignKey(item => item.AccessProfileId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne(item => item.AccessProfileSource)
+            .WithMany(source => source.UserAccessProfiles)
+            .HasForeignKey(item => item.AccessProfileSourceId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public sealed class AccessProfileRevisionConfiguration : IEntityTypeConfiguration<AccessProfileRevision>
+{
+    public void Configure(EntityTypeBuilder<AccessProfileRevision> builder)
+    {
+        builder.Property(item => item.RevisionKey).HasMaxLength(300).IsRequired();
+        builder.Property(item => item.BillingPlanCode).HasMaxLength(100).IsRequired();
+        builder.HasIndex(item => item.RevisionKey).IsUnique();
+        builder.HasIndex(item => new { item.ProcessedOnUtc, item.RequestedOnUtc });
     }
 }
 

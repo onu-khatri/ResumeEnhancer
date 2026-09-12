@@ -11,7 +11,7 @@ public sealed class CreateBillingSubscriptionRequestValidator
         RuleFor(request => request.BillingAccountId).GreaterThan(0);
         RuleFor(request => request.UserId).GreaterThan(0);
         RuleFor(request => request.BillingPlanId).GreaterThan(0);
-        RuleFor(request => request.Status).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.StatusId).GreaterThan(0);
     }
 }
 
@@ -23,6 +23,6 @@ public sealed class UpdateBillingSubscriptionRequestValidator
         RuleFor(request => request.BillingAccountId).GreaterThan(0);
         RuleFor(request => request.UserId).GreaterThan(0);
         RuleFor(request => request.BillingPlanId).GreaterThan(0);
-        RuleFor(request => request.Status).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.StatusId).GreaterThan(0);
     }
 }

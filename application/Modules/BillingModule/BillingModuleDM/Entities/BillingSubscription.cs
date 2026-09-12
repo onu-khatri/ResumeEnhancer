@@ -18,11 +18,9 @@ public sealed class BillingSubscription : BusinessRelation
 
     public BillingPlan? BillingPlan { get; set; }
 
-    public int? AccessProfileId { get; set; }
-    public AccessProfile? AccessProfile { get; set; }
+    public int StatusId { get; set; }
 
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    public BillingSubscriptionStatus? Status { get; set; }
 
     public DateTime StartDateUtc { get; set; } = DateTime.UtcNow;
 

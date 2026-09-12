@@ -18,7 +18,6 @@ public interface IBillingRegistrationService
 {
     public Task<BillingRegistrationSnapshot?> AddStarterRegistrationBillingAsync(
         int userId,
-        int accessProfileId,
         CancellationToken cancellationToken = default
     );
     public Task<IReadOnlyList<BillingSubscriptionSnapshot>> ListActiveSubscriptionSnapshotsAsync(

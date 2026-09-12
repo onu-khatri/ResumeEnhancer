@@ -53,7 +53,7 @@ internal static class BillingPlanApis
                 var response = await mediator.Send(new UpdateBillingPlanCommand(billingPlanId, request, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             });
-        }).WithName("UpdateBillingPlan");
+        }).RequireAuthorization("AdminPlanManagement").WithName("UpdateBillingPlan");
 
         group.MapDelete("/{billingPlanId:int}", async (int billingPlanId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {

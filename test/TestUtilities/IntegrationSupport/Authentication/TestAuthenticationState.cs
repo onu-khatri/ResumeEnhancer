@@ -53,6 +53,14 @@ internal sealed class TestAuthenticationState
         }
     }
 
+    public void Clear()
+    {
+        lock (_lock)
+        {
+            _current = null;
+        }
+    }
+
     public IReadOnlyList<Claim> CreateClaims()
     {
         lock (_lock)
@@ -71,6 +79,7 @@ internal sealed class TestAuthenticationState
             };
 
             claims.AddRange(_current.Privileges.Select(privilege => new Claim("privilege", privilege)));
+            claims.AddRange(_current.Privileges.Select(privilege => new Claim("capability", privilege)));
 
             return claims;
         }

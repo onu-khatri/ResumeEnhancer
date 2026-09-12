@@ -14,8 +14,9 @@ public sealed class BillingAccount : BusinessEntity
     [MaxLength(50)]
     public string AccountNumber { get; set; } = string.Empty;
 
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    public int StatusId { get; set; }
+
+    public BillingAccountStatus? Status { get; set; }
 
     [MaxLength(100)]
     public string? ExternalReference { get; set; }

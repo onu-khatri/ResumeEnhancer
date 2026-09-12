@@ -10,6 +10,7 @@ using ResumeEnhancer.ProfilingModule.DM.Entities;
 using ResumeEnhancer.ProfilingModule.DM.Enums;
 using ResumeEnhancer.ProfilingModule.PL;
 using ResumeEnhancer.BillingModule.PL;
+using ResumeEnhancer.BillingModule.DM.Entities;
 using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.DM.Entities;
 using ResumeEnhancer.TemplateModule.PL;
@@ -87,11 +88,67 @@ internal sealed class SqliteAppDbContextScope : IDisposable
             ResumeTestData.UserAddressType(ResumeTestData.CommunicationAddressTypeId, nameof(UserAddressType.Communication), 2),
             ResumeTestData.Role(),
             ResumeTestData.AccessProfile(),
+            new AccessProfileSource
+            {
+                Id = 1,
+                Code = "plan",
+                Description = "Billing plan",
+                DisplayName = "Billing plan",
+                Order = 1,
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfileSource
+            {
+                Id = 2,
+                Code = "admin",
+                Description = "Administrator",
+                DisplayName = "Administrator",
+                Order = 2,
+                Guid = Guid.NewGuid()
+            },
+            new Currency
+            {
+                Id = 1,
+                Code = "USD",
+                Description = "United States dollar",
+                DisplayName = "US Dollar",
+                Order = 1,
+                Guid = Guid.NewGuid()
+            },
+            new BillingInterval
+            {
+                Id = 1,
+                Code = "Monthly",
+                Description = "Monthly",
+                DisplayName = "Monthly",
+                Order = 1,
+                Guid = Guid.NewGuid()
+            },
+            new BillingAccountStatus
+            {
+                Id = 1,
+                Code = "Active",
+                Description = "Active",
+                DisplayName = "Active",
+                Order = 1,
+                Guid = Guid.NewGuid()
+            },
+            new BillingSubscriptionStatus
+            {
+                Id = 1,
+                Code = "Active",
+                Description = "Active",
+                DisplayName = "Active",
+                Order = 1,
+                Guid = Guid.NewGuid()
+            });
+
+        DbContext.SaveChanges();
+        DbContext.AddRange(
             ResumeTestData.BillingPlan(),
             ResumeTestData.TemplateCategory(),
             ResumeTestData.TemplateRenderType(),
             ResumeTestData.Template());
-
         DbContext.SaveChanges();
         DbContext.ChangeTracker.Clear();
     }

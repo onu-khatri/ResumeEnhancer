@@ -527,15 +527,23 @@ public sealed class AuthRegistrationServiceTests
         public Task<StarterAccessProfileSnapshot?> GetStarterAccessProfileAsync(
             CancellationToken c = default
         ) => Task.FromResult<StarterAccessProfileSnapshot?>(new(7));
+
+        public Task ReviseAccessProfilesAsync(
+            IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+            CancellationToken c = default
+        ) => Task.CompletedTask;
+
+        public Task ProcessPendingAccessProfileRevisionsAsync(
+            CancellationToken c = default
+        ) => Task.CompletedTask;
     }
 
     private sealed class FakeBillingService : IBillingRegistrationService
     {
         public Task<BillingRegistrationSnapshot?> AddStarterRegistrationBillingAsync(
             int u,
-            int p,
             CancellationToken c = default
-        ) => Task.FromResult<BillingRegistrationSnapshot?>(new(9, 1, p, "FREE"));
+        ) => Task.FromResult<BillingRegistrationSnapshot?>(new(9, 1, 7, "FREE"));
 
         public Task<
             IReadOnlyList<BillingSubscriptionSnapshot>

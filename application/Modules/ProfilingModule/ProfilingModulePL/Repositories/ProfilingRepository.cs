@@ -174,6 +174,14 @@ public sealed class ProfilingRepository(
             return;
         }
 
+        var sourceId = await _unitOfWork
+            .GetRepo<AccessProfileSource>()
+            .Query()
+            .Where(source => source.Code == "admin" && !source.ObsoleteFlag)
+            .Select(source => (int?)source.Id)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new InvalidOperationException("The administrator access-profile source is not configured.");
+
         var validIds = await _unitOfWork
             .GetRepo<AccessProfile>()
             .Query()
@@ -186,7 +194,14 @@ public sealed class ProfilingRepository(
             if (!existing.ContainsKey(accessProfileId))
             {
                 await relationRepository.AddAsync(
-                    new UserAccessProfile { UserId = user.Id, AccessProfileId = accessProfileId },
+                    new UserAccessProfile
+                    {
+                        UserId = user.Id,
+                        AccessProfileId = accessProfileId,
+                        AccessProfileSourceId = sourceId,
+                        AssignedOnUtc = DateTime.UtcNow,
+                        Enabled = true
+                    },
                     cancellationToken
                 );
             }
@@ -363,11 +378,124 @@ public sealed class ProfilingRepository(
         await InvalidateSetupCacheAsync(cancellationToken);
     }
 
+    public async Task ReviseAccessProfilesAsync(
+        IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (inputs.Count == 0)
+            return;
+
+        var sourceId = await _unitOfWork
+            .GetRepo<AccessProfileSource>()
+            .Query()
+            .Where(source => source.Code == "plan" && !source.ObsoleteFlag)
+            .Select(source => (int?)source.Id)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new InvalidOperationException("The plan access-profile source is not configured.");
+
+        foreach (var input in inputs)
+        {
+            if (input.UserId <= 0 || input.BillingSubscriptionId <= 0 || input.AccessProfileId <= 0 || string.IsNullOrWhiteSpace(input.BillingPlanCode))
+                throw new InvalidOperationException("An access-profile revision contains invalid integration data.");
+
+            var profileExists = await _unitOfWork
+                .GetRepo<AccessProfile>()
+                .Query()
+                .AnyAsync(profile => profile.Id == input.AccessProfileId && !profile.ObsoleteFlag, cancellationToken);
+            if (!profileExists)
+                throw new InvalidOperationException($"Access profile '{input.AccessProfileId}' is not available.");
+
+            var revisionKey = $"{input.BillingPlanCode.Trim().ToUpperInvariant()}:{input.BillingSubscriptionId}:{input.AccessProfileId}";
+            var revisionRepository = _unitOfWork.GetRepo<AccessProfileRevision>();
+            var existingRevision = await revisionRepository.Query()
+                .SingleOrDefaultAsync(revision => revision.RevisionKey == revisionKey, cancellationToken);
+            if (existingRevision?.ProcessedOnUtc is not null)
+                continue;
+
+            var revision = existingRevision;
+            if (revision is null)
+            {
+                revision = new AccessProfileRevision
+                {
+                    RevisionKey = revisionKey,
+                    UserId = input.UserId,
+                    BillingSubscriptionId = input.BillingSubscriptionId,
+                    BillingPlanCode = input.BillingPlanCode.Trim(),
+                    AccessProfileId = input.AccessProfileId,
+                };
+                await revisionRepository.AddAsync(revision, cancellationToken);
+            }
+
+            var assignments = await _unitOfWork
+                .GetRepo<UserAccessProfile>()
+                .Query()
+                .Where(assignment =>
+                    assignment.UserId == input.UserId
+                    && assignment.BillingSubscriptionId == input.BillingSubscriptionId
+                    && assignment.Enabled)
+                .ToListAsync(cancellationToken);
+
+            foreach (var assignment in assignments)
+                assignment.Enabled = assignment.AccessProfileId == input.AccessProfileId;
+
+            if (!assignments.Any(assignment => assignment.AccessProfileId == input.AccessProfileId))
+            {
+                await _unitOfWork.GetRepo<UserAccessProfile>().AddAsync(
+                    new UserAccessProfile
+                    {
+                        UserId = input.UserId,
+                        AccessProfileId = input.AccessProfileId,
+                        BillingSubscriptionId = input.BillingSubscriptionId,
+                        AccessProfileSourceId = sourceId,
+                        AssignedOnUtc = DateTime.UtcNow,
+                        Enabled = true,
+                    },
+                    cancellationToken);
+            }
+
+            revision.ProcessedOnUtc = DateTime.UtcNow;
+        }
+
+        await SaveAsync(null, cancellationToken);
+    }
+
+    public async Task ProcessPendingAccessProfileRevisionsAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        var inputs = await _unitOfWork
+            .GetRepo<AccessProfileRevision>()
+            .Query()
+            .Where(revision => revision.ProcessedOnUtc == null)
+            .OrderBy(revision => revision.RequestedOnUtc)
+            .Select(revision => new AccessProfileRevisionInput(
+                revision.UserId,
+                revision.BillingSubscriptionId,
+                revision.BillingPlanCode,
+                revision.AccessProfileId
+            ))
+            .ToListAsync(cancellationToken);
+
+        await ReviseAccessProfilesAsync(inputs, cancellationToken);
+    }
+
     private async Task AddRegistrationBaselineEntitiesAsync(
         RegistrationBaselineInput input,
         CancellationToken cancellationToken
     )
     {
+        if (string.IsNullOrWhiteSpace(input.BillingPlanCode))
+            throw new InvalidOperationException("A billing plan code is required for an access-profile assignment.");
+
+        var planSourceId = await _unitOfWork
+            .GetRepo<AccessProfileSource>()
+            .Query()
+            .Where(source => source.Code == "plan" && !source.ObsoleteFlag)
+            .Select(source => (int?)source.Id)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new InvalidOperationException("The plan access-profile source is not configured.");
+
         await _unitOfWork
             .GetRepo<UserPreference>()
             .AddAsync(
@@ -380,15 +508,16 @@ public sealed class ProfilingRepository(
                 cancellationToken
             );
         await _unitOfWork
-            .GetRepo<UserEntitlement>()
+            .GetRepo<UserAccessProfile>()
             .AddAsync(
-                new UserEntitlement
+                new UserAccessProfile
                 {
                     UserId = input.UserId,
-                    BillingSubscriptionId = input.BillingSubscriptionId,
                     AccessProfileId = input.AccessProfileId,
+                    BillingSubscriptionId = input.BillingSubscriptionId,
+                    AssignedOnUtc = DateTime.UtcNow,
+                    AccessProfileSourceId = planSourceId,
                     Enabled = true,
-                    Source = "plan",
                 },
                 cancellationToken
             );

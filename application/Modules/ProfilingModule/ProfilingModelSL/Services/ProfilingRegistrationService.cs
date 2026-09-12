@@ -44,4 +44,19 @@ internal sealed class ProfilingRegistrationService(IProfilingRepository reposito
     {
         return repository.GetStarterAccessProfileAsync(cancellationToken);
     }
+
+    public Task ReviseAccessProfilesAsync(
+        IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return repository.ReviseAccessProfilesAsync(inputs, cancellationToken);
+    }
+
+    public Task ProcessPendingAccessProfileRevisionsAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        return repository.ProcessPendingAccessProfileRevisionsAsync(cancellationToken);
+    }
 }

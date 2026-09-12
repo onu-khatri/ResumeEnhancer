@@ -10,10 +10,12 @@ public sealed class ResumeModuleIntegrationTestFixture
 {
     public ResumeModuleIntegrationTestFixture()
     {
-        Utilities = IntegrationTestAssemblyFixture.Utilities;
+        Utilities = IntegrationTestAssemblyFixture.CreateUtilities();
     }
 
     internal IntegrationTestUtilities<global::Program> Utilities { get; }
 
     internal ISetupper CreateSetupper() => Utilities.CreateSetupper();
+
+    public void Dispose() => Utilities.Dispose();
 }

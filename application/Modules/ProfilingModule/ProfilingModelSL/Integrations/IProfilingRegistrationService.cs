@@ -7,12 +7,20 @@ public sealed record ProfileRegistrationSnapshot(int UserId);
 public sealed record RegistrationBaselineInput(
     int UserId,
     int BillingSubscriptionId,
-    int AccessProfileId
+    int AccessProfileId,
+    string BillingPlanCode
 );
 
 public sealed record AccessShapeSnapshot(IReadOnlySet<string> Capabilities);
 
 public sealed record StarterAccessProfileSnapshot(int AccessProfileId);
+
+public sealed record AccessProfileRevisionInput(
+    int UserId,
+    int BillingSubscriptionId,
+    string BillingPlanCode,
+    int AccessProfileId
+);
 
 public interface IProfilingRegistrationService
 {
@@ -32,6 +40,13 @@ public interface IProfilingRegistrationService
         CancellationToken cancellationToken = default
     );
     public Task<StarterAccessProfileSnapshot?> GetStarterAccessProfileAsync(
+        CancellationToken cancellationToken = default
+    );
+    public Task ReviseAccessProfilesAsync(
+        IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+        CancellationToken cancellationToken = default
+    );
+    public Task ProcessPendingAccessProfileRevisionsAsync(
         CancellationToken cancellationToken = default
     );
 }

@@ -13,9 +13,8 @@ public sealed class CreateBillingSubscriptionRequest
     [Required]
     public int BillingPlanId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     public DateTime StartDateUtc { get; set; } = DateTime.UtcNow;
 
@@ -33,9 +32,8 @@ public sealed class UpdateBillingSubscriptionRequest
     [Required]
     public int BillingPlanId { get; set; }
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Active";
+    [Range(1, int.MaxValue)]
+    public int StatusId { get; set; }
 
     public DateTime StartDateUtc { get; set; } = DateTime.UtcNow;
 

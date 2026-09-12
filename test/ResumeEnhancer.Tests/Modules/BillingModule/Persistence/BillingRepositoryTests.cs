@@ -21,7 +21,7 @@ public sealed class BillingRepositoryTests
         {
             UserId = ResumeTestData.UserId,
             AccountNumber = "ACC-002",
-            Status = "Active",
+            StatusId = 1,
             ExternalReference = "ext",
         };
         var plan = ResumeTestData.BillingPlan(id: 2, code: "PRO", order: 2);
@@ -34,7 +34,7 @@ public sealed class BillingRepositoryTests
                 BillingAccountId = addedAccount.Id,
                 UserId = ResumeTestData.UserId,
                 BillingPlanId = addedPlan.Id,
-                Status = "Active",
+                StatusId = 1,
                 StartDateUtc = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
             },
             77,

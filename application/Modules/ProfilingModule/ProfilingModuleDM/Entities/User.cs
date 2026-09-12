@@ -20,5 +20,4 @@ public sealed class User : BusinessEntity, IDeactivateable
 
     public ICollection<UserAccessProfile> UserAccessProfiles { get; set; } = [];
     public ICollection<UserPreference> Preferences { get; set; } = [];
-    public ICollection<UserEntitlement> Entitlements { get; set; } = [];
 }

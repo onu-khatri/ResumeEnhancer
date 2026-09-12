@@ -11,8 +11,9 @@ public sealed class CreateBillingPlanRequestValidator : AbstractValidator<Create
         RuleFor(request => request.Description).NotEmpty().MaximumLength(1000);
         RuleFor(request => request.DisplayName).NotEmpty().MaximumLength(200);
         RuleFor(request => request.Price).GreaterThanOrEqualTo(0);
-        RuleFor(request => request.Currency).NotEmpty().MaximumLength(10);
-        RuleFor(request => request.BillingInterval).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.CurrencyId).GreaterThan(0);
+        RuleFor(request => request.BillingIntervalId).GreaterThan(0);
+        RuleFor(request => request.AccessProfileId).GreaterThan(0);
     }
 }
 
@@ -24,7 +25,8 @@ public sealed class UpdateBillingPlanRequestValidator : AbstractValidator<Update
         RuleFor(request => request.Description).NotEmpty().MaximumLength(1000);
         RuleFor(request => request.DisplayName).NotEmpty().MaximumLength(200);
         RuleFor(request => request.Price).GreaterThanOrEqualTo(0);
-        RuleFor(request => request.Currency).NotEmpty().MaximumLength(10);
-        RuleFor(request => request.BillingInterval).NotEmpty().MaximumLength(50);
+        RuleFor(request => request.CurrencyId).GreaterThan(0);
+        RuleFor(request => request.BillingIntervalId).GreaterThan(0);
+        RuleFor(request => request.AccessProfileId).GreaterThan(0);
     }
 }

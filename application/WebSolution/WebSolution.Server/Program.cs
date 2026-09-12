@@ -19,7 +19,11 @@ builder.Services.AddAppDbContext((_, options) =>
 builder.Services.AddApplicationModules();
 builder.Host.ConfigureSerilog(builder.Configuration);
 builder.Services.AddOpenApi();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPlanManagement", policy =>
+        policy.RequireAuthenticatedUser().RequireClaim("capability", "ViewAdminPortal"));
+});
 
 var app = builder.Build();
 

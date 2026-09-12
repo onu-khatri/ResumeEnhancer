@@ -232,7 +232,7 @@ public static class AuthApiTestData
                     ).ShouldBe(1);
                     (
                         await dbContext
-                            .Set<UserEntitlement>()
+                            .Set<UserAccessProfile>()
                             .CountAsync(x => x.UserId == userId, cancellationToken)
                     ).ShouldBe(1);
                 }

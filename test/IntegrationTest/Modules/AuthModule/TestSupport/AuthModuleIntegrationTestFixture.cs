@@ -12,12 +12,9 @@ public sealed class AuthModuleCollection : ICollectionFixture<AuthModuleIntegrat
 
 public sealed class AuthModuleIntegrationTestFixture
 {
-    private static readonly IntegrationTestUtilities<global::Program> SharedUtilities =
-        IntegrationTestAssemblyFixture.Utilities;
-
     public AuthModuleIntegrationTestFixture()
     {
-        Utilities = SharedUtilities;
+        Utilities = IntegrationTestAssemblyFixture.CreateUtilities();
     }
 
     internal IntegrationTestUtilities<global::Program> Utilities { get; }
@@ -33,4 +30,6 @@ public sealed class AuthModuleIntegrationTestFixture
         )?.Reset();
         await Utilities.Services.SeedAppDbContextAsync(cancellationToken);
     }
+
+    public void Dispose() => Utilities.Dispose();
 }

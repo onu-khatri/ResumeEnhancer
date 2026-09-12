@@ -88,17 +88,8 @@ internal sealed class RegistrationService(
             new ProfileRegistrationInput(request.FirstName.Trim(), request.LastName.Trim(), email),
             ct
         );
-        var starterProfile = await profiling.GetStarterAccessProfileAsync(ct);
         var billingBaseline =
-            (
-                starterProfile is null
-                    ? null
-                    : await billing.AddStarterRegistrationBillingAsync(
-                        user.UserId,
-                        starterProfile.AccessProfileId,
-                        ct
-                    )
-            )
+            await billing.AddStarterRegistrationBillingAsync(user.UserId, ct)
             ?? throw new AuthException(
                 "AUTH_CONFIGURATION_UNAVAILABLE",
                 "Registration setup is unavailable.",
@@ -108,7 +99,8 @@ internal sealed class RegistrationService(
             new RegistrationBaselineInput(
                 user.UserId,
                 billingBaseline.BillingSubscriptionId,
-                billingBaseline.AccessProfileId
+                billingBaseline.AccessProfileId,
+                billingBaseline.PlanCode
             ),
             ct
         );

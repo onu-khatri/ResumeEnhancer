@@ -13,6 +13,7 @@ public interface IBillingRepository
     Task<BillingPlan?> GetBillingPlanAsync(int billingPlanId, bool track = false, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<BillingPlan>> ListBillingPlansAsync(CancellationToken cancellationToken = default);
     Task DeleteBillingPlanAsync(BillingPlan plan, int? auditUserId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<BillingSubscription>> ListActiveSubscriptionsForPlanAsync(int billingPlanId, CancellationToken cancellationToken = default);
 
     Task<BillingSubscription> AddBillingSubscriptionAsync(BillingSubscription subscription, int? auditUserId, CancellationToken cancellationToken = default);
     Task<BillingSubscription?> GetBillingSubscriptionAsync(int billingSubscriptionId, bool track = false, CancellationToken cancellationToken = default);

@@ -3,6 +3,7 @@ using ResumeEnhancer.BillingModule.AM.Responses;
 using ResumeEnhancer.BillingModule.SL.Abstractions.Persistence;
 using ResumeEnhancer.BillingModule.SL.Contracts;
 using ResumeEnhancer.BillingModule.SL.Mapping;
+using ResumeEnhancer.ProfilingModule.SL.Integrations;
 
 namespace ResumeEnhancer.BillingModule.SL.Handlers;
 
@@ -20,22 +21,35 @@ public sealed class CreateBillingPlanCommandHandler : ICommandHandler<CreateBill
     }
 }
 
-public sealed class UpdateBillingPlanCommandHandler : ICommandHandler<UpdateBillingPlanCommand, BillingPlanDetailResponse?>
+public sealed class UpdateBillingPlanCommandHandler(
+    IBillingRepository repository,
+    IProfilingRegistrationService profiling
+) : ICommandHandler<UpdateBillingPlanCommand, BillingPlanDetailResponse?>
 {
-    private readonly IBillingRepository _repository;
-
-    public UpdateBillingPlanCommandHandler(IBillingRepository repository) => _repository = repository;
-
     public async ValueTask<BillingPlanDetailResponse?> Handle(UpdateBillingPlanCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetBillingPlanAsync(request.BillingPlanId, track: true, cancellationToken);
+        var entity = await repository.GetBillingPlanAsync(request.BillingPlanId, track: true, cancellationToken);
         if (entity is null)
         {
             return null;
         }
 
+        var previousAccessProfileId = entity.AccessProfileId;
         BillingModelMapper.Apply(request.Request, entity);
-        await _repository.SaveAsync(request.AuditUserId, cancellationToken);
+        await repository.SaveAsync(request.AuditUserId, cancellationToken);
+
+        if (request.Request.CascadeExistingSubscriptions && previousAccessProfileId != entity.AccessProfileId)
+        {
+            var subscriptions = await repository.ListActiveSubscriptionsForPlanAsync(entity.Id, cancellationToken);
+            await profiling.ReviseAccessProfilesAsync(
+                subscriptions.Select(subscription => new AccessProfileRevisionInput(
+                    subscription.UserId,
+                    subscription.Id,
+                    entity.Code,
+                    entity.AccessProfileId
+                )).ToArray(),
+                cancellationToken);
+        }
         return BillingModelMapper.MapBillingPlanDetail(entity);
     }
 }

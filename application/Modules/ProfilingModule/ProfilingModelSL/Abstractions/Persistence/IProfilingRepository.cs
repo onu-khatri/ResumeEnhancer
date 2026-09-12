@@ -28,6 +28,13 @@ public interface IProfilingRepository
     public Task<StarterAccessProfileSnapshot?> GetStarterAccessProfileAsync(
         CancellationToken cancellationToken = default
     );
+    public Task ReviseAccessProfilesAsync(
+        IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+        CancellationToken cancellationToken = default
+    );
+    public Task ProcessPendingAccessProfileRevisionsAsync(
+        CancellationToken cancellationToken = default
+    );
     public Task<User?> GetUserAsync(
         int userId,
         bool track = false,

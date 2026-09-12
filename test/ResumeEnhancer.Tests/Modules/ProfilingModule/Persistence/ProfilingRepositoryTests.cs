@@ -4,12 +4,100 @@ using Shouldly;
 using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.ProfilingModule.DM.Entities;
 using ResumeEnhancer.ProfilingModule.PL.Repositories;
+using ResumeEnhancer.ProfilingModule.SL.Integrations;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.ProfilingModule.Persistence;
 
 public sealed class ProfilingRepositoryTests
 {
+    public static TheoryData<int, int, string, int> InvalidRevisionInputs => new()
+    {
+        { 0, 10, "FREE", 2 },
+        { 1, 0, "FREE", 2 },
+        { 1, 10, "", 2 },
+        { 1, 10, "FREE", 0 },
+    };
+
+    [Theory]
+    [MemberData(nameof(InvalidRevisionInputs))]
+    public async Task ReviseAccessProfilesAsync_InvalidInput_Throws(
+        int userId,
+        int subscriptionId,
+        string planCode,
+        int accessProfileId)
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+
+        await Should.ThrowAsync<InvalidOperationException>(() => repository.ReviseAccessProfilesAsync(
+            [new AccessProfileRevisionInput(userId, subscriptionId, planCode, accessProfileId)],
+            TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task ReviseAccessProfilesAsync_Replay_DoesNotDuplicateActiveAssignment()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        scope.DbContext.Add(
+            new AccessProfile { Id = 2, Code = "PRO", Description = "Pro", DisplayName = "Pro", Order = 2, Guid = Guid.NewGuid() });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+        var input = new AccessProfileRevisionInput(ResumeTestData.UserId, 501, "PRO", 2);
+
+        await repository.ReviseAccessProfilesAsync([input], cancellationToken);
+        await repository.ReviseAccessProfilesAsync([input], cancellationToken);
+
+        var assignments = await scope.DbContext.Set<UserAccessProfile>()
+            .Where(item => item.UserId == ResumeTestData.UserId && item.BillingSubscriptionId == 501 && item.Enabled)
+            .ToListAsync(cancellationToken);
+        assignments.ShouldHaveSingleItem().AccessProfileId.ShouldBe(2);
+        (await scope.DbContext.Set<AccessProfileRevision>().CountAsync(cancellationToken)).ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ReviseAccessProfilesAsync_DisablesPreviousAssignment_AndPreservesExpiry()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        scope.DbContext.Add(new AccessProfile
+        {
+            Id = 2,
+            Code = "PRO",
+            Description = "Pro",
+            DisplayName = "Pro",
+            Order = 2,
+            Guid = Guid.NewGuid()
+        });
+        var expiredOn = DateTime.UtcNow.AddMinutes(-1);
+        scope.DbContext.Add(new UserAccessProfile
+        {
+            UserId = ResumeTestData.UserId,
+            AccessProfileId = ResumeTestData.AccessProfileId,
+            AccessProfileSourceId = 1,
+            BillingSubscriptionId = 501,
+            AssignedOnUtc = expiredOn.AddDays(-1),
+            ValidTillUtc = expiredOn,
+            Enabled = true
+        });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+        await repository.ReviseAccessProfilesAsync(
+            [new AccessProfileRevisionInput(ResumeTestData.UserId, 501, "FREE", 2)],
+            cancellationToken);
+
+        var assignments = await scope.DbContext.Set<UserAccessProfile>()
+            .Where(item => item.UserId == ResumeTestData.UserId && item.BillingSubscriptionId == 501)
+            .OrderBy(item => item.AccessProfileId)
+            .ToListAsync(cancellationToken);
+        assignments.Count.ShouldBe(2);
+        assignments[0].Enabled.ShouldBeFalse();
+        assignments[0].ValidTillUtc.ShouldBe(expiredOn);
+        assignments[1].Enabled.ShouldBeTrue();
+    }
+
     [Fact]
     public async Task ProfilingRepository_CoversCrudAndSyncFlows()
     {

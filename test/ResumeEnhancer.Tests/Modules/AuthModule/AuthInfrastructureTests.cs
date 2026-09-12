@@ -142,6 +142,18 @@ public sealed class AuthInfrastructureTests
             [outbox]
         );
 
+        var idempotency = new AuthRegistrationIdempotency
+        {
+            NormalizedEmail = "ada@example.com",
+            IdempotencyKey = "registration-1",
+            RequestHash = "hash",
+            ResponseJson = "{}"
+        };
+        await repository.AddRegistrationIdempotencyAsync(idempotency);
+        await repository.AddAuditAsync(new AuthAuditEvent { UserId = 1, EventType = "registration_replayed" });
+        await repository.SaveAsync();
+        Assert.Same(idempotency, await repository.FindRegistrationIdempotencyAsync("ada@example.com", "registration-1"));
+
         Assert.NotNull(await repository.FindIdentityAsync("ada@example.com"));
         Assert.Equal(session.Id, (await repository.FindSessionAsync(session.TokenHash))?.Id);
         var claimed = await repository.ClaimDueOutboxAsync(
@@ -408,9 +420,8 @@ public sealed class AuthInfrastructureTests
 
         public Task<BillingRegistrationSnapshot?> AddStarterRegistrationBillingAsync(
             int u,
-            int p,
             CancellationToken c = default
-        ) => Task.FromResult<BillingRegistrationSnapshot?>(new(1, 1, p, "FREE"));
+        ) => Task.FromResult<BillingRegistrationSnapshot?>(new(1, 1, 1, "FREE"));
 
         public Task<
             IReadOnlyList<BillingSubscriptionSnapshot>
@@ -445,6 +456,15 @@ public sealed class AuthInfrastructureTests
         public Task<StarterAccessProfileSnapshot?> GetStarterAccessProfileAsync(
             CancellationToken c = default
         ) => Task.FromResult<StarterAccessProfileSnapshot?>(new(1));
+
+        public Task ReviseAccessProfilesAsync(
+            IReadOnlyCollection<AccessProfileRevisionInput> inputs,
+            CancellationToken c = default
+        ) => Task.CompletedTask;
+
+        public Task ProcessPendingAccessProfileRevisionsAsync(
+            CancellationToken c = default
+        ) => Task.CompletedTask;
     }
 
     private sealed class StubRegistrationService : IRegistrationService

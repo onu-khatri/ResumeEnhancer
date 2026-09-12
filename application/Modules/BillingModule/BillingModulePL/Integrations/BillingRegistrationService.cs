@@ -10,7 +10,6 @@ public sealed class BillingRegistrationService(IUnitOfWork<AppDbContext> unitOfW
 {
     public async Task<BillingRegistrationSnapshot?> AddStarterRegistrationBillingAsync(
         int userId,
-        int accessProfileId,
         CancellationToken cancellationToken = default
     )
     {
@@ -18,12 +17,27 @@ public sealed class BillingRegistrationService(IUnitOfWork<AppDbContext> unitOfW
             .GetRepo<BillingPlan>()
             .Query()
             .SingleOrDefaultAsync(x => x.Code == "FREE", cancellationToken);
-        if (plan is null || accessProfileId <= 0)
+        if (plan is null || plan.AccessProfileId <= 0)
+            return null;
+        var accountStatusId = await unitOfWork
+            .GetRepo<BillingAccountStatus>()
+            .Query()
+            .Where(x => x.Code == "Active")
+            .Select(x => (int?)x.Id)
+            .SingleOrDefaultAsync(cancellationToken);
+        var subscriptionStatusId = await unitOfWork
+            .GetRepo<BillingSubscriptionStatus>()
+            .Query()
+            .Where(x => x.Code == "Active")
+            .Select(x => (int?)x.Id)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (accountStatusId is null || subscriptionStatusId is null)
             return null;
         var account = new BillingAccount
         {
             UserId = userId,
             AccountNumber = $"USR-{Guid.NewGuid():N}"[..20],
+            StatusId = accountStatusId.Value,
         };
         await unitOfWork.GetRepo<BillingAccount>().AddAsync(account, cancellationToken);
         var subscription = new BillingSubscription
@@ -31,15 +45,14 @@ public sealed class BillingRegistrationService(IUnitOfWork<AppDbContext> unitOfW
             BillingAccount = account,
             UserId = userId,
             BillingPlanId = plan.Id,
-            AccessProfileId = accessProfileId,
-            Status = "Active",
+            StatusId = subscriptionStatusId.Value,
         };
         await unitOfWork.GetRepo<BillingSubscription>().AddAsync(subscription, cancellationToken);
         await unitOfWork.SaveAsync(cancellationToken);
         return new BillingRegistrationSnapshot(
             subscription.Id,
             plan.Id,
-            accessProfileId,
+            plan.AccessProfileId,
             plan.Code
         );
     }
@@ -56,13 +69,13 @@ public sealed class BillingRegistrationService(IUnitOfWork<AppDbContext> unitOfW
             .Query()
             .Where(x =>
                 x.BillingAccount!.UserId == userId
-                && x.Status == "Active"
+                && x.Status!.Code == "Active"
                 && (x.EndDateUtc == null || x.EndDateUtc > DateTime.UtcNow)
             )
             .Select(x => new BillingSubscriptionSnapshot(
                 x.Id,
                 x.BillingPlanId,
-                x.AccessProfileId,
+                x.BillingPlan!.AccessProfileId,
                 x.BillingPlan!.Code
             ))
             .AsNoTracking()

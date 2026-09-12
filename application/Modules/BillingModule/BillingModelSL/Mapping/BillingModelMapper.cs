@@ -12,7 +12,7 @@ internal static class BillingModelMapper
         {
             UserId = request.UserId,
             AccountNumber = request.AccountNumber.Trim(),
-            Status = request.Status.Trim(),
+            StatusId = request.StatusId,
             ExternalReference = TrimOrNull(request.ExternalReference),
         };
     }
@@ -21,7 +21,7 @@ internal static class BillingModelMapper
     {
         entity.UserId = request.UserId;
         entity.AccountNumber = request.AccountNumber.Trim();
-        entity.Status = request.Status.Trim();
+        entity.StatusId = request.StatusId;
         entity.ExternalReference = TrimOrNull(request.ExternalReference);
     }
 
@@ -33,8 +33,9 @@ internal static class BillingModelMapper
             Description = request.Description.Trim(),
             DisplayName = request.DisplayName.Trim(),
             Price = request.Price,
-            Currency = request.Currency.Trim(),
-            BillingInterval = request.BillingInterval.Trim(),
+            CurrencyId = request.CurrencyId,
+            BillingIntervalId = request.BillingIntervalId,
+            AccessProfileId = request.AccessProfileId,
             IsDeactivated = request.IsDeactivated,
         };
     }
@@ -45,8 +46,9 @@ internal static class BillingModelMapper
         entity.Description = request.Description.Trim();
         entity.DisplayName = request.DisplayName.Trim();
         entity.Price = request.Price;
-        entity.Currency = request.Currency.Trim();
-        entity.BillingInterval = request.BillingInterval.Trim();
+        entity.CurrencyId = request.CurrencyId;
+        entity.BillingIntervalId = request.BillingIntervalId;
+        entity.AccessProfileId = request.AccessProfileId;
         entity.IsDeactivated = request.IsDeactivated;
         entity.ObsoleteFlag = request.ObsoleteFlag;
     }
@@ -60,7 +62,7 @@ internal static class BillingModelMapper
             BillingAccountId = request.BillingAccountId,
             UserId = request.UserId,
             BillingPlanId = request.BillingPlanId,
-            Status = request.Status.Trim(),
+            StatusId = request.StatusId,
             StartDateUtc = request.StartDateUtc,
             EndDateUtc = request.EndDateUtc,
         };
@@ -71,7 +73,7 @@ internal static class BillingModelMapper
         entity.BillingAccountId = request.BillingAccountId;
         entity.UserId = request.UserId;
         entity.BillingPlanId = request.BillingPlanId;
-        entity.Status = request.Status.Trim();
+        entity.StatusId = request.StatusId;
         entity.StartDateUtc = request.StartDateUtc;
         entity.EndDateUtc = request.EndDateUtc;
     }
@@ -83,7 +85,7 @@ internal static class BillingModelMapper
             Id = entity.Id,
             UserId = entity.UserId,
             AccountNumber = entity.AccountNumber,
-            Status = entity.Status,
+            Status = entity.Status?.Code ?? string.Empty,
             ExternalReference = entity.ExternalReference,
             App_CreateDate = entity.App_CreateDate,
             App_UpdateDate = entity.App_UpdateDate,
@@ -98,7 +100,7 @@ internal static class BillingModelMapper
             Id = entity.Id,
             UserId = entity.UserId,
             AccountNumber = entity.AccountNumber,
-            Status = entity.Status,
+            Status = entity.Status?.Code ?? string.Empty,
         };
     }
 
@@ -111,8 +113,8 @@ internal static class BillingModelMapper
             Description = entity.Description,
             DisplayName = entity.DisplayName,
             Price = entity.Price,
-            Currency = entity.Currency,
-            BillingInterval = entity.BillingInterval,
+            Currency = entity.Currency?.Code ?? string.Empty,
+            BillingInterval = entity.BillingInterval?.Code ?? string.Empty,
             IsDeactivated = entity.IsDeactivated,
             ObsoleteFlag = entity.ObsoleteFlag,
             App_CreateDate = entity.App_CreateDate,
@@ -129,7 +131,7 @@ internal static class BillingModelMapper
             Code = entity.Code,
             DisplayName = entity.DisplayName,
             Price = entity.Price,
-            Currency = entity.Currency,
+            Currency = entity.Currency?.Code ?? string.Empty,
             IsDeactivated = entity.IsDeactivated,
         };
     }
@@ -144,7 +146,7 @@ internal static class BillingModelMapper
             BillingAccountId = entity.BillingAccountId,
             UserId = entity.UserId,
             BillingPlanId = entity.BillingPlanId,
-            Status = entity.Status,
+            Status = entity.Status?.Code ?? string.Empty,
             StartDateUtc = entity.StartDateUtc,
             EndDateUtc = entity.EndDateUtc,
             App_CreateDate = entity.App_CreateDate,
@@ -163,7 +165,7 @@ internal static class BillingModelMapper
             BillingAccountId = entity.BillingAccountId,
             UserId = entity.UserId,
             BillingPlanId = entity.BillingPlanId,
-            Status = entity.Status,
+            Status = entity.Status?.Code ?? string.Empty,
         };
     }
 
