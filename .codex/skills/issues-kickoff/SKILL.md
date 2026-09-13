@@ -1,6 +1,6 @@
 ---
 name: issues-kickoff
-description: When explicitly invoked, find up to five ready-to-implement ResumeEnhancer GitHub issues through MCP, collect an optional search brief, and coordinate selected issue implementation through PR readiness.
+description: When explicitly invoked, find up to five ready-to-implement ResumeEnhancer GitHub issues through MCP, persist selected issue context locally, collect an optional search brief, and coordinate selected issue implementation through PR readiness.
 ---
 
 # Issues Kickoff
@@ -36,6 +36,63 @@ Present all returned issues with number, title, state, labels, updated/created d
 
 If the user supplied exact issue numbers and the results unambiguously contain them, retain those as the requested scope. Otherwise ask the user for the issue number(s) to kick off. Do not begin implementation, create branches, create worktrees, invoke `$openspec-orchestrator`, or update story status until at least one valid issue number is explicitly supplied. Do not ask for a separate approval; issue-number selection is the scope gate.
 
+### 4. Persist the selected issue artifact
+
+For every issue number explicitly selected for kickoff, create or refresh the canonical local Markdown artifact at `.tmp/artifacts/issues/<issue-identifier>.md` before readiness checks or any handoff. Use the issue number as the identifier by default; preserve a repository-supported prefixed identifier when that is the stable issue ID. Sanitize the identifier so it is filesystem-safe. Create `.tmp/artifacts/issues/` automatically when it does not exist.
+
+The artifact is the downstream local reference for requirements analysis, solution design, implementation, testing, code review, documentation, and validation. Tell subsequent agents to start from this file and follow its links when more context is needed.
+
+When a refresh is required, rewrite the complete canonical file rather than appending to an existing file. This makes repeated kickoffs idempotent: the same issue keeps the same filename, receives current issue data, and has no duplicated sections or links. Preserve no stale issue content that conflicts with the latest fetched issue; retain only current source-backed information.
+
+When the canonical artifact already exists, do not assume it is current. Read the live Issue again and reread the linked `.US.md`, `.SI.md`, `.Research.md`, business-requirement, architecture, ADR, design, specification, and other repository documents that contributed to the artifact. Compare the current Issue payload and local source-document contents with the artifact before deciding whether it needs revision. Store source fingerprints in a non-rendered HTML comment, for example `<!-- Source fingerprints: issue=<hash>; User-Stories/example.US.md=<hash> -->`, so later kickoffs can detect changes to both hosted Issue content/metadata and linked local files without copying entire source documents into the artifact.
+
+If any tracked source content, relevant Issue metadata, User Story association, acceptance criteria, dependency/reference, or resolvable link changed, rebuild the same canonical file from the latest sources and update `Last Synced`. If all tracked sources are unchanged, leave the existing artifact content and timestamp untouched, report that it was checked and is current, and do not create a duplicate or needless rewrite. If an older artifact has no fingerprints, perform a full source comparison against its rendered sections and upgrade it with fingerprints on the next successful refresh.
+
+Use this structure, omitting optional sections or entries whose source information is unavailable rather than fabricating them:
+
+```md
+# Issue <issue-number>: <issue-title>
+
+## Issue
+
+- **Issue ID:** <issue-number-or-id>
+- **Issue URL:** <canonical-issue-url>
+- **Status:** <status, when available>
+- **Labels:** <labels, when available>
+- **Last Synced:** <timestamp>
+
+<!-- Source fingerprints: issue=<hash>; <repository-relative-source-path>=<hash> -->
+
+## Description
+
+<full issue description/content>
+
+## Acceptance Criteria
+
+<acceptance criteria, when present in the issue or linked story>
+
+## User Story
+
+- **User Story:** <story title or stable ID>
+- **Link:** <repository-relative path or external URL>
+
+## Related User Story Documents
+
+- [Document](<repository-relative path or external URL>)
+
+## Dependencies / References
+
+- <referenced issue, dependency, or related issue>
+```
+
+Populate the artifact from the fetched GitHub issue and repository evidence. The minimum required issue fields are the stable number/ID, title, canonical URL, full description/content, and generation/refresh timestamp. Include status, labels, dates, author, milestone, acceptance criteria, and issue references when available and useful.
+
+Resolve the linked User Story using information already available to this skill: issue story ID/slice labels, explicit issue-body links, the source story's `## GitHub Issues` register, and matching files under `User-Stories/`. Persist both a human-readable story title/ID and a resolvable repository-relative path or external URL. Follow the selected `.US.md` links and explicitly referenced supporting documents, including matching `.SI.md` and `.Research.md` files when present, business requirements, architecture notes, ADRs, designs, specifications, and other linked artifacts. Keep repository-relative paths for repository files and preserve external URLs. Validate repository-relative links when practical; do not invent missing files or links.
+
+If the issue or story cannot be associated with a User Story, keep the issue artifact valid and omit the User Story sections or mark the information unavailable. Missing optional story data, related documents, acceptance criteria, labels, or dependencies must not fail kickoff.
+
+Do not treat the artifact as a substitute for the live GitHub issue during reconciliation: use it to reuse context, then verify mutable hosted state when the workflow requires it.
+
 ## Implementation entry criteria
 
 For every selected issue, verify:
@@ -63,17 +120,17 @@ Do not infer approval from the `ready-to-implement` label, issue selection, cont
 
 ## Workflow
 
-### 4. Load implementation context
+### 5. Load implementation context
 
 Read `AGENTS.md`, `KnowledgeBase/INDEX.md`, the selected source story pack, and the linked GitHub issue. Read only the knowledge topics and specialist skill references relevant to the delivery shape. Reconcile the issue URL/number and scope against the story's `## GitHub Issues` register and body; if the register is missing or the issue and local story materially disagree, stop and report the mismatch before changing code.
 
-### 5. Resolve issue order and dependencies
+### 6. Resolve issue order and dependencies
 
 Use the issue `Pick order`, `Depends on`, `Blocks`, and `Related to` sections plus the story `Depends on` fields to build a topological delivery graph. Implement prerequisites before dependents. Keep independent issues in parallel groups only when they do not share contracts, migrations, composition, shared UI primitives, or other conflict-heavy files. `Depends on` is authoritative for prerequisites; `Blocks` must be its inverse, `Related to` never orders work, and contradictory, cyclic, or unavailable references block execution.
 
 If references are missing, contradictory, cyclic, or point to an unavailable issue, stop and report the exact dependency problem. Do not invent an order.
 
-### 6. Prepare the OpenSpecWorkflow handoff
+### 7. Prepare the OpenSpecWorkflow handoff
 
 Do not create a branch, worktree, OpenSpec change, or implementation handoff until the issue-number gate has passed. Then pass the selected issue, canonical URL, source story pack, dependency graph, requested scope, repository evidence, and current OpenSpec/branch/worktree state to `$openspec-workflow`.
 
@@ -81,7 +138,7 @@ Do not create a branch, worktree, OpenSpec change, or implementation handoff unt
 
 Do not continue when OpenSpecWorkflow reports `BLOCKED`; report the exact missing decision, evidence, dependency, approval, or capability.
 
-### 7. Classify implementation ownership for the OpenSpecWorkflow handoff
+### 8. Classify implementation ownership for the OpenSpecWorkflow handoff
 
 - **backend** — Minimal APIs, contracts, handlers, EF, migrations: `backend-implementer`.
 - **frontend** — React feature UI, forms, hooks, and API integration: `frontend-implementer`.
@@ -91,7 +148,7 @@ Do not continue when OpenSpecWorkflow reports `BLOCKED`; report the exact missin
 
 Select one primary implementation owner per issue and pass that ownership to `$openspec-workflow`. `issues-kickoff` does not invoke the owner or any implementation agent. Load specialist skills only when their trigger applies; they return constraints or findings to the OpenSpec-coordinated owner and do not duplicate implementation.
 
-### 8. Identify conflicts before execution
+### 9. Identify conflicts before execution
 
 Check for shared:
 
@@ -103,11 +160,11 @@ Check for shared:
 
 Keep shared-contract and migration ownership in one coordinating lane. Do not parallelize conflicting issues merely because their GitHub issues are separate.
 
-### 9. Issue-number gate before handoff
+### 10. Issue-number gate before handoff
 
 Before handing off, verify that the user explicitly supplied at least one valid issue number from the presented results. Resolve dependency order, delivery shape, ownership, conflict risks, and verification commands from the selected issue and repository evidence without asking for a separate approval. Do not ask the user to create a worktree here; OpenSpecWorkflow asks at the implementation handoff after proposal approval.
 
-### 10. Hand off the selected issue
+### 11. Hand off the selected issue
 
 Hand the selected issue, source story pack, dependency order, implementation ownership, conflict assessment, requested scope, and repository evidence to `$openspec-workflow`. That skill owns proposal approval, worktree creation, worktree-local OpenSpec coordination, implementation, verification, PR delivery, and closeout. It must report status transitions (`In_Progress`, `Blocked`, `PR_Open`, `Done`) and update story tracking in the appropriate existing worktree.
 
@@ -122,5 +179,7 @@ Report per issue:
 - verification commands and actual results;
 - blockers or residual risks; and
 - PR URL or the remaining work to reach PR readiness.
+
+Also report the persisted artifact path and whether it was created or refreshed. Validate the artifact before reporting completion: confirm the canonical filename, issue ID/title/URL/content, timestamp, User Story link when available, related-document links, and absence of duplicate sections or links. This skill currently has no executable test harness; use these observable artifact checks as its validation coverage and report any link that could not be validated.
 
 Read `us-kickoff/references/kickoff-playbook.md` for the shared status vocabulary and handoff conventions. Use `git-worktrees`, `full-stack-feature-orchestrator`, and the relevant implementation skills when their triggers apply. `$create-github-issue` and `$us-kickoff` may hand work to GitHub, but neither automatically invokes this skill.
