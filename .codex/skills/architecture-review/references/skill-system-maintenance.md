@@ -1,25 +1,17 @@
----
-title: .NET Backend And Architecture Skill System
-intent: Maintain backend and architecture skills so they route agents to the smallest authoritative knowledge, preserve reusable boundaries, and remain synchronized with their source bodies.
-scope: Backend and architecture skill maintenance, including authority routing, examples, self-sufficiency, ADR retrieval, and structural verification. Excludes project implementation rules, ADR contents, and application-code changes.
-audience: Codex skill maintainers and agents maintaining backend and architecture knowledge
-last_reviewed: 2026-08-23
----
-
 # .NET Backend And Architecture Skill System
 
 ## Intent
 
 Use this topic when maintaining a backend or architecture skill, its knowledge routing, or its linked source body. It establishes what belongs in the skill, what belongs in reusable knowledge, and when project facts must be retrieved from routing or ADR authorities.
 
-**Observed:** `AGENTS.md` requires index-first, selective knowledge retrieval and separates skills, custom agents, OpenSpec workflows, and root guidance. The active backend and architecture skills implement that model by routing to `KnowledgeBase/INDEX.md` before choosing detailed authorities.
+**Observed:** `AGENTS.md` separates skills, custom agents, OpenSpec workflows, and root guidance. Backend and architecture skills should use the repository's current indexes as discovery maps, then select authorities by decision area rather than hard-coding filenames.
 
 ## When To Use This Knowledge
 
 Read this before changing any of these backend and architecture skills:
 
-- `backend-feature-development`, `dotnet-backend-patterns`, or `ef-core-database-architect`
-- `dotnet-architect`, `domain-driven-design`, or `architect-review`
+- `backend-feature-development`, `backend-dotnet-patterns`, or `backend-ef-core`
+- `backend-dotnet-architecture`, `architecture-domain-modeling`, or `architecture-review`
 - a source body maintained by `.codex/tools/sync-linked-skill-bodies.ps1` or related synchronization tooling
 - the index entry or routed authority used by one of those skills
 
@@ -43,15 +35,15 @@ The active backend-feature skill shows the intended entrypoint shape: it directs
 ```md
 ## Knowledge routing
 
-1. Check `KnowledgeBase/INDEX.md`.
-2. Read the API/application delivery topic for contract and validation decisions.
-3. Read the EF Core persistence topic when data access or migrations are affected.
+1. Check the repository's current knowledge/authority index when one exists.
+2. Select the API/application, persistence, or other topic matching the affected decision area.
+3. Retrieve applicable ADRs through the current index/registry and verify status; never assume a fixed ADR number.
 4. Read a project adaptation topic only when local conventions affect the change.
 ```
 
 ### Self-Sufficiency
 
-**Observed:** Active operational knowledge topics such as `dotnet-backend-api-delivery.knowledge.md`, `dotnet-modular-architecture.knowledge.md`, and `architecture-review.knowledge.md` contain an implementation or review procedure, verification evidence, explicit boundaries, and a `Discover Locally Only When` section.
+**Observed:** Active operational topics and [architecture-review-guide.md](architecture-review-guide.md) contain a procedure, verification evidence, explicit boundaries, and a local-discovery section.
 
 For backend and architecture skill maintenance, each operational topic must let an agent:
 
@@ -65,7 +57,7 @@ Self-sufficiency reduces routine rediscovery; it never permits an agent to skip 
 
 ### Examples
 
-**Observed:** Existing generic knowledge uses concise good/bad examples for high-risk boundary decisions. `dotnet-backend-api-delivery.knowledge.md` distinguishes transport validation from reusable application behavior, and `dotnet-modular-architecture.knowledge.md` distinguishes a narrow application contract from a cross-module repository dependency.
+**Observed:** Existing generic knowledge uses concise good/bad examples for high-risk boundary decisions, such as distinguishing a narrow application contract from a cross-component persistence dependency.
 
 ```csharp
 // Good: application collaboration depends on a narrow contract.
@@ -84,19 +76,19 @@ Add an example only when prose alone could produce an incorrect implementation o
 
 ## Main Workflow
 
-1. Start with `KnowledgeBase/INDEX.md`; identify the decision trigger and the existing authoritative topic before changing a skill or knowledge artifact.
+1. Start with the repository's current authority index, if available; identify the decision trigger and authoritative topic before changing a skill or knowledge artifact.
 2. Assign ownership: keep triggers, workflow, gates, and outputs in the skill; keep reusable decision guidance in knowledge; route project facts to `AGENTS.md`, project knowledge, or ADRs.
 3. Update the smallest authority. Do not duplicate API/application guidance, EF Core guidance, project persistence facts, or ADR rules in a generic architecture skill or topic.
 4. Preserve self-sufficiency: retain the procedure, high-risk boundary, verification evidence, and local-discovery boundary needed for first-pass use.
 5. Add or retain an example only where it prevents a concrete boundary error. Keep it concise, source-grounded, and reusable.
-6. When module ownership or cross-module behavior matters, retrieve `resumeenhancer-architecture-routing.knowledge.md`, then the governing ADR. State the ADR status; do not create a competing summary.
+6. When project ownership or cross-component behavior matters, retrieve [ResumeEnhancer architecture routing](resumeenhancer-architecture-routing.md), then the current governing authority. State its status; do not create a competing summary.
 7. If a linked skill has a source template, update the active skill and source body together, or record the mismatch as a blocker. Then verify every link, reference, and generated-body expectation.
 
 ## Rules And Invariants
 
-- **Index first:** every backend or architecture skill change preserves selective retrieval through `KnowledgeBase/INDEX.md`.
+- **Discover, then select:** every backend or architecture skill change preserves selective retrieval through the repository's current authority index when available.
 - **One authority per decision:** generic knowledge does not restate project APIs, persistence conventions, or ADR decisions.
-- **ADR retrieval, not duplication:** a skill or routing topic names the governing ADR and preserves its status instead of copying its rules.
+- **Authority retrieval, not duplication:** a skill or routing topic identifies the governing authority and preserves its status instead of copying its rules or assuming a fixed filename.
 - **Examples are exceptional:** use good/bad pairs only for a high-risk boundary mistake; do not turn maintenance knowledge into a code inventory.
 - **Local discovery stays explicit:** inspect changed or volatile facts, including contracts, handlers, entities, queries, registrations, tests, consumers, migration state, authority status, and requirement conflicts.
 - **Source bodies remain aligned:** a synchronization source must not silently reintroduce retired references or replace an active skill with a stale workflow.
@@ -132,7 +124,7 @@ For an active skill with synchronized source bodies, compare the generated or so
 - Do not use a generic topic as a parallel source of truth for `resumeenhancer-api-application-delivery.knowledge.md`, `persistence-project.knowledge.md`, or an ADR.
 - Do not remove an authority without first moving its unique policy and updating every index or skill reference.
 - Do not assume a source template is current merely because it exists; compare it to the active body before relying on synchronization.
-- Do not apply distributed-architecture review merely because a change is broad. Preserve the `architect-review` review-mode gate for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
+- Do not apply distributed-architecture review merely because a change is broad. Preserve the `architecture-review` review-mode gate for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
 
 ## Clarifications
 

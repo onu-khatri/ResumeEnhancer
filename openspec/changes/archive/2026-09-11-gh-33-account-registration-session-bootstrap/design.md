@@ -33,9 +33,9 @@ The repository is a modular .NET monolith with explicit module composition and s
 
 ## Risks / Trade-offs
 
-- **[Risk]** Refresh-token rotation and replay handling are security-sensitive. → **Mitigation:** hash stored tokens, rotate on use, revoke the token family on replay, add security-focused tests, and require `$backend-security-coder` review.
+- **[Risk]** Refresh-token rotation and replay handling are security-sensitive. → **Mitigation:** hash stored tokens, rotate on use, revoke the token family on replay, add security-focused tests, and require `$backend-security` review.
 - **[Risk]** Shared signing-key configuration can drift between containers. → **Mitigation:** define deployment configuration requirements, key rotation overlap, and startup validation in the implementation design.
-- **[Risk]** Cross-module account creation can create coupling. → **Mitigation:** keep orchestration in the application layer and expose small Profiling contracts; review composition with `$architect-review`.
+- **[Risk]** Cross-module account creation can create coupling. → **Mitigation:** keep orchestration in the application layer and expose small Profiling contracts; review composition with `$architecture-review`.
 - **[Risk]** Queue failure can leave verification delayed. → **Mitigation:** durable retry/outbox-compatible job handling, explicit response state, and resend endpoint.
 - **[Risk]** Existing repository conventions may not yet provide all auth persistence primitives. → **Mitigation:** perform a baseline architecture/persistence inventory before coding and keep schema changes in one coordinating lane.
 

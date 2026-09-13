@@ -1,14 +1,6 @@
----
-title: Distributed Architecture Review
-intent: Help an agent review a real distributed-system boundary without treating distributed technologies as default architecture.
-scope: Reusable distributed-boundary, consistency, resilience, observability, rollout, and operability review guidance. Excludes provider and platform selection without evidence.
-audience: Autonomous Codex architecture reviewers and implementation agents
-last_reviewed: 2026-08-23
----
-
 # Distributed Architecture Review
 
-## When To Use This Knowledge
+## When To Use This Reference
 
 Read this only when a reviewed change creates or materially changes a remote boundary, asynchronous message flow, independently deployed component, eventual-consistency model, distributed transaction, resilience policy, or distributed-observability requirement. Do not use it for ordinary modular-monolith collaboration.
 
@@ -18,7 +10,7 @@ Read this only when a reviewed change creates or materially changes a remote bou
 2. Define synchronous or asynchronous interaction, availability and latency expectations, and failure ownership.
 3. Define consistency model, idempotency, ordering, duplication, timeout, retry, compensation, and recovery behavior.
 4. Assess data ownership, trust boundaries, observability, rollout/rollback, operational cost, and verification strategy.
-5. Require repository evidence or `$deep-research` before naming a broker, service mesh, cloud, container, or provider technology.
+5. Require repository evidence or `$research-deep` before naming a broker, service mesh, cloud, container, or provider technology.
 
 ## High-Risk Anti-Patterns
 
@@ -36,4 +28,4 @@ Read this only when a reviewed change creates or materially changes a remote bou
 
 ## Boundary
 
-This topic evaluates patterns, not vendor products. A concrete platform recommendation requires evidence from the target system or `$deep-research`.
+This topic evaluates patterns, not vendor products. A concrete platform recommendation requires evidence from the target system or `$research-deep`.
