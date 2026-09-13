@@ -117,12 +117,12 @@ Use this skill to create durable ADRs that another engineer or agent can underst
   "architecture-review" = @'
 ---
 name: architecture-review
-description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
+description: Review architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
-# Architect Review
+# Architecture Review
 
-Use this skill for evidence-led design review when code correctness alone is not enough.
+Use this skill to review an existing design or diff. It is a finding-producing skill, not an implementation owner.
 
 ## Use this skill when
 
@@ -134,14 +134,12 @@ Use this skill for evidence-led design review when code correctness alone is not
 - the task is only a local correctness review
 - there is no architecture-sensitive behavior
 
-## Knowledge Routing
+## Authority discovery
 
-1. Read `KnowledgeBase/INDEX.md`.
-2. Read `architecture-review.knowledge.md` before producing findings.
-3. Select modular-monolith mode by default; use distributed mode only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
-4. In distributed mode, read `distributed-architecture-review.knowledge.md`.
-5. Read `dotnet-modular-architecture.knowledge.md` only for applicable architecture lenses.
-6. For ResumeEnhancer facts, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
+1. Read [architecture review guide](references/architecture-review-guide.md).
+2. Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map and select authorities by decision area.
+3. Select modular review by default; use distributed review only for actual remote, asynchronous, independent-deployment, eventual-consistency, resilience, or distributed-observability concerns.
+4. Never require a particular knowledge filename or ADR number; verify the current authority's status and scope.
 
 ## Specialist Gates
 
@@ -494,12 +492,12 @@ Use this skill when a shallow code read would create avoidable risk and the answ
   "architecture-domain-modeling" = @'
 ---
 name: architecture-domain-modeling
-description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
+description: Clarify business language, context boundaries, invariants, lifecycles, and model responsibilities when business complexity materially affects architecture or behavior.
 ---
 
-# Domain Driven Design
+# Domain Modeling
 
-Use this skill pragmatically. The goal is clearer business modeling, not performative DDD vocabulary.
+Use this skill to resolve business-model uncertainty. It produces modeling decisions and constraints; it does not implement features or perform a general architecture review.
 
 ## Use this skill when
 
@@ -512,12 +510,11 @@ Use this skill pragmatically. The goal is clearer business modeling, not perform
 - the task is straightforward data maintenance with no meaningful invariants
 - the issue is purely technical and has no business-model consequence
 
-## Knowledge Routing
+## Authority discovery
 
-1. Read `KnowledgeBase/INDEX.md`.
-2. Read `domain-modeling.knowledge.md` before proposing a domain-modeling pattern.
-3. Read `dotnet-modular-architecture.knowledge.md` when the model decision changes dependencies, composition, or integration seams.
-4. For ResumeEnhancer adaptation, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
+1. Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map.
+2. Select the current domain or project authority matching the decision; do not assume a fixed knowledge filename or ADR number.
+3. Read [ResumeEnhancer architecture routing](../architecture-review/references/resumeenhancer-architecture-routing.md) only when local ownership or authority selection is material.
 
 ## Workflow Gate
 
@@ -536,12 +533,12 @@ Stop after the viability assessment when the task has no meaningful invariant, d
   "backend-dotnet-architecture" = @'
 ---
 name: backend-dotnet-architecture
-description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
+description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, lifecycle, and verification decisions before implementation.
 ---
 
-# Dotnet Architect
+# .NET Backend Architecture
 
-Use this skill when an architecture decision needs .NET-aware reasoning rather than a local implementation pattern.
+Use this skill for architecture design before implementation. It produces a decision handoff; it is not the implementation owner and does not replace an independent review.
 
 ## Use this skill when
 
@@ -555,13 +552,12 @@ Use this skill when an architecture decision needs .NET-aware reasoning rather t
 - an established local pattern answers the question without a boundary decision
 - you only need a design review of an existing change; use `$architecture-review`
 
-## Knowledge Routing
+## Authority discovery
 
-1. Read `KnowledgeBase/INDEX.md`.
-2. Read `dotnet-modular-architecture.knowledge.md` before selecting a boundary, dependency, composition, or integration pattern.
-3. Read `domain-modeling.knowledge.md` only when business boundaries, language, or invariants are material.
-4. For ResumeEnhancer adaptation, read `resumeenhancer-architecture-routing.knowledge.md`, then the authority it identifies.
-5. Retrieve Group 1 API/application or EF/persistence knowledge only when that decision area is affected.
+1. Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map.
+2. Select only the current authority matching the decision area; do not require a fixed knowledge filename or ADR number.
+3. Read [ResumeEnhancer architecture routing](../architecture-review/references/resumeenhancer-architecture-routing.md) only when project-specific authority selection is material.
+4. Retrieve API, persistence, security, performance, or other specialist authority only when that decision area is affected.
 
 ## Workflow
 

@@ -1,21 +1,13 @@
----
-title: Architecture Review
-intent: Help an agent perform an evidence-led, finding-first architecture review beyond local code correctness.
-scope: Reusable architecture-review method for boundary, dependency, integration, evolution, and operability risk. Excludes project layer names and persistence-specific rules.
-audience: Autonomous Codex implementation agents, architecture planners, and reviewers
-last_reviewed: 2026-08-23
----
-
 # Architecture Review
 
-## When To Use This Knowledge
+## When To Use This Reference
 
-Read this after `KnowledgeBase/INDEX.md` when a diff or design changes module ownership, dependency direction, cross-component contracts, composition, persistence responsibility, scalability posture, or long-lived abstractions. Do not use it instead of a local bug review or implementation workflow.
+Read this when a diff or design changes module ownership, dependency direction, cross-component contracts, composition, persistence responsibility, scalability posture, or long-lived abstractions. The owning skill decides which repository authorities are applicable; do not use this instead of a local bug review or implementation workflow.
 
 ## Review Mode Selection
 
 - Use **modular-monolith mode** by default for ownership, dependency, composition, contract, persistence, and evolution review.
-- Use **distributed mode** only when a change creates a remote boundary, asynchronous communication, independently deployed component, eventual-consistency model, resilience requirement, or distributed-observability concern. Retrieve `distributed-architecture-review.knowledge.md` before applying that mode.
+- Use **distributed mode** only when a change creates a remote boundary, asynchronous communication, independently deployed component, eventual-consistency model, resilience requirement, or distributed-observability concern. Retrieve [distributed review guide](distributed-review-guide.md) before applying that mode.
 - Do not select distributed mode because a design is merely large, future-facing, or composed of multiple local modules.
 
 ## Review Workflow
@@ -97,9 +89,9 @@ This repository name is not clean. Rename it.
 
 ## Project Adaptation Boundary
 
-This topic is generic. Retrieve `resumeenhancer-architecture-routing.knowledge.md` for ResumeEnhancer-specific authority and do not copy its module, helper, or persistence rules here.
+This reference is generic. For repository-specific facts, retrieve the owning routing reference and then the current authority identified for the decision area. Do not copy module, helper, persistence, or ADR rules into this generic guide.
 
-When a finding depends on module ownership or cross-module behavior, check ADR-001 or ADR-002 through routing and report their status. Do not infer an undocumented exception.
+When a finding depends on local ownership or cross-component behavior, cite the applicable authority and report its status. Do not assume a particular ADR number or infer an undocumented exception.
 
 ## Discover Locally Only When
 

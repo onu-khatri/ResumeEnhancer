@@ -80,7 +80,7 @@ aggregate.Items.Add(new ChildItem());
 
 ## Project Adaptation Boundary
 
-This topic is generic. Retrieve `resumeenhancer-architecture-routing.knowledge.md` before applying it to ResumeEnhancer. Its module map and cross-module rules remain in ADR-001 and ADR-002.
+This topic is generic. Retrieve [ResumeEnhancer architecture routing](../.codex/skills/architecture-review/references/resumeenhancer-architecture-routing.md) before applying it to ResumeEnhancer. Its module map and cross-module rules remain in ADR-001 and ADR-002.
 
 ## Discover Locally Only When
 

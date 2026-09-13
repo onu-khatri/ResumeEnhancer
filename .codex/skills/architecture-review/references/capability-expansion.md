@@ -1,11 +1,3 @@
----
-title: Architect Review Capability Expansion
-intent: Maintain the conditional distributed-review and specialist-routing contract for architect review.
-scope: `$architecture-review` capability boundaries and supporting knowledge.
-audience: Codex skill maintainers
-last_reviewed: 2026-08-23
----
-
 # Architect Review Capability Expansion
 
 ## Capability Contract

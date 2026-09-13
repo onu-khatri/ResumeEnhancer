@@ -189,12 +189,12 @@ Use this skill when a decision deserves durable documentation because it affects
   "architecture-review" = @'
 ---
 name: architecture-review
-description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
+description: Review architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
-# Architect Review
+# Architecture Review
 
-Read `KnowledgeBase/INDEX.md`, then `architecture-review.knowledge.md` before producing findings. Use distributed review only for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability; then read `distributed-architecture-review.knowledge.md`.
+Read [architecture review guide](references/architecture-review-guide.md). Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map and select current authorities by decision area. Use distributed review only for actual distributed-boundary concerns; never require a fixed knowledge filename or ADR number.
 
 Route domain, security, performance, research, and ADR work to their specialist skills only when their trigger applies. Report Architecture Impact as High, Medium, or Low with affected quality attributes, then evidence-backed findings, residual risks, and verification gaps.
 '@
@@ -251,24 +251,24 @@ Use this skill for broad investigations where the answer depends on multiple rep
   "architecture-domain-modeling" = @'
 ---
 name: architecture-domain-modeling
-description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
+description: Clarify business language, context boundaries, invariants, lifecycles, and model responsibilities when business complexity materially affects architecture or behavior.
 ---
 
-# Domain Driven Design
+# Domain Modeling
 
-Read `KnowledgeBase/INDEX.md`, then `domain-modeling.knowledge.md` before proposing domain-modeling patterns. Retrieve modular architecture when dependencies, composition, or integration change, and project routing for local adaptation.
+Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map. Select the current authority matching the decision; do not assume a fixed knowledge filename or ADR number. Read [ResumeEnhancer architecture routing](../architecture-review/references/resumeenhancer-architecture-routing.md) only when local authority selection is material.
 
 Stop after viability assessment when no meaningful invariant, divergent context, or lifecycle rule exists.
 '@
   "backend-dotnet-architecture" = @'
 ---
 name: backend-dotnet-architecture
-description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
+description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, lifecycle, and verification decisions before implementation.
 ---
 
-# Dotnet Architect
+# .NET Backend Architecture
 
-Read `KnowledgeBase/INDEX.md`, then `dotnet-modular-architecture.knowledge.md` before selecting a boundary, dependency, composition, or integration pattern. Retrieve domain-modeling and project-routing knowledge only when applicable.
+Use `KnowledgeBase/INDEX.md`, when present, as a retrieval map. Select the current authority matching the decision area; do not assume a fixed knowledge filename or ADR number. Read [ResumeEnhancer architecture routing](../architecture-review/references/resumeenhancer-architecture-routing.md) only when project-specific authority selection is material.
 
 State ownership, dependency direction, verification implications, and an ADR recommendation for durable decisions.
 '@
