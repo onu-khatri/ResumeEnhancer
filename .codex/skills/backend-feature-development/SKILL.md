@@ -32,16 +32,16 @@ Use this skill to move from an approved backend requirement to review-ready code
 
 1. Start from the requirement, acceptance criteria, existing behavior, and repository evidence.
 2. Identify the affected entry point, module ownership, API or messaging contracts, rules, data, compatibility, security, rollout, and verification boundaries.
-3. Identify material unresolved decisions. When one remains, load `$user-interview`, ask one focused question at a time, and obtain confirmation of the shared-understanding summary before proceeding.
+3. Identify material unresolved decisions. When one remains, load `$workflow-user-interview`, ask one focused question at a time, and obtain confirmation of the shared-understanding summary before proceeding.
 4. Record confirmed decisions, deferred items, and blockers. Do not silently assume material behavior, contract, data, security, or verification details.
-5. When the change has material module, dependency, integration, or quality-attribute risk, load `$architect-review` or `$dotnet-architect` before implementation. Use `$domain-driven-design` when business rules or bounded-context ownership are unclear.
+5. When the change has material module, dependency, integration, or quality-attribute risk, load `$architecture-review` or `$backend-dotnet-architecture` before implementation. Use `$architecture-domain-modeling` when business rules or bounded-context ownership are unclear.
 
 ### 2. Implement backend behavior
 
 1. Implement only the necessary contract, validation, application, domain, and persistence changes, following existing dependency and composition patterns.
 2. Make invalid input, authorization boundaries, error behavior, cancellation, mapping, and compatibility intentional at the API or application boundary.
-3. When persistence is affected, load `$ef-core-database-architect` to make schema, query, transaction, migration, initialization, and rollback decisions explicit.
-4. When the change creates a meaningful attack surface, load `$backend-security-coder` or `$security-manager` for focused secure-design and implementation guidance.
+3. When persistence is affected, load `$backend-ef-core` to make schema, query, transaction, migration, initialization, and rollback decisions explicit.
+4. When the change creates a meaningful attack surface, load `$backend-security` or `$security-management` for focused secure-design and implementation guidance.
 
 ### 3. Verify and harden
 
@@ -52,7 +52,7 @@ Use this skill to move from an approved backend requirement to review-ready code
 ### 4. Prepare delivery
 
 1. State migration, initialization, configuration, compatibility, rollout, rollback, observability, and operational follow-up needs that affect the backend change.
-2. Route frontend-dependent delivery to `$full-stack-feature-orchestrator`; this skill owns the backend portion and does not prescribe frontend implementation.
+2. Route frontend-dependent delivery to `$delivery-full-stack-feature`; this skill owns the backend portion and does not prescribe frontend implementation.
 3. Leave deployment execution and production monitoring to the repository's approved delivery process unless the user explicitly requests them.
 
 ## Implementation lenses

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Slides"
+  short_description: "Help with Frontend Slides tasks"
+  default_prompt: "Use $frontend-presentations to turn ResumeEnhancer frontend work into stakeholder-ready slides."

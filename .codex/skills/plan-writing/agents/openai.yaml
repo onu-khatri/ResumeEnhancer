@@ -1,4 +1,0 @@
-interface:
-  display_name: "Plan Writing"
-  short_description: "Create clear plans for complex work"
-  default_prompt: "Use $plan-writing to turn this request into a clear, actionable, reviewable plan."

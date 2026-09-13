@@ -1,0 +1,4 @@
+interface:
+  display_name: "Professional Article Writer"
+  short_description: "Help with Professional Article Writer tasks"
+  default_prompt: "Use $documentation-professional-writing to write professional content grounded in ResumeEnhancer evidence."

@@ -37,24 +37,24 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 
 ### Skill Selection
 
-- Backend delivery: `$backend-feature-development`, `$dotnet-backend-patterns`, `$ef-core-database-architect`, `$backend-security-coder`, and `$performance-optimization` as the change requires.
-- Architecture and domain: `$architect-review`, `$dotnet-architect`, `$domain-driven-design`, and `$architecture-decision-records`.
-- Frontend delivery: `$frontend-developer`, `$frontend-dev-guidelines`, `$react-patterns`, `$frontend-design`, `$production-ui-generator`, and `$frontend-security-coder` as applicable.
-- Full-stack and story delivery: `$full-stack-feature-orchestrator`, `$us-kickoff` for readiness and GitHub handoff, `$issues-kickoff` for GitHub issue intake and readiness handoff, `$openspec-workflow` for proposal approval, worktree implementation, verification, and closeout, `$plan-writing`, and the OpenSpec skills in `.agents/skills/` when the workflow applies.
-- Development entry gate: use `$development-entry-gate` before any development-related code, test, configuration, migration, frontend, backend, or architecture implementation; it routes specialist skills and returns readiness, but does not invoke implementation agents.
+- Backend delivery: `$backend-feature-development`, `$backend-dotnet-patterns`, `$backend-ef-core`, `$backend-security`, and `$quality-performance` as the change requires.
+- Architecture and domain: `$architecture-review`, `$backend-dotnet-architecture`, `$architecture-domain-modeling`, and `$architecture-adr`.
+- Frontend delivery: `$frontend-development`, `$frontend-guidelines`, `$frontend-react-patterns`, `$frontend-design`, `$frontend-production-ui`, and `$frontend-security` as applicable.
+- Full-stack and story delivery: `$delivery-full-stack-feature`, `$delivery-user-story-kickoff` for readiness and GitHub handoff, `$delivery-issues-kickoff` for GitHub issue intake and readiness handoff, `$openspec-workflow` for proposal approval, worktree implementation, verification, and closeout, `$workflow-planning`, and the OpenSpec skills in `.agents/skills/` when the workflow applies.
+- Development entry gate: use `$workflow-development-entry` before any development-related code, test, configuration, migration, frontend, backend, or architecture implementation; it routes specialist skills and returns readiness, but does not invoke implementation agents.
 - OpenSpec repository policy: use `$openspec-repository-policy` as an overlay with generated OpenSpec workflows. It preserves repository-specific gates, worktree sequencing, and delivery evidence across OpenSpec refreshes.
-- Development handoff: `$openspec-workflow` keeps proposal work in the main checkout, obtains explicit user approval, and creates the canonical branch/worktree only when implementation is about to begin. `$openspec-orchestrator` coordinates approved development work inside that worktree; implementation agents are reached only through the OpenSpec coordinator.
-- Review, quality, and security: `$production-code-reviewer`, `$ai-code-review`, `$code-review-checklist`, `$clean-code`, `$code-refactoring-tech-debt`, `$security-manager`, and `$design-review` as relevant.
-- Research and durable guidance: `$deep-research`, `$project-knowledge-builder`, `$documentation-generator`, `$readme-generator`, `$prd-manager`, and `$user-story-creator`. Use `$project-knowledge-builder` for reusable `KnowledgeBase/` artifacts, not ordinary documentation.
-- Delivery operations: `$git-workflows`, `$git-worktrees`, `$git-commit`, and `$pr-creator` when managing branches, commits, worktrees, or pull requests.
-- Use `$user-interview` when a selected workflow requires user-confirmed material decisions; do not silently replace a required interview with assumptions.
+- Development handoff: `$openspec-workflow` keeps proposal work in the main checkout, obtains explicit user approval, and creates the canonical branch/worktree only when implementation is about to begin. `$openspec-orchestration` coordinates approved development work inside that worktree; implementation agents are reached only through the OpenSpec coordinator.
+- Review, quality, and security: `$quality-production-code-review`, `$quality-ai-code-review`, `$quality-code-review-checklist`, `$quality-clean-code`, `$quality-refactoring`, `$security-management`, and `$frontend-design-review` as relevant.
+- Research and durable guidance: `$research-deep`, `$knowledge-project-builder`, `$documentation-generation`, `$documentation-readme`, `$product-prd`, and `$product-user-story`. Use `$knowledge-project-builder` for reusable `KnowledgeBase/` artifacts, not ordinary documentation.
+- Delivery operations: `$git-workflows`, `$git-worktrees`, `$git-commit`, and `$delivery-pull-request` when managing branches, commits, worktrees, or pull requests.
+- Use `$workflow-user-interview` when a selected workflow requires user-confirmed material decisions; do not silently replace a required interview with assumptions.
 
 ### Frontend Operating Model
 
-- Use [frontend workflow routing](.codex/skills/frontend-dev-guidelines/references/frontend-workflow-routing.md) to select frontend skills and the `frontend-implementer` agent.
-- Resolve material uncertainty before frontend delivery: use `$deep-research` for significant evidence gaps and `$user-interview` for a material user decision that evidence cannot answer.
-- Assign one primary implementation owner for a workstream. `$frontend-developer` is the default for frontend code; `$production-ui-generator` is an alternative only for an explicitly UI-dominant surface, not a parallel implementer.
-- Treat `$frontend-dev-guidelines` as the non-delegating standards authority. Use design, React-pattern, security, performance, review, and slides skills only when their stated trigger applies.
+- Use [frontend workflow routing](.codex/skills/frontend-guidelines/references/frontend-workflow-routing.md) to select frontend skills and the `frontend-implementer` agent.
+- Resolve material uncertainty before frontend delivery: use `$research-deep` for significant evidence gaps and `$workflow-user-interview` for a material user decision that evidence cannot answer.
+- Assign one primary implementation owner for a workstream. `$frontend-development` is the default for frontend code; `$frontend-production-ui` is an alternative only for an explicitly UI-dominant surface, not a parallel implementer.
+- Treat `$frontend-guidelines` as the non-delegating standards authority. Use design, React-pattern, security, performance, review, and slides skills only when their stated trigger applies.
 - Specialist skills return constraints, findings, or a handoff to the primary owner. They do not recursively invoke other frontend skills, spawn the `frontend-implementer`, or duplicate implementation work.
 
 ### Custom Agent Selection

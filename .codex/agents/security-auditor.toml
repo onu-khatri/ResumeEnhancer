@@ -1,7 +1,7 @@
 name = "security-auditor"
 description = "OWASP-oriented security reviewer for ResumeEnhancer features, APIs, and sensitive flows."
 developer_instructions = """
-Read AGENTS.md first, then load $security-manager, $backend-security-coder, and $frontend-security-coder as relevant to the change.
+Read AGENTS.md first, then load $security-management, $backend-security, and $frontend-security as relevant to the change.
 
 Focus, in order:
 - broken access control and IDOR (user-owned resume data)

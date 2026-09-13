@@ -1,7 +1,7 @@
 $skillBodies = @{
-  "agent-orchestration-improver" = @'
+  "orchestration-agent-improvement" = @'
 ---
-name: agent-orchestration-improver
+name: orchestration-agent-improvement
 description: Improve how Codex decomposes and coordinates multi-agent work for ResumeEnhancer, especially for parallel story execution, research, review, and implementation. Use when a task is large enough to benefit from structured delegation, validation, and synthesis.
 ---
 
@@ -55,9 +55,9 @@ Use this skill to strengthen existing ResumeEnhancer orchestration flows instead
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/agent-orchestration-improve-agent
 '@
-  "architecture-decision-records" = @'
+  "architecture-adr" = @'
 ---
-name: architecture-decision-records
+name: architecture-adr
 description: Write clear architecture decision records for ResumeEnhancer that capture context, options, tradeoffs, status, and consequences in project-specific language. Use when Codex needs to document a meaningful technical decision or proposed architecture change.
 ---
 
@@ -114,9 +114,9 @@ Use this skill to create durable ADRs that another engineer or agent can underst
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architecture-decision-records
 '@
-  "architect-review" = @'
+  "architecture-review" = @'
 ---
-name: architect-review
+name: architecture-review
 description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
@@ -145,11 +145,11 @@ Use this skill for evidence-led design review when code correctness alone is not
 
 ## Specialist Gates
 
-- Load `$domain-driven-design` for business vocabulary, bounded-context, aggregate, lifecycle, or invariant risk.
-- Load `$backend-security-coder` for trust, authorization, sensitive-data, secret, abuse, privacy, or export risk.
-- Load `$performance-optimization` for observed or visible latency, throughput, query, cache, resource, or capacity risk.
-- Load `$deep-research` before concrete distributed platform or pattern recommendations unsupported by repository evidence.
-- Recommend `$architecture-decision-records` for durable boundary, integration, persistence, deployment, or test-expectation decisions.
+- Load `$architecture-domain-modeling` for business vocabulary, bounded-context, aggregate, lifecycle, or invariant risk.
+- Load `$backend-security` for trust, authorization, sensitive-data, secret, abuse, privacy, or export risk.
+- Load `$quality-performance` for observed or visible latency, throughput, query, cache, resource, or capacity risk.
+- Load `$research-deep` before concrete distributed platform or pattern recommendations unsupported by repository evidence.
+- Recommend `$architecture-adr` for durable boundary, integration, persistence, deployment, or test-expectation decisions.
 
 ## Review Gate
 
@@ -227,9 +227,9 @@ Use this skill to move from a ResumeEnhancer story to review-ready backend code 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-development-feature-development
 '@
-  "backend-security-coder" = @'
+  "backend-security" = @'
 ---
-name: backend-security-coder
+name: backend-security
 description: Implement and review secure backend code for ResumeEnhancer with OWASP-oriented practices around validation, authorization, data handling, logging, and abuse resistance. Use when Codex is changing APIs, persistence flows, auth-sensitive logic, or other backend attack surfaces.
 ---
 
@@ -281,11 +281,11 @@ Use this skill to apply practical backend security during implementation and rev
 - verification notes
 
 ## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-security-coder
+- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-security-coder-coder
 '@
-  "clean-code" = @'
+  "quality-clean-code" = @'
 ---
-name: clean-code
+name: quality-clean-code
 description: Keep ResumeEnhancer changes readable, cohesive, and easy to extend without introducing unnecessary abstractions or duplication. Use when Codex is implementing, refactoring, or reviewing code quality across backend or frontend areas.
 ---
 
@@ -336,9 +336,9 @@ Use this skill to improve clarity and maintainability while preserving the repos
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/clean-code
 '@
-  "code-refactoring-tech-debt" = @'
+  "quality-refactoring" = @'
 ---
-name: code-refactoring-tech-debt
+name: quality-refactoring
 description: Reduce technical debt in ResumeEnhancer through scoped refactoring that preserves behavior while improving structure, duplication, and maintainability. Use when Codex needs to clean up existing code, prepare for new features, or address architectural friction.
 ---
 
@@ -390,9 +390,9 @@ Use this skill to make the codebase cheaper to change without disguising a redes
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-refactoring-tech-debt
 '@
-  "production-code-reviewer" = @'
+  "quality-production-code-review" = @'
 ---
-name: production-code-reviewer
+name: quality-production-code-review
 description: Perform production-grade code review for ResumeEnhancer with a defect-first mindset across architecture, correctness, security, tests, and maintainability. Use when Codex needs to review diffs, pull requests, or uncommitted changes before merge.
 ---
 
@@ -446,9 +446,9 @@ Use this skill to produce high-signal review findings that protect correctness a
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-review-excellence
 '@
-  "deep-research" = @'
+  "research-deep" = @'
 ---
-name: deep-research
+name: research-deep
 description: Perform deep, evidence-based research for ResumeEnhancer across product requirements, user stories, code, tests, and external sources when needed. Use when Codex needs a thorough answer before implementation, architecture, or planning decisions.
 ---
 
@@ -491,9 +491,9 @@ Use this skill when a shallow code read would create avoidable risk and the answ
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/deep-research
 '@
-  "domain-driven-design" = @'
+  "architecture-domain-modeling" = @'
 ---
-name: domain-driven-design
+name: architecture-domain-modeling
 description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
@@ -533,9 +533,9 @@ Stop after the viability assessment when the task has no meaningful invariant, d
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/domain-driven-design
 '@
-  "dotnet-architect" = @'
+  "backend-dotnet-architecture" = @'
 ---
-name: dotnet-architect
+name: backend-dotnet-architecture
 description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
@@ -553,7 +553,7 @@ Use this skill when an architecture decision needs .NET-aware reasoning rather t
 
 - the task is not meaningfully architecture-sensitive
 - an established local pattern answers the question without a boundary decision
-- you only need a design review of an existing change; use `$architect-review`
+- you only need a design review of an existing change; use `$architecture-review`
 
 ## Knowledge Routing
 
@@ -569,7 +569,7 @@ Use this skill when an architecture decision needs .NET-aware reasoning rather t
 2. Make the smallest boundary decision that preserves dependency direction and explicit composition.
 3. Evaluate lifecycle, configuration, failure, and test consequences.
 4. State alternatives and tradeoffs when the choice is durable.
-5. Use `$architecture-decision-records` when the project needs the decision recorded.
+5. Use `$architecture-adr` when the project needs the decision recorded.
 
 ## Output Requirements
 
@@ -581,9 +581,9 @@ Use this skill when an architecture decision needs .NET-aware reasoning rather t
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-architect
 '@
-  "dotnet-backend-patterns" = @'
+  "backend-dotnet-patterns" = @'
 ---
-name: dotnet-backend-patterns
+name: backend-dotnet-patterns
 description: Apply .NET backend implementation patterns for API boundaries, application behavior, persistence, and testing. Use when a change needs pattern selection or a framework-aware implementation review.
 ---
 
@@ -620,9 +620,9 @@ Use this skill to select and apply the smallest proven .NET backend pattern that
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-backend-patterns
 '@
-  "frontend-dev-guidelines" = @'
+  "frontend-guidelines" = @'
 ---
-name: frontend-dev-guidelines
+name: frontend-guidelines
 description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
@@ -689,15 +689,15 @@ Use this skill to shape product-quality experiences instead of interchangeable c
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-design
 '@
-  "frontend-developer" = @'
+  "frontend-development" = @'
 ---
-name: frontend-developer
+name: frontend-development
 description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. `$frontend-dev-guidelines` owns detailed shared standards; this skill owns delivery sequencing and evidence.
+Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. `$frontend-guidelines` owns detailed shared standards; this skill owns delivery sequencing and evidence.
 
 ## Use this skill when
 
@@ -735,9 +735,9 @@ Use this skill to turn approved frontend behavior into implementation-ready code
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-developer
 '@
-  "frontend-security-coder" = @'
+  "frontend-security" = @'
 ---
-name: frontend-security-coder
+name: frontend-security
 description: Implement and review secure frontend behavior in ResumeEnhancer with attention to auth flow, data exposure, user input handling, DOM safety, redirects, and safe API interaction. Use when Codex is changing client-side behavior with security or privacy implications.
 ---
 
@@ -788,11 +788,11 @@ Use this skill for client-side security work that should prevent real browser-si
 - verification notes
 
 ## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-security-coder
+- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-security-coder-coder
 '@
-  "frontend-slides" = @'
+  "frontend-presentations" = @'
 ---
-name: frontend-slides
+name: frontend-presentations
 description: Create presentation-ready frontend walkthroughs, implementation summaries, and UI narratives for ResumeEnhancer. Use when Codex needs to turn frontend work into stakeholder-friendly slides, demos, or visual explanations.
 ---
 
@@ -844,9 +844,9 @@ Use this skill to turn product or implementation work into clear, polished prese
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-slides
 '@
-  "production-ui-generator" = @'
+  "frontend-production-ui" = @'
 ---
-name: production-ui-generator
+name: frontend-production-ui
 description: Generate production-grade UI for ResumeEnhancer with intentional design, accessibility, component reuse, theming, and implementation-ready React patterns. Use when Codex needs to create or improve pages, flows, feature UIs, or polished product surfaces in the React/Vite client.
 ---
 
@@ -897,9 +897,9 @@ Use this skill when the UI should feel launch-ready, deliberate, and implementab
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-ui-dark-ts
 '@
-  "full-stack-feature-orchestrator" = @'
+  "delivery-full-stack-feature" = @'
 ---
-name: full-stack-feature-orchestrator
+name: delivery-full-stack-feature
 description: Coordinate full-stack feature delivery in ResumeEnhancer across requirements, frontend, API, service layer, persistence, tests, and PR packaging. Use when Codex needs to drive an end-to-end feature from story to review-ready implementation.
 ---
 
@@ -999,18 +999,18 @@ foreach ($name in $skillBodies.Keys) {
 $upstreamRoot = Join-Path $env:TEMP "antigravity-awesome-skills-audit\skills"
 
 Copy-MarkdownWithFooter `
-  -SourcePath (Join-Path $upstreamRoot "dotnet-backend-patterns\references\dapper-patterns.md") `
-  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "dotnet-backend-patterns\references\dapper-patterns.md"))) `
+  -SourcePath (Join-Path $upstreamRoot "backend-dotnet-patterns\references\dapper-patterns.md") `
+  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "backend-dotnet-patterns\references\dapper-patterns.md"))) `
   -UpstreamUrl "https://github.com/benjaminasterA/antigravity-awesome-skills/blob/main/skills/dotnet-backend-patterns/references/dapper-patterns.md"
 
 Copy-CSharpWithFooter `
-  -SourcePath (Join-Path $upstreamRoot "dotnet-backend-patterns\assets\repository-template.cs") `
-  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "dotnet-backend-patterns\assets\repository-template.cs"))) `
+  -SourcePath (Join-Path $upstreamRoot "backend-dotnet-patterns\assets\repository-template.cs") `
+  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "backend-dotnet-patterns\assets\repository-template.cs"))) `
   -UpstreamUrl "https://github.com/benjaminasterA/antigravity-awesome-skills/blob/main/skills/dotnet-backend-patterns/assets/repository-template.cs"
 
 Copy-CSharpWithFooter `
-  -SourcePath (Join-Path $upstreamRoot "dotnet-backend-patterns\assets\service-template.cs") `
-  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "dotnet-backend-patterns\assets\service-template.cs"))) `
+  -SourcePath (Join-Path $upstreamRoot "backend-dotnet-patterns\assets\service-template.cs") `
+  -DestinationPath ([IO.Path]::GetFullPath((Join-Path $skillRoot "backend-dotnet-patterns\assets\service-template.cs"))) `
   -UpstreamUrl "https://github.com/benjaminasterA/antigravity-awesome-skills/blob/main/skills/dotnet-backend-patterns/assets/service-template.cs"
 
 $reviewChecklist = @'
@@ -1103,15 +1103,15 @@ Use this note when combining human review judgment with AI-assisted triage.
 '@
 
 Set-FileText `
-  -Path ([IO.Path]::GetFullPath((Join-Path $skillRoot "production-code-reviewer\references\review-checklist.md"))) `
+  -Path ([IO.Path]::GetFullPath((Join-Path $skillRoot "quality-production-code-review\references\review-checklist.md"))) `
   -Content $reviewChecklist
 
 Set-FileText `
-  -Path ([IO.Path]::GetFullPath((Join-Path $skillRoot "production-code-reviewer\references\ai-review-playbook.md"))) `
+  -Path ([IO.Path]::GetFullPath((Join-Path $skillRoot "quality-production-code-review\references\ai-review-playbook.md"))) `
   -Content $aiReviewPlaybook
 
 $extendedReferences = @{
-  "agent-orchestration-improver\references\optimization-playbook.md" = @'
+  "orchestration-agent-improvement\references\optimization-playbook.md" = @'
 # Agent Optimization Playbook
 
 Use this playbook when the orchestration itself needs redesign rather than another prompt tweak.
@@ -1140,7 +1140,7 @@ Use this playbook when the orchestration itself needs redesign rather than anoth
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/agent-orchestration-improve-agent
 '@
-  "architecture-decision-records\references\adr-patterns.md" = @'
+  "architecture-adr\references\adr-patterns.md" = @'
 # ADR Patterns
 
 Use this note for higher-quality ADRs when the decision is important enough to revisit later.
@@ -1171,7 +1171,7 @@ Use this note for higher-quality ADRs when the decision is important enough to r
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architecture-decision-records
 '@
-  "backend-security-coder\references\security-review-guide.md" = @'
+  "backend-security\references\security-review-guide.md" = @'
 # Backend Security Review Guide
 
 Use this note when the code touches a trust boundary or protected data path.
@@ -1192,9 +1192,9 @@ Use this note when the code touches a trust boundary or protected data path.
 - make failures safe and observable
 
 ## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-security-coder
+- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-security-coder-coder
 '@
-  "code-refactoring-tech-debt\references\refactoring-playbook.md" = @'
+  "quality-refactoring\references\refactoring-playbook.md" = @'
 # Refactoring Playbook
 
 Use this playbook when behavior must stay stable while structure improves.
@@ -1239,10 +1239,10 @@ Use this playbook when the interface needs a stronger design point of view.
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-design
 '@
-  "frontend-developer\references\implementation-playbook.md" = @'
+  "frontend-development\references\implementation-playbook.md" = @'
 # Frontend Implementation Playbook
 
-Use this note for a route, form, remote-data, or multi-state feature. It complements `$frontend-dev-guidelines`; current source and requirements remain authoritative.
+Use this note for a route, form, remote-data, or multi-state feature. It complements `$frontend-guidelines`; current source and requirements remain authoritative.
 
 ## Delivery sequence
 
@@ -1263,7 +1263,7 @@ Use this note for a route, form, remote-data, or multi-state feature. It complem
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-developer
 '@
-  "frontend-security-coder\references\client-security-playbook.md" = @'
+  "frontend-security\references\client-security-playbook.md" = @'
 # Client Security Playbook
 
 Use this note when the browser-side code handles untrusted content or sensitive state.
@@ -1283,9 +1283,9 @@ Use this note when the browser-side code handles untrusted content or sensitive 
 - treat third-party scripts and widgets as risk surfaces
 
 ## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-security-coder
+- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-security-coder-coder
 '@
-  "frontend-slides\references\slides-playbook.md" = @'
+  "frontend-presentations\references\slides-playbook.md" = @'
 # Slides Playbook
 
 Use this note when a UI story needs to become a clear presentation.
@@ -1307,7 +1307,7 @@ Use this note when a UI story needs to become a clear presentation.
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-slides
 '@
-  "production-ui-generator\references\theme-and-layout-playbook.md" = @'
+  "frontend-production-ui\references\theme-and-layout-playbook.md" = @'
 # Theme And Layout Playbook
 
 Use this note when the UI needs stronger visual structure and theming decisions.
@@ -1329,7 +1329,7 @@ Use this note when the UI needs stronger visual structure and theming decisions.
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-ui-dark-ts
 '@
-  "full-stack-feature-orchestrator\references\feature-delivery-playbook.md" = @'
+  "delivery-full-stack-feature\references\feature-delivery-playbook.md" = @'
 # Feature Delivery Playbook
 
 Use this note when a feature spans frontend, backend, persistence, and release preparation.

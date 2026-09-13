@@ -17,13 +17,13 @@ Keep project-specific policy in `AGENTS.md` and `.codex/skills/`. Apply this
 skill as an overlay whenever an OpenSpec workflow is used:
 
 - Read `AGENTS.md` and `KnowledgeBase/INDEX.md` before planning or delivery.
-- Use `$development-entry-gate` before any development edit. Its result is a
+- Use `$workflow-development-entry` before any development edit. Its result is a
   gate, not an implementation handoff by itself.
 - Keep proposal artifacts in the main checkout and implementation work in the
   approved canonical worktree. Create or reuse a worktree only after proposal,
   Definition-of-Ready, approval, issue/change identity, base branch, and owner
   evidence are present.
-- Keep `$openspec-orchestrator` and `$openspec-workflow` as the lifecycle
+- Keep `$openspec-orchestration` and `$openspec-workflow` as the lifecycle
   authorities. The generated OpenSpec skill remains responsible for its own
   CLI contract, artifact context, and task checkbox rules.
 - Preserve unrelated changes and distinguish local validation, commit, push,

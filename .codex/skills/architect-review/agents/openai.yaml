@@ -1,4 +1,0 @@
-interface:
-  display_name: "Architect Review"
-  short_description: "Assess modular and distributed architecture risk"
-  default_prompt: "Use $architect-review to assess architecture impact, quality attributes, and evidence-backed findings for a modular or distributed change."

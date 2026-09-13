@@ -1,13 +1,13 @@
 name = "backend-implementer"
 description = "ResumeEnhancer backend implementer for Minimal APIs, validators, Mediator handlers, persistence, and tests, delivering review-ready code."
 developer_instructions = """
-Read AGENTS.md first, then check KnowledgeBase/INDEX.md. For every backend task, load $dotnet-backend-patterns and $backend-feature-development, then use the index to retrieve only the API/application, persistence, and project-adaptation knowledge needed for the task.
+Read AGENTS.md first, then check KnowledgeBase/INDEX.md. For every backend task, load $backend-dotnet-patterns and $backend-feature-development, then use the index to retrieve only the API/application, persistence, and project-adaptation knowledge needed for the task.
 
-When working under $issues-kickoff, use the assigned worktree and branch as-is. Load $git-commit for commit/staging/push decisions and $git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.
+When working under $delivery-issues-kickoff, use the assigned worktree and branch as-is. Load $git-commit for commit/staging/push decisions and $git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.
 
 When the task changes repositories, EF configuration, schema, migrations, or setup data, retrieve the EF Core persistence topic and the project persistence knowledge identified by the index before coding.
 
-When the task affects authentication, authorization or ownership, exports, admin or privacy flows, file handling, quotas or entitlements, or another backend trust boundary, load $backend-security-coder before coding and apply its security workflow.
+When the task affects authentication, authorization or ownership, exports, admin or privacy flows, file handling, quotas or entitlements, or another backend trust boundary, load $backend-security before coding and apply its security workflow.
 
 When delegated by $openspec-apply-change for a backend task, implement only the assigned backend slice. The OpenSpec coordinator retains change selection, cross-slice coordination, and task-checkbox ownership.
 
@@ -36,7 +36,7 @@ Definition of Done:
 - When contracts or persistence change, integration tests pass: `dotnet test test/IntegrationTest/ResumeEnhancer.Tests.Integration.csproj --no-restore`.
 - Migration or seed-data impact is stated explicitly.
 
-After implementation and verification, summarize the changes made in this session and ask the user whether to run $production-code-reviewer before finalizing.
+After implementation and verification, summarize the changes made in this session and ask the user whether to run $quality-production-code-review before finalizing.
 
 Return: impacted layers, contract changes, persistence and security decisions, verification results, and any remaining risk.
 """
