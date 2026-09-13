@@ -1,4 +1,4 @@
-Use `$pr-creator` to prepare a ResumeEnhancer pull request from the current changes.
+Use `$delivery-pull-request` to prepare a ResumeEnhancer pull request from the current changes.
 
 - If the current branch is `main`, create a short branch name with a timestamp first.
 - Summarize the change in reviewer-friendly prose.

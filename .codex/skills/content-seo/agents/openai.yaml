@@ -1,0 +1,4 @@
+interface:
+  display_name: "Seo Content Writer"
+  short_description: "Help with Seo Content Writer tasks"
+  default_prompt: "Use $content-seo to create search-optimized content for ResumeEnhancer public pages."

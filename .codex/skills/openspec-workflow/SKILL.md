@@ -5,7 +5,7 @@ description: Coordinate ResumeEnhancer OpenSpec proposal, approval, worktree imp
 
 # OpenSpecWorkflow
 
-Use this skill for OpenSpec proposal work, proposal approval, implementation handoff, implementation continuation, verification, synchronization, archiving, and change closeout. It is the OpenSpec lifecycle authority. `$issues-kickoff` supplies issue intake and readiness evidence; `$openspec-orchestrator` and the OpenSpec skills supply the stateful planning and implementation mechanics.
+Use this skill for OpenSpec proposal work, proposal approval, implementation handoff, implementation continuation, verification, synchronization, archiving, and change closeout. It is the OpenSpec lifecycle authority. `$delivery-issues-kickoff` supplies issue intake and readiness evidence; `$openspec-orchestration` and the OpenSpec skills supply the stateful planning and implementation mechanics.
 
 The generated workflows under `.agents/skills/` own their CLI-specific
 operation contracts. Read `$openspec-repository-policy` as the repository
@@ -83,7 +83,7 @@ When an approved proposal exists and the user asks to implement, write code, con
 4. After confirmation, use `$git-worktrees` to create and validate `openspec/gh-<issue-number>-<short-kebab-slug>` at `.worktrees/gh-<issue-number>-<short-kebab-slug>` from the actual default branch. For issue-less changes use the canonical `openspec/<change-name>` branch.
 5. Re-read `AGENTS.md`, `KnowledgeBase/INDEX.md`, the source story pack, and all OpenSpec context files from inside the worktree. If `AGENTS.md` differs from the approved main-checkout version, synchronize the approved file before coding and verify the diff; do not silently discard either version.
 6. Update only implementation tracking metadata in the worktree story (`status: In_Progress`, branch, worktree path, base branch, updated), preserving body and unrelated edits.
-7. From inside the worktree, invoke `$openspec-orchestrator`, then `$openspec-apply-change` for pending tasks. The apply workflow MUST run `$development-entry-gate` before the first code edit and use the routed implementation/security/review skills.
+7. From inside the worktree, invoke `$openspec-orchestration`, then `$openspec-apply-change` for pending tasks. The apply workflow MUST run `$workflow-development-entry` before the first code edit and use the routed implementation/security/review skills.
 8. Keep OpenSpec task checkboxes, implementation files, tests, migrations, and verification evidence in the worktree. Report actual commands and results; do not claim success from planned commands.
 
 ## Verification, PR, and closeout
@@ -99,7 +99,7 @@ If the user asks to merge, rebase, cherry-pick, clean up, archive, or otherwise 
 
 - operate from the existing worktree/branch or explicitly supplied checkout;
 - do not ask to create a new worktree;
-- use `$git-workflows` for history operations, `$git-commit` for commit/push boundaries, `$pr-creator` for PR delivery, and `$git-worktrees` for cleanup;
+- use `$git-workflows` for history operations, `$git-commit` for commit/push boundaries, `$delivery-pull-request` for PR delivery, and `$git-worktrees` for cleanup;
 - clean up only after the branch is merged or the change is intentionally abandoned, the worktree has no required uncommitted changes, no process/editor still uses it, and the user-authorized closeout is complete;
 - after cleanup, verify `git worktree list`, branch/PR state, story status, and OpenSpec archive state.
 

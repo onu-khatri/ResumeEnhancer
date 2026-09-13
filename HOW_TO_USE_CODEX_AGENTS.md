@@ -169,7 +169,7 @@ Use the `knowledge-researcher` agent to document how resume search flows from fr
 For approval-driven knowledge work, pair it with the knowledge skill:
 
 ```text
-Use the `knowledge-researcher` agent and `$project-knowledge-builder` to investigate persistence patterns.
+Use the `knowledge-researcher` agent and `$knowledge-project-builder` to investigate persistence patterns.
 Ask interview questions first, then create `KnowledgeBase/persistence-patterns.kb_plan.md`.
 After I approve the plan, create `KnowledgeBase/persistence-patterns.pre-knowledge.md`.
 Only save the final `.knowledge.md` after I approve the draft.

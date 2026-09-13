@@ -1,7 +1,7 @@
 $skillBodies = @{
-  "pr-creator" = @'
+  "delivery-pull-request" = @'
 ---
-name: pr-creator
+name: delivery-pull-request
 description: Create high-quality pull requests for ResumeEnhancer with branch safety, story traceability, reviewer context, and clear validation notes. Use when Codex needs to prepare a branch, stage work, summarize code changes, link user stories or business requirements, and produce a reviewer-ready PR flow.
 ---
 
@@ -26,15 +26,15 @@ Use this skill to finish implementation work safely and package it for review wi
 - Mention schema or migration impact whenever persistence changes.
 - Mention validation, mapping, and test coverage when relevant.
 '@
-  "us-kickoff" = @'
+  "delivery-user-story-kickoff" = @'
 ---
-name: us-kickoff
-description: Prepare approved ResumeEnhancer user stories for GitHub issue handoff with readiness checks, dependency ordering, and human approval. Use issues-kickoff for implementation execution.
+name: delivery-user-story-kickoff
+description: Prepare approved ResumeEnhancer user stories for GitHub issue handoff with readiness checks, dependency ordering, and human approval. Use delivery-issues-kickoff for implementation execution.
 ---
 
 # US Kickoff
 
-Use this skill to validate approved story slices and hand them to GitHub through `$create-github-issue` without losing readiness discipline or architectural boundaries. It does not create branches, worktrees, or implementation agents.
+Use this skill to validate approved story slices and hand them to GitHub through `$delivery-github-issue` without losing readiness discipline or architectural boundaries. It does not create branches, worktrees, or implementation agents.
 
 ## Entry Criteria
 
@@ -49,12 +49,12 @@ Use this skill to validate approved story slices and hand them to GitHub through
 2. Resolve dependencies and determine issue pick order and any evidence-backed splits.
 3. Identify shared files, migration risk, and likely merge conflicts.
 4. Stop for a short human approval checkpoint before issue creation.
-5. After approval, invoke `$create-github-issue` for the approved stories in dependency order.
-6. After verified handoff, use `$issues-kickoff` for branches, worktrees, agents, implementation, and PR readiness.
+5. After approval, invoke `$delivery-github-issue` for the approved stories in dependency order.
+6. After verified handoff, use `$delivery-issues-kickoff` for branches, worktrees, agents, implementation, and PR readiness.
 '@
-  "production-ui-generator" = @'
+  "frontend-production-ui" = @'
 ---
-name: production-ui-generator
+name: frontend-production-ui
 description: Generate production-grade UI for ResumeEnhancer with intentional design, accessibility, component reuse, and implementation-ready React patterns. Use when Codex needs to create or improve pages, flows, feature UIs, or polished product surfaces in the React/Vite client.
 ---
 
@@ -70,9 +70,9 @@ Use this skill for UI work that must feel launch-ready, not demo-grade.
 4. Build mobile and desktop behavior intentionally.
 5. Keep styling purposeful and specific.
 '@
-  "production-code-reviewer" = @'
+  "quality-production-code-review" = @'
 ---
-name: production-code-reviewer
+name: quality-production-code-review
 description: Perform production-grade code review for ResumeEnhancer with a defect-first mindset across architecture, correctness, security, tests, and maintainability. Use when Codex needs to review diffs, pull requests, or uncommitted changes before merge.
 ---
 
@@ -88,9 +88,9 @@ Use this skill for real review work, not style-only commentary.
 4. Validate behavior through tests, call sites, validators, mappers, and API contracts.
 5. Report findings by severity, with concrete impact and narrow file references.
 '@
-  "professional-article-writer" = @'
+  "documentation-professional-writing" = @'
 ---
-name: professional-article-writer
+name: documentation-professional-writing
 description: Write professional long-form content grounded in ResumeEnhancer product thinking, implementation detail, and evidence. Use when Codex needs to produce articles, technical explainers, internal writeups, or polished thought pieces from project material.
 ---
 
@@ -105,9 +105,9 @@ Use this skill for polished writing that should sound informed, concrete, and pu
 - avoid hype and filler
 - tailor tone to internal docs, blog posts, launch notes, or engineering explainers
 '@
-  "ef-core-database-architect" = @'
+  "backend-ef-core" = @'
 ---
-name: ef-core-database-architect
+name: backend-ef-core
 description: Design and review ResumeEnhancer database and persistence changes using EF Core, SQL Server, shared persistence infrastructure, and migration discipline. Use when Codex needs to shape schemas, repositories, seeding, mappings, or migration strategy for this project.
 ---
 
@@ -123,9 +123,9 @@ Use this skill for persistence design in the actual stack this repository uses.
 - setup data and seeding
 - query shape, includes, and pagination
 '@
-  "security-manager" = @'
+  "security-management" = @'
 ---
-name: security-manager
+name: security-management
 description: Apply OWASP-oriented secure design and secure coding guidance to ResumeEnhancer across frontend, backend, authentication, persistence, and AI-adjacent flows. Use when Codex needs to assess, implement, or review security-sensitive changes in this project.
 ---
 
@@ -142,9 +142,9 @@ Use this skill when a task touches authorization, data protection, input validat
 - logging and secret handling
 - rate limiting and abuse controls
 '@
-  "excalidraw-diagram-generator" = @'
+  "documentation-excalidraw-diagrams" = @'
 ---
-name: excalidraw-diagram-generator
+name: documentation-excalidraw-diagrams
 description: Generate clear architecture and workflow diagrams for ResumeEnhancer that can be rendered in Excalidraw or translated into diagram assets later. Use when Codex needs to visualize modules, flows, integrations, or story delivery plans.
 ---
 
@@ -159,9 +159,9 @@ Use this skill to turn architecture or workflow understanding into diagram-ready
 - directional flows
 - notes on what is observed versus inferred
 '@
-  "agent-orchestration-improver" = @'
+  "orchestration-agent-improvement" = @'
 ---
-name: agent-orchestration-improver
+name: orchestration-agent-improvement
 description: Improve how Codex decomposes and coordinates multi-agent work for ResumeEnhancer, especially for parallel story execution, research, review, and implementation. Use when a task is large enough to benefit from structured delegation and synthesis.
 ---
 
@@ -176,9 +176,9 @@ Use this skill when one agent should plan, delegate, gather evidence, and synthe
 - parallelism only where file overlap is low
 - explicit synthesis responsibilities for the parent agent
 '@
-  "architecture-decision-records" = @'
+  "architecture-adr" = @'
 ---
-name: architecture-decision-records
+name: architecture-adr
 description: Write clear architecture decision records for ResumeEnhancer that capture context, options, tradeoffs, and consequences in project-specific language. Use when Codex needs to document a meaningful technical decision or proposed architecture change.
 ---
 
@@ -186,9 +186,9 @@ description: Write clear architecture decision records for ResumeEnhancer that c
 
 Use this skill when a decision deserves durable documentation because it affects module boundaries, persistence strategy, feature orchestration, testing strategy, security posture, or delivery sequencing.
 '@
-  "architect-review" = @'
+  "architecture-review" = @'
 ---
-name: architect-review
+name: architecture-review
 description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
@@ -208,9 +208,9 @@ description: Implement backend features in ResumeEnhancer using the existing .NE
 
 Use this skill to add or change backend behavior without breaking the repo’s layering and contract patterns.
 '@
-  "backend-security-coder" = @'
+  "backend-security" = @'
 ---
-name: backend-security-coder
+name: backend-security
 description: Implement and review secure backend code for ResumeEnhancer with OWASP-oriented practices around validation, authorization, data handling, and abuse resistance. Use when Codex is changing APIs, persistence flows, auth-sensitive logic, or other backend attack surfaces.
 ---
 
@@ -218,9 +218,9 @@ description: Implement and review secure backend code for ResumeEnhancer with OW
 
 Use this skill when backend work must be correct and secure, especially around account state, document sharing, AI usage, billing, exports, or admin behavior.
 '@
-  "clean-code" = @'
+  "quality-clean-code" = @'
 ---
-name: clean-code
+name: quality-clean-code
 description: Keep ResumeEnhancer changes readable, cohesive, and easy to extend without introducing unnecessary abstractions or duplication. Use when Codex is implementing, refactoring, or reviewing code quality across backend or frontend areas.
 ---
 
@@ -228,9 +228,9 @@ description: Keep ResumeEnhancer changes readable, cohesive, and easy to extend 
 
 Use this skill to improve clarity and maintainability while respecting the repository’s existing architecture instead of fighting it.
 '@
-  "code-refactoring-tech-debt" = @'
+  "quality-refactoring" = @'
 ---
-name: code-refactoring-tech-debt
+name: quality-refactoring
 description: Reduce technical debt in ResumeEnhancer through scoped refactoring that preserves behavior while improving structure, duplication, and maintainability. Use when Codex needs to clean up existing code, prepare for new features, or address architectural friction.
 ---
 
@@ -238,9 +238,9 @@ description: Reduce technical debt in ResumeEnhancer through scoped refactoring 
 
 Use this skill when the goal is structural improvement with low behavioral risk.
 '@
-  "deep-research" = @'
+  "research-deep" = @'
 ---
-name: deep-research
+name: research-deep
 description: Perform deep, evidence-based research for ResumeEnhancer across product requirements, user stories, code, tests, and external sources when needed. Use when Codex needs a thorough answer before implementation, architecture, or planning decisions.
 ---
 
@@ -248,9 +248,9 @@ description: Perform deep, evidence-based research for ResumeEnhancer across pro
 
 Use this skill for broad investigations where the answer depends on multiple repository layers or on current external evidence.
 '@
-  "domain-driven-design" = @'
+  "architecture-domain-modeling" = @'
 ---
-name: domain-driven-design
+name: architecture-domain-modeling
 description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
@@ -260,9 +260,9 @@ Read `KnowledgeBase/INDEX.md`, then `domain-modeling.knowledge.md` before propos
 
 Stop after viability assessment when no meaningful invariant, divergent context, or lifecycle rule exists.
 '@
-  "dotnet-architect" = @'
+  "backend-dotnet-architecture" = @'
 ---
-name: dotnet-architect
+name: backend-dotnet-architecture
 description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
@@ -272,9 +272,9 @@ Read `KnowledgeBase/INDEX.md`, then `dotnet-modular-architecture.knowledge.md` b
 
 State ownership, dependency direction, verification implications, and an ADR recommendation for durable decisions.
 '@
-  "dotnet-backend-patterns" = @'
+  "backend-dotnet-patterns" = @'
 ---
-name: dotnet-backend-patterns
+name: backend-dotnet-patterns
 description: Apply .NET backend implementation patterns for API boundaries, application behavior, persistence, and testing. Use when a change needs pattern selection or a framework-aware implementation review.
 ---
 
@@ -284,9 +284,9 @@ Use this skill to select and apply the smallest proven .NET backend pattern that
 
 Check `KnowledgeBase/INDEX.md`, then retrieve only the API/application, EF Core persistence, and project-adaptation topics that affect the task.
 '@
-  "frontend-dev-guidelines" = @'
+  "frontend-guidelines" = @'
 ---
-name: frontend-dev-guidelines
+name: frontend-guidelines
 description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
@@ -310,19 +310,19 @@ description: Design polished, intentional interfaces for ResumeEnhancer that fit
 
 Use this skill when the task is primarily about product design quality and user experience, not just component coding.
 '@
-  "frontend-developer" = @'
+  "frontend-development" = @'
 ---
-name: frontend-developer
+name: frontend-development
 description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. Read `$frontend-dev-guidelines` for detailed shared implementation standards, preserve the typed shared API client, implement complete user-visible states, and report focused verification precisely.
+Use this skill to turn approved frontend behavior into implementation-ready code that fits the current React/Vite client. Read `$frontend-guidelines` for detailed shared implementation standards, preserve the typed shared API client, implement complete user-visible states, and report focused verification precisely.
 '@
-  "frontend-security-coder" = @'
+  "frontend-security" = @'
 ---
-name: frontend-security-coder
+name: frontend-security
 description: Implement and review secure frontend behavior in ResumeEnhancer with attention to auth flow, data exposure, user input handling, and safe API interaction. Use when Codex is changing client-side behavior with security or privacy implications.
 ---
 
@@ -330,9 +330,9 @@ description: Implement and review secure frontend behavior in ResumeEnhancer wit
 
 Use this skill when client work touches authentication, sensitive content, sharing, account state, or potentially unsafe rendering paths.
 '@
-  "frontend-slides" = @'
+  "frontend-presentations" = @'
 ---
-name: frontend-slides
+name: frontend-presentations
 description: Create presentation-ready frontend walkthroughs, implementation summaries, and UI narratives for ResumeEnhancer. Use when Codex needs to turn frontend work into stakeholder-friendly slides, demos, or visual explanations.
 ---
 
@@ -340,9 +340,9 @@ description: Create presentation-ready frontend walkthroughs, implementation sum
 
 Use this skill when the output is a presentation artifact or demo narrative rather than production code.
 '@
-  "full-stack-feature-orchestrator" = @'
+  "delivery-full-stack-feature" = @'
 ---
-name: full-stack-feature-orchestrator
+name: delivery-full-stack-feature
 description: Coordinate full-stack feature delivery in ResumeEnhancer across requirements, frontend, API, service layer, persistence, tests, and PR packaging. Use when Codex needs to drive an end-to-end feature from story to review-ready implementation.
 ---
 
@@ -386,9 +386,9 @@ sandbox_mode = "workspace-write"
 name = "frontend-implementer"
 description = "Single-lane ResumeEnhancer frontend implementer for React/TypeScript features, forms, routes, typed client data, and focused verification."
 developer_instructions = """
-Read AGENTS.md first, then `.codex/skills/frontend-dev-guidelines/references/frontend-workflow-routing.md`. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
+Read AGENTS.md first, then `.codex/skills/frontend-guidelines/references/frontend-workflow-routing.md`. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
 
-Load `$frontend-developer` and `$frontend-dev-guidelines` for assigned implementation. Consult a specialist only when the routing trigger applies, incorporate its result, and remain the sole implementer. Do not run `$deep-research` or `$user-interview`; return a material evidence gap or user decision to the parent with the exact question and evidence checked.
+Load `$frontend-development` and `$frontend-guidelines` for assigned implementation. Consult a specialist only when the routing trigger applies, incorporate its result, and remain the sole implementer. Do not run `$research-deep` or `$workflow-user-interview`; return a material evidence gap or user decision to the parent with the exact question and evidence checked.
 
 Work inside feature boundaries, reuse shared UI and model types, keep API interaction typed and centralized, implement meaningful user-visible states, preserve accessible responsive behavior, add focused tests, and report exactly which checks ran. If a requirement or contract is materially missing, return the blocker to the parent instead of inventing it.
 """
@@ -425,7 +425,7 @@ foreach ($file in $agentBodies.Keys) {
 
 $promptDir = Join-Path $PSScriptRoot "..\\..\\Prompts"
 Set-Content -LiteralPath (Join-Path $promptDir "PR_Creation_Starter.prompt.md") -Value @'
-Use `$pr-creator` to prepare a ResumeEnhancer pull request from the current changes.
+Use `$delivery-pull-request` to prepare a ResumeEnhancer pull request from the current changes.
 
 - If the current branch is `main`, create a short branch name with a timestamp first.
 - Summarize the change in reviewer-friendly prose.
@@ -434,7 +434,7 @@ Use `$pr-creator` to prepare a ResumeEnhancer pull request from the current chan
 '@ -NoNewline
 
 Set-Content -LiteralPath (Join-Path $promptDir "US_Kickoff_Starter.prompt.md") -Value @'
-Use `$us-kickoff` to evaluate the selected ResumeEnhancer user stories and prepare an approved GitHub issue handoff plan. After verified handoff, stop; the user must explicitly invoke `$issues-kickoff` later for top-10 issue intake and implementation.
+Use `$delivery-user-story-kickoff` to evaluate the selected ResumeEnhancer user stories and prepare an approved GitHub issue handoff plan. After verified handoff, stop; the user must explicitly invoke `$delivery-issues-kickoff` later for top-10 issue intake and implementation.
 
 - Only continue if the stories are ready to implement.
 - Group by frontend, backend, full-stack, research, or architecture work.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issues Kickoff"
+  short_description: "Find and implement selected GitHub issues"
+  default_prompt: "Use $delivery-issues-kickoff to search the top 10 matching ResumeEnhancer GitHub issues, confirm my selection, and implement only the approved issues."

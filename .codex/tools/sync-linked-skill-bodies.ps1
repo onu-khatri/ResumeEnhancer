@@ -1,7 +1,7 @@
 $skillBodies = @{
-  "agent-orchestration-improver" = @'
+  "orchestration-agent-improvement" = @'
 ---
-name: agent-orchestration-improver
+name: orchestration-agent-improvement
 description: Improve how Codex decomposes and coordinates multi-agent work for ResumeEnhancer, especially for parallel story execution, research, review, and implementation. Use when a task is large enough to benefit from structured delegation and synthesis.
 ---
 
@@ -46,9 +46,9 @@ Systematic improvement of existing ResumeEnhancer-oriented agent workflows throu
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/agent-orchestration-improve-agent
 '@
-  "architecture-decision-records" = @'
+  "architecture-adr" = @'
 ---
-name: architecture-decision-records
+name: architecture-adr
 description: Write clear architecture decision records for ResumeEnhancer that capture context, options, tradeoffs, and consequences in project-specific language. Use when Codex needs to document a meaningful technical decision or proposed architecture change.
 ---
 
@@ -97,9 +97,9 @@ Document significant ResumeEnhancer decisions using durable ADRs that preserve c
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/architecture-decision-records
 '@
-  "architect-review" = @'
+  "architecture-review" = @'
 ---
-name: architect-review
+name: architecture-review
 description: Review modular and distributed architecture-sensitive changes for structural risk, quality attributes, and evidence-backed corrective direction. Use when design-level review is needed beyond local correctness.
 ---
 
@@ -156,9 +156,9 @@ Orchestrate backend feature work in ResumeEnhancer from requirement to handler, 
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-development-feature-development
 '@
-  "backend-security-coder" = @'
+  "backend-security" = @'
 ---
-name: backend-security-coder
+name: backend-security
 description: Implement and review secure backend code for ResumeEnhancer with OWASP-oriented practices around validation, authorization, data handling, and abuse resistance. Use when Codex is changing APIs, persistence flows, auth-sensitive logic, or other backend attack surfaces.
 ---
 
@@ -196,15 +196,15 @@ Apply security-focused implementation and review practices to ResumeEnhancer bac
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/backend-security-coder
 '@
-  "clean-code" = @'
+  "quality-clean-code" = @'
 ---
-name: clean-code
+name: quality-clean-code
 description: Keep ResumeEnhancer changes readable, cohesive, and easy to extend without introducing unnecessary abstractions or duplication. Use when Codex is implementing, refactoring, or reviewing code quality across backend or frontend areas.
 ---
 
 # Clean Code
 
-Apply clean-code principles to ResumeEnhancer changes so future contributors and agents can read, change, and verify the code confidently.
+Apply quality-clean-code principles to ResumeEnhancer changes so future contributors and agents can read, change, and verify the code confidently.
 
 ## Use this skill when
 
@@ -236,9 +236,9 @@ Apply clean-code principles to ResumeEnhancer changes so future contributors and
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/clean-code
 '@
-  "code-refactoring-tech-debt" = @'
+  "quality-refactoring" = @'
 ---
-name: code-refactoring-tech-debt
+name: quality-refactoring
 description: Reduce technical debt in ResumeEnhancer through scoped refactoring that preserves behavior while improving structure, duplication, and maintainability. Use when Codex needs to clean up existing code, prepare for new features, or address architectural friction.
 ---
 
@@ -268,9 +268,9 @@ Reduce technical debt in ResumeEnhancer through targeted, reviewable refactoring
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-refactoring-tech-debt
 '@
-  "production-code-reviewer" = @'
+  "quality-production-code-review" = @'
 ---
-name: production-code-reviewer
+name: quality-production-code-review
 description: Perform production-grade code review for ResumeEnhancer with a defect-first mindset across architecture, correctness, security, tests, and maintainability. Use when Codex needs to review diffs, pull requests, or uncommitted changes before merge.
 ---
 
@@ -318,9 +318,9 @@ Transform code review from gatekeeping into high-signal defect detection, archit
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-review-excellence
 '@
-  "deep-research" = @'
+  "research-deep" = @'
 ---
-name: deep-research
+name: research-deep
 description: Perform deep, evidence-based research for ResumeEnhancer across product requirements, user stories, code, tests, and external sources when needed. Use when Codex needs a thorough answer before implementation, architecture, or planning decisions.
 ---
 
@@ -356,9 +356,9 @@ Perform broad, evidence-driven investigation before important ResumeEnhancer dec
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/deep-research
 '@
-  "domain-driven-design" = @'
+  "architecture-domain-modeling" = @'
 ---
-name: domain-driven-design
+name: architecture-domain-modeling
 description: Apply pragmatic domain modeling to clarify business language, context boundaries, invariants, and model responsibilities. Use when business complexity materially affects architecture or behavior.
 ---
 
@@ -371,9 +371,9 @@ Stop after viability assessment when no meaningful invariant, divergent context,
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/domain-driven-design
 '@
-  "dotnet-architect" = @'
+  "backend-dotnet-architecture" = @'
 ---
-name: dotnet-architect
+name: backend-dotnet-architecture
 description: Design .NET backend and modular-application architecture with explicit ownership, dependency, composition, integration, and verification decisions. Use when a change needs architecture judgment before implementation.
 ---
 
@@ -386,9 +386,9 @@ State ownership, dependency direction, verification implications, and an ADR rec
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/dotnet-architect
 '@
-  "frontend-dev-guidelines" = @'
+  "frontend-guidelines" = @'
 ---
-name: frontend-dev-guidelines
+name: frontend-guidelines
 description: Build and review ResumeEnhancer React frontend code with current architecture, typed data flows, accessible UI states, and proportionate performance practices. Use for feature, component, form, route, or client-data changes.
 ---
 
@@ -432,15 +432,15 @@ Design deliberate, product-quality user experiences for ResumeEnhancer rather th
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-design
 '@
-  "frontend-developer" = @'
+  "frontend-development" = @'
 ---
-name: frontend-developer
+name: frontend-development
 description: Deliver production-ready ResumeEnhancer React features with correct routes, typed client data, accessible responsive behavior, and focused verification. Use when building or changing product UI, hooks, forms, or client integration.
 ---
 
 # Frontend Developer
 
-Implement production-facing client work in ResumeEnhancer with correct feature ownership, typed data boundaries, accessible responsive behavior, and focused verification. Read `$frontend-dev-guidelines` for detailed shared standards; do not import Next.js, server-component, or uninstalled-tooling patterns.
+Implement production-facing client work in ResumeEnhancer with correct feature ownership, typed data boundaries, accessible responsive behavior, and focused verification. Read `$frontend-guidelines` for detailed shared standards; do not import Next.js, server-component, or uninstalled-tooling patterns.
 
 ## Use this skill when
 
@@ -470,9 +470,9 @@ Implement production-facing client work in ResumeEnhancer with correct feature o
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-developer
 '@
-  "frontend-security-coder" = @'
+  "frontend-security" = @'
 ---
-name: frontend-security-coder
+name: frontend-security
 description: Implement and review secure frontend behavior in ResumeEnhancer with attention to auth flow, data exposure, user input handling, and safe API interaction. Use when Codex is changing client-side behavior with security or privacy implications.
 ---
 
@@ -498,9 +498,9 @@ Secure ResumeEnhancer client behavior around authentication, user-owned content,
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-security-coder
 '@
-  "frontend-slides" = @'
+  "frontend-presentations" = @'
 ---
-name: frontend-slides
+name: frontend-presentations
 description: Create presentation-ready frontend walkthroughs, implementation summaries, and UI narratives for ResumeEnhancer. Use when Codex needs to turn frontend work into stakeholder-friendly slides, demos, or visual explanations.
 ---
 
@@ -525,9 +525,9 @@ Turn ResumeEnhancer frontend work into stakeholder-friendly slide narratives, de
 ## Upstream URL
 - https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/frontend-slides
 '@
-  "full-stack-feature-orchestrator" = @'
+  "delivery-full-stack-feature" = @'
 ---
-name: full-stack-feature-orchestrator
+name: delivery-full-stack-feature
 description: Coordinate full-stack feature delivery in ResumeEnhancer across requirements, frontend, API, service layer, persistence, tests, and PR packaging. Use when Codex needs to drive an end-to-end feature from story to review-ready implementation.
 ---
 

@@ -7,7 +7,7 @@ description: Design polished, intentional interfaces for ResumeEnhancer that fit
 
 Use this skill to shape product-quality experiences with a clear point of view instead of interchangeable component grids. Keep the result distinctive, implementable, and aligned with the existing ResumeEnhancer client.
 
-For a multi-skill task, follow [frontend workflow routing](../frontend-dev-guidelines/references/frontend-workflow-routing.md). Return an implementation handoff to the primary owner; do not implement, delegate, or reselect frontend skills from this design pass.
+For a multi-skill task, follow [frontend workflow routing](../frontend-guidelines/references/frontend-workflow-routing.md). Return an implementation handoff to the primary owner; do not implement, delegate, or reselect frontend skills from this design pass.
 
 ## Use this skill when
 
@@ -19,7 +19,7 @@ For a multi-skill task, follow [frontend workflow routing](../frontend-dev-guide
 
 - the work is purely backend or data-layer oriented
 - implementation mechanics matter more than design direction
-- the user wants a defect-first critique of an existing UI more than new or revised design direction; use `design-review` instead
+- the user wants a defect-first critique of an existing UI more than new or revised design direction; use `frontend-design-review` instead
 
 ## Knowledge routing
 

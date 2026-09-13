@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Dev Guidelines"
+  short_description: "Build reliable ResumeEnhancer React features"
+  default_prompt: "Use $frontend-guidelines to implement or review a project-consistent, accessible, well-tested ResumeEnhancer frontend change."

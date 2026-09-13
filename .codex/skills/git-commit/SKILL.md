@@ -16,7 +16,7 @@ Use this skill to turn an inspected diff into small, reviewable, traceable commi
 ## Do not use this skill when
 
 - you need history rewriting or branch surgery (use `git-workflows`)
-- you only need to review a diff (use `production-code-reviewer`)
+- you only need to review a diff (use `quality-production-code-review`)
 
 ## Preflight and branch safety
 
@@ -36,7 +36,7 @@ git diff --cached --stat
 git branch --show-current
 ```
 
-- If on `main`, use `$issues-kickoff` and `$git-worktrees` to create the canonical `openspec/...` branch first.
+- If on `main`, use `$delivery-issues-kickoff` and `$git-worktrees` to create the canonical `openspec/...` branch first.
 - Confirm the issue/story ID and intended files before staging. Preserve unrelated staged or unstaged changes.
 - Stop if a merge, rebase, cherry-pick, or bisect is active until its state is understood.
 

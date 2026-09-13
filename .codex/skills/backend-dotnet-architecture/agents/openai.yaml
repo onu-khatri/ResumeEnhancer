@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dotnet Architect"
+  short_description: "Design modular .NET architecture"
+  default_prompt: "Use $backend-dotnet-architecture to make an ownership, dependency, composition, or integration decision for a .NET backend change."

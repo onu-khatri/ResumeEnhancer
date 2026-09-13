@@ -1,4 +1,4 @@
-Use `$project-knowledge-builder` to investigate ResumeEnhancer and build a reusable knowledge artifact about one concrete topic through the approval workflow.
+Use `$knowledge-project-builder` to investigate ResumeEnhancer and build a reusable knowledge artifact about one concrete topic through the approval workflow.
 
 Topic:
 - Trace the resume create/update flow end to end.

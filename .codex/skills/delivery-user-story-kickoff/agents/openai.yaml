@@ -1,0 +1,4 @@
+interface:
+  display_name: "Us Kickoff"
+  short_description: "Prepare story-to-GitHub handoffs"
+  default_prompt: "Use $delivery-user-story-kickoff to validate ready ResumeEnhancer stories and hand them off to verified GitHub issues."

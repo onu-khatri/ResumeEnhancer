@@ -1,4 +1,0 @@
-interface:
-  display_name: "Domain Driven Design"
-  short_description: "Model domain boundaries and invariants"
-  default_prompt: "Use $domain-driven-design to assess domain-modeling depth and clarify business language, ownership, and invariants."
