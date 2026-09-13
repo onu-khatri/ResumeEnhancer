@@ -24,7 +24,7 @@ last_reviewed: 2026-08-23
 | Endpoint, AM, SL, validation, Mediator, mapping, and host-facing composition adaptation | `resumeenhancer-api-application-delivery.knowledge.md` | Do not duplicate API/application flow here. |
 | EF Core model, repositories, transactions, setup data, seeding, migrations, and persistence test seams | `persistence-project.knowledge.md` and applicable ADRs | This topic contains no persistence implementation facts. |
 | Generic API/application or EF Core decision methods | Group 1 topics through `INDEX.md` | Retrieve selectively; do not load by default. |
-| A durable new architecture decision | `architecture-decision-records` skill and affected authority | This topic does not prescribe ADR content. |
+| A durable new architecture decision | `architecture-adr` skill and affected authority | This topic does not prescribe ADR content. |
 
 ## Boundaries
 

@@ -57,11 +57,11 @@ Assess only attributes relevant to the change: maintainability, testability, rel
 
 ## Specialist Review Gates
 
-- Use `$domain-driven-design` for business-language, context, aggregate, lifecycle, or invariant concerns.
-- Use `$backend-security-coder` for trust, authorization, sensitive-data, secret, abuse, privacy, or export concerns.
-- Use `$performance-optimization` when latency, throughput, query, cache, resource, or capacity risk is observed or visible.
-- Use `$deep-research` before concrete distributed platform or pattern recommendations unsupported by repository evidence.
-- Recommend `$architecture-decision-records` for durable boundary, integration, persistence, deployment, or test-expectation decisions.
+- Use `$architecture-domain-modeling` for business-language, context, aggregate, lifecycle, or invariant concerns.
+- Use `$backend-security` for trust, authorization, sensitive-data, secret, abuse, privacy, or export concerns.
+- Use `$quality-performance` when latency, throughput, query, cache, resource, or capacity risk is observed or visible.
+- Use `$research-deep` before concrete distributed platform or pattern recommendations unsupported by repository evidence.
+- Recommend `$architecture-adr` for durable boundary, integration, persistence, deployment, or test-expectation decisions.
 
 ## Finding-Quality Example
 

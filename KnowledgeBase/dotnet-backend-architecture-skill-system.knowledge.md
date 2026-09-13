@@ -18,8 +18,8 @@ Use this topic when maintaining a backend or architecture skill, its knowledge r
 
 Read this before changing any of these backend and architecture skills:
 
-- `backend-feature-development`, `dotnet-backend-patterns`, or `ef-core-database-architect`
-- `dotnet-architect`, `domain-driven-design`, or `architect-review`
+- `backend-feature-development`, `backend-dotnet-patterns`, or `backend-ef-core`
+- `backend-dotnet-architecture`, `architecture-domain-modeling`, or `architecture-review`
 - a source body maintained by `.codex/tools/sync-linked-skill-bodies.ps1` or related synchronization tooling
 - the index entry or routed authority used by one of those skills
 
@@ -132,7 +132,7 @@ For an active skill with synchronized source bodies, compare the generated or so
 - Do not use a generic topic as a parallel source of truth for `resumeenhancer-api-application-delivery.knowledge.md`, `persistence-project.knowledge.md`, or an ADR.
 - Do not remove an authority without first moving its unique policy and updating every index or skill reference.
 - Do not assume a source template is current merely because it exists; compare it to the active body before relying on synchronization.
-- Do not apply distributed-architecture review merely because a change is broad. Preserve the `architect-review` review-mode gate for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
+- Do not apply distributed-architecture review merely because a change is broad. Preserve the `architecture-review` review-mode gate for remote boundaries, asynchronous messaging, independent deployment, eventual consistency, resilience, or distributed observability.
 
 ## Clarifications
 
