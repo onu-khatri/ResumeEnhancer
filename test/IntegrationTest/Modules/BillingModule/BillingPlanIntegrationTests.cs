@@ -26,7 +26,10 @@ public sealed class BillingPlanIntegrationTests(IntegrationTestAssemblyFixture f
         var cancellationToken = TestContext.Current.CancellationToken;
         await fixture.ResetAndSeedAsync(cancellationToken);
         if (capability is not null)
-            await fixture.CreateSetupper().SetupAccessAsync(1, privileges: capability);
+        {
+            using var setupper = fixture.CreateSetupper();
+            await setupper.SetupAccessAsync(1, privileges: capability);
+        }
 
         using var client = fixture.Utilities.CreateClient();
         using var response = await client.PutAsJsonAsync(
@@ -52,7 +55,10 @@ public sealed class BillingPlanIntegrationTests(IntegrationTestAssemblyFixture f
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         await fixture.ResetAndSeedAsync(cancellationToken);
-        await fixture.CreateSetupper().SetupAccessAsync(1, privileges: "ViewAdminPortal");
+        using (var setupper = fixture.CreateSetupper())
+        {
+            await setupper.SetupAccessAsync(1, privileges: "ViewAdminPortal");
+        }
         var request = new UpdateBillingPlanRequest
         {
             Code = "FREE",

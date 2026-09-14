@@ -13,7 +13,7 @@ public sealed class IntegrationTestCollection : ICollectionFixture<IntegrationTe
 {
 }
 
-public sealed class IntegrationTestAssemblyFixture
+public sealed class IntegrationTestAssemblyFixture : IDisposable
 {
     public IntegrationTestAssemblyFixture()
     {
@@ -53,4 +53,6 @@ public sealed class IntegrationTestAssemblyFixture
         Utilities.ClearAuthentication();
         await Utilities.Services.SeedAppDbContextAsync(cancellationToken);
     }
+
+    public void Dispose() => Utilities.Dispose();
 }
