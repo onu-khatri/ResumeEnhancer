@@ -32,6 +32,9 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 
 - Discover available repository skills under `.codex/skills/<skill-name>/SKILL.md` and custom agents under `.codex/agents/*.toml` before choosing a workflow. Read a selected skill's `SKILL.md` before acting; read only its routed references that apply.
 - Use `AGENTS.md` for durable repository-wide constraints, a skill for reusable task guidance, and a custom agent for a focused delegated workstream. A delegated agent does not replace the main agent's repository inspection or ownership of the final result.
+- Use the `implementation-planner` custom agent for OpenSpec implementation planning. It stores either a single-task plan or a coherent batch plan under `.tmp/ImplementationPlans/<change-name>/` and may write only Proposed plans until the user explicitly approves every covered task.
+- The implementation planner must inspect applicable KnowledgeBase topics and ADRs through `KnowledgeBase/INDEX.md`, use `$research-deep` for material evidence gaps, use `$workflow-user-interview` for unresolved user decisions, and perform a recorded self-review before requesting approval. Plans must expose evidence, assumptions, decisions, risks, snippets, and validation; nothing material may remain implicit.
+- Any agent implementing production code, tests, migrations, or configuration must read the matching plan in `.tmp/ImplementationPlans/<change-name>/`, verify `status: Approved` and the change/task identity, and stop before editing when the plan is missing, unapproved, stale, or materially inconsistent.
 - Keep these mechanisms separate: skill UI metadata is `.codex/skills/<skill-name>/agents/openai.yaml`; OpenSpec workflows live in `.agents/skills/`; custom-agent definitions live in `.codex/agents/`.
 - OpenSpec workflows under `.agents/skills/` are generator-managed. Do not edit them directly for repository-specific behavior; run `openspec update` to refresh them and keep ResumeEnhancer policy in `$openspec-repository-policy`, `AGENTS.md`, and the other `.codex/skills/` authorities.
 
@@ -59,6 +62,7 @@ This repository is a modular resume platform built as a .NET modular monolith wi
 
 ### Custom Agent Selection
 
+- `implementation-planner`: approval-gated OpenSpec task planning with evidence, dependencies, validation, and focused code snippets; it does not implement production code.
 - `backend-implementer`: assigned backend slices across Minimal APIs, validation, Mediator, persistence, and tests.
 - `frontend-implementer`: assigned React/TypeScript feature slices, routes, forms, and typed API integration.
 - `knowledge-researcher`: evidence gathering and approval-driven reusable knowledge work; it does not implement product code.

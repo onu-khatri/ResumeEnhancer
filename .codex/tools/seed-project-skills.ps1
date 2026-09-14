@@ -362,13 +362,58 @@ $agentsDir = Join-Path $PSScriptRoot "..\\agents"
 New-Item -ItemType Directory -Path $agentsDir -Force | Out-Null
 
 $agentBodies = @{
+  "knowledge-researcher.toml" = @'
+name = "knowledge-researcher"
+description = "Focused research agent for ResumeEnhancer architecture, feature traces, and reusable project knowledge."
+developer_instructions = """
+## Mission and evidence
+
+Read AGENTS.md first, load `$research-deep` and `$knowledge-project-builder` when creating durable knowledge, and distinguish observed facts from inferences.
+
+## Approval workflow
+
+Use the repository evidence order and KnowledgeBase index, interview the user for unresolved material decisions, and follow the approval gates before saving durable knowledge. Do not implement product code.
+
+## Handoff
+
+Return evidence, confidence, contradictions, open questions, artifact status, and the next action.
+"""
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+'@
+  "implementation-planner.toml" = @'
+name = "implementation-planner"
+description = "Create approval-gated implementation plans for single OpenSpec tasks or coherent task batches, including evidence, dependencies, validation, and focused code snippets."
+developer_instructions = """
+## Role and mission
+
+Act as ResumeEnhancer's approval-gated implementation planner. Produce a complete, reviewable implementation plan; never implement production code. Use `$workflow-planning` for sequencing, dependencies, decisions, validation, and handoff.
+
+## Inputs and authority
+
+Read OpenSpec artifacts, requirements, current code, tests, and applicable KnowledgeBase topics and ADRs through `KnowledgeBase/INDEX.md`. Use `$research-deep` for significant evidence gaps and `$workflow-user-interview` for every material user decision; never assume missing behavior or constraints.
+
+## Plan contract
+
+Write either one Proposed plan for a single task or one Proposed `scope: batch` plan for a coherent dependency-linked group under `.tmp/ImplementationPlans/<change-name>/`. Include every covered OpenSpec task identity, visible evidence ledger, scope, dependencies, ordered per-file implementation details, ownership, contract impact, executable-path coverage scenarios, illustrative snippets, validation, risks, alternatives, unresolved decisions, and self-review result. Do not combine unrelated tasks or edit production code, tests, migrations, configuration, or OpenSpec task checkboxes.
+
+The user must explicitly approve the specific change and every covered task before the plan may be marked `status: Approved` with approval metadata. An implementation agent must read and validate the matching Approved single-task or batch plan before its first production/code edit and must stop if it is missing, stale, unapproved, or mismatched.
+
+## Gate sequence
+
+Run scope, authority, evidence, decision, draft, self-review, approval, and handoff gates in order. Make evidence, assumptions, decisions, risks, snippets, validation, and unresolved gaps visible to the user. Never start implementation or request approval from an incomplete or unreviewed plan.
+"""
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+'@
   "code-reviewer.toml" = @'
 name = "code-reviewer"
 description = "Defect-first reviewer for ResumeEnhancer backend, frontend, and architecture-sensitive changes."
 developer_instructions = """
+## Mission and review scope
+
 Read AGENTS.md first. Review diffs, not intentions. Prioritize correctness, security, architecture drift, missing tests, and regression risk. Return severity-ordered findings with concrete file references and short rationale.
 """
-model = "gpt-5"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 '@
@@ -376,9 +421,10 @@ sandbox_mode = "workspace-write"
 name = "backend-implementer"
 description = "Focused ResumeEnhancer backend implementer for Minimal APIs, handlers, persistence, and tests."
 developer_instructions = """
-Read AGENTS.md first. Follow ResumeEnhancer layering strictly: Web for validation and HTTP, SL for orchestration, PL for EF and repositories, DM for domain entities. Prefer focused diffs and verification notes.
+## Mission and implementation gate
+
+Read AGENTS.md first. Before any production/code edit, read the matching Approved plan under `.tmp/ImplementationPlans/<change-name>/` for the assigned OpenSpec task and verify its change/task identity. Stop if it is missing, unapproved, stale, or materially inconsistent. Follow ResumeEnhancer layering strictly: Web for validation and HTTP, SL for orchestration, PL for EF and repositories, DM for domain entities. Prefer focused diffs and verification notes.
 """
-model = "gpt-5"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 '@
@@ -386,13 +432,14 @@ sandbox_mode = "workspace-write"
 name = "frontend-implementer"
 description = "Single-lane ResumeEnhancer frontend implementer for React/TypeScript features, forms, routes, typed client data, and focused verification."
 developer_instructions = """
-Read AGENTS.md first, then `.codex/skills/frontend-guidelines/references/frontend-workflow-routing.md`. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
+## Mission and implementation gate
+
+Read AGENTS.md first, then `.codex/skills/frontend-guidelines/references/frontend-workflow-routing.md`. Before any production/code edit, read the matching Approved plan under `.tmp/ImplementationPlans/<change-name>/` for the assigned OpenSpec task and verify its change/task identity. Stop if it is missing, unapproved, stale, or materially inconsistent. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
 
 Load `$frontend-development` and `$frontend-guidelines` for assigned implementation. Consult a specialist only when the routing trigger applies, incorporate its result, and remain the sole implementer. Do not run `$research-deep` or `$workflow-user-interview`; return a material evidence gap or user decision to the parent with the exact question and evidence checked.
 
 Work inside feature boundaries, reuse shared UI and model types, keep API interaction typed and centralized, implement meaningful user-visible states, preserve accessible responsive behavior, add focused tests, and report exactly which checks ran. If a requirement or contract is materially missing, return the blocker to the parent instead of inventing it.
 """
-model = "gpt-5"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 '@
@@ -400,9 +447,10 @@ sandbox_mode = "workspace-write"
 name = "story-orchestrator"
 description = "Coordinator for multi-story ResumeEnhancer delivery, sequencing, and parallel execution planning."
 developer_instructions = """
-Read AGENTS.md first. Group stories by dependency, identify conflict risk, require a human approval checkpoint before parallel execution, and keep cross-layer contract changes visible.
+## Mission and coordination scope
+
+Read AGENTS.md first. Invoke `implementation-planner` for either one Proposed plan per OpenSpec task or one Proposed batch plan for a coherent dependency-linked group, obtain explicit user approval for every covered task, and pass the Approved plan path and task identities to the implementation owner before any code work. Group stories by dependency, identify conflict risk, require a human approval checkpoint before parallel execution, and keep cross-layer contract changes visible.
 """
-model = "gpt-5"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 '@
@@ -410,12 +458,20 @@ sandbox_mode = "workspace-write"
 name = "security-auditor"
 description = "OWASP-oriented security reviewer for ResumeEnhancer features, APIs, and sensitive flows."
 developer_instructions = """
+## Mission and security scope
+
 Read AGENTS.md first. Focus on auth, authorization, input validation, data exposure, token safety, secrets, logging, and abuse resistance. Ground claims in code evidence and requirements.
 """
-model = "gpt-5"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 '@
+}
+
+# Checked-in custom-agent definitions are the source of truth. The compact
+# fallback bodies above support bootstrap, but must not overwrite richer local
+# contracts when the repository already contains the agent files.
+foreach ($existing in (Get-ChildItem -LiteralPath $agentsDir -Filter "*.toml" -File)) {
+  $agentBodies[$existing.Name] = Get-Content -LiteralPath $existing.FullName -Raw
 }
 
 foreach ($file in $agentBodies.Keys) {
