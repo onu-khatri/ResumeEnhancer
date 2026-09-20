@@ -24,6 +24,19 @@ public sealed record BootstrapResponse(
 
 public sealed record RegisterResponse(int UserId, AuthTokens Tokens, BootstrapResponse Bootstrap);
 
+public sealed record AuthenticatedIdentityResponse(
+    int UserId,
+    bool EmailVerified,
+    bool IsDisabled,
+    bool IsLocked
+);
+
+public sealed record AuthenticationResponse(
+    int UserId,
+    AuthTokens Tokens,
+    AuthenticatedIdentityResponse Identity
+);
+
 public sealed record AuthError(
     string Code,
     string Message,

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace ResumeEnhancer.AuthModule.SL.Abstractions;
 
 public interface IPasswordHasher
@@ -8,12 +10,15 @@ public interface IPasswordHasher
 
 public interface ITokenService
 {
-    public (string AccessToken, DateTime ExpiresAtUtc) CreateAccessToken(
+    public Task<(string AccessToken, DateTime ExpiresAtUtc)> CreateAccessTokenAsync(
         int userId,
-        Guid sessionId
+        Guid sessionId,
+        CancellationToken cancellationToken = default
     );
     public string CreateRefreshToken();
     public string HashRefreshToken(string token);
+    public Task<ClaimsPrincipal?> ValidateAccessTokenAsync(string token, CancellationToken cancellationToken = default);
+    public Task InvalidateKeyAsync(string keyIdentifier, CancellationToken cancellationToken = default);
 }
 
 public interface IAuthSideEffectQueue
@@ -32,6 +37,7 @@ public interface IAuthSideEffectHandler
         string type,
         int userId,
         string email,
+        string? challenge,
         CancellationToken cancellationToken = default
     );
 }
@@ -43,4 +49,33 @@ public interface IRegistrationThrottle
         string? ipAddress,
         CancellationToken cancellationToken = default
     );
+
+    public Task<LimiterDecision> TryConsumeAsync(
+        LimiterOperation operation,
+        string? normalizedEmail,
+        string? subject,
+        string? ipAddress,
+        CancellationToken cancellationToken = default);
+}
+
+public enum LimiterOperation
+{
+    Login,
+    Registration,
+    Refresh,
+    Verification,
+    Recovery,
+    PasswordChange,
+    Logout,
+}
+
+public sealed record LimiterDecision(
+    bool Allowed,
+    int Count,
+    int Limit,
+    DateTime RetryAtUtc,
+    bool Degraded = false)
+{
+    public TimeSpan RetryAfter(DateTime nowUtc) =>
+        RetryAtUtc > nowUtc ? RetryAtUtc - nowUtc : TimeSpan.Zero;
 }

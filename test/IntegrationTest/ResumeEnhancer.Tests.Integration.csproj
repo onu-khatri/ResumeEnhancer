@@ -2,6 +2,7 @@
   <PropertyGroup>
     <AssemblyName>ResumeEnhancer.Tests.Integration</AssemblyName>
     <RootNamespace>ResumeEnhancer.Tests.Integration</RootNamespace>
+    <SkipClientProjectReference>true</SkipClientProjectReference>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.3" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.0.0" />
     <PackageReference Include="morelinq" Version="4.4.0" />
   </ItemGroup>
 

@@ -15,17 +15,23 @@ using ResumeEnhancer.ResumeModule.PL;
 using ResumeEnhancer.TemplateModule.DM.Entities;
 using ResumeEnhancer.TemplateModule.PL;
 using ResumeEnhancer.AuthModule.PL;
+using ResumeEnhancer.AuthModule.DM.Entities;
+using ResumeEnhancer.AuthModule.SL.Options;
 
 namespace ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 internal sealed class SqliteAppDbContextScope : IDisposable
 {
     private readonly SqliteConnection _connection;
+    private readonly string _connectionString;
 
-    public SqliteAppDbContextScope()
+    public SqliteAppDbContextScope(string? connectionString = null)
     {
-        _connection = new SqliteConnection("Data Source=:memory:");
+        _connectionString = connectionString ?? $"Data Source=AuthTests-{Guid.NewGuid():N};Mode=Memory;Cache=Shared;Default Timeout=30";
+        _connection = new SqliteConnection(_connectionString);
         _connection.Open();
+
+        ConnectionString = _connectionString;
 
         var dbContextOptions = new DbContextOptionsBuilder<AppDbContext>()
             .UseSqlite(_connection)
@@ -41,6 +47,8 @@ internal sealed class SqliteAppDbContextScope : IDisposable
         services.TryAddTransient(typeof(IModelLoader<>), typeof(ModelLoader<>));
         services.TryAddSingleton(CreateCacheProvider());
         services.AddResumeModulePersistence();
+        services.AddDataProtection();
+        services.AddSingleton(new AuthSecurityOptions());
         services.AddAuthModulePersistence();
 
         Services = services.BuildServiceProvider();
@@ -50,6 +58,8 @@ internal sealed class SqliteAppDbContextScope : IDisposable
     }
 
     public ServiceProvider Services { get; }
+
+    public string ConnectionString { get; }
 
     public AppDbContext DbContext => Services.GetRequiredService<AppDbContext>();
 
@@ -140,6 +150,20 @@ internal sealed class SqliteAppDbContextScope : IDisposable
                 Description = "Active",
                 DisplayName = "Active",
                 Order = 1,
+                Guid = Guid.NewGuid()
+            },
+            new AuthChallengePurpose
+            {
+                Id = 1,
+                Code = "password-reset",
+                Description = "Password reset challenge",
+                Guid = Guid.NewGuid()
+            },
+            new AuthChallengePurpose
+            {
+                Id = 2,
+                Code = "email-verification",
+                Description = "Email verification challenge",
                 Guid = Guid.NewGuid()
             });
 

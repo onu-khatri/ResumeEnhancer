@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security.Claims;
 using FluentValidation;
 using Mediator;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +45,7 @@ public sealed class ResumeEndpointDelegateTests
                 Id = 12,
                 Title = "Created"
             }));
-        var httpContext = HttpContextWithHeaders(auditUserId: "42");
+        var httpContext = HttpContextWithHeaders(auditUserId: "1");
 
         var result = await InvokeCommandAsync(
             "CreateResumeAsync",
@@ -58,7 +59,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status201Created);
         snapshot.ReadJson().GetProperty("id").GetInt32().ShouldBe(12);
         await mediator.Received(1).Send(
-            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsCreateCommand(command, 42)),
+            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsCreateCommand(command, 1)),
             cancellationToken);
     }
 
@@ -108,7 +109,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("title").GetString().ShouldBe("Updated");
         await mediator.Received(1).Send(
-            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsUpdateCommand(command, 7, 9, 7)),
+            Arg.Is<ICommand<ResumeDetailResponse>>(command => IsUpdateCommand(command, 7, 7, 7)),
             cancellationToken);
     }
 
@@ -150,7 +151,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.StatusCode.ShouldBe(StatusCodes.Status200OK);
         snapshot.ReadJson().GetProperty("deletedCount").GetInt32().ShouldBe(1);
         await mediator.Received(1).Send(
-            Arg.Is<ICommand<ResumeDeleteResponse>>(command => IsDeleteCommand(command, 5, 11, 7)),
+            Arg.Is<ICommand<ResumeDeleteResponse>>(command => IsDeleteCommand(command, 5, 7, 7)),
             cancellationToken);
     }
 
@@ -195,7 +196,7 @@ public sealed class ResumeEndpointDelegateTests
         snapshot.ReadJson().GetProperty("hasFailures").GetBoolean().ShouldBeTrue();
         await mediator.Received(1).Send(
             Arg.Is<ICommand<ResumeDeleteResponse>>(command =>
-                IsDeleteResumesCommand(command, new[] { 1, 2 }, 13, 7)),
+                IsDeleteResumesCommand(command, new[] { 1, 2 }, 7, 7)),
             cancellationToken);
     }
 
@@ -257,6 +258,7 @@ public sealed class ResumeEndpointDelegateTests
             new ResumeSearchRequest { PageNumber = 0 },
             validator,
             Substitute.For<IMediator>(),
+            new DefaultHttpContext(),
             TestContext.Current.CancellationToken);
         var snapshot = await result.ExecuteAsync();
 
@@ -272,6 +274,7 @@ public sealed class ResumeEndpointDelegateTests
             null,
             new InlineValidator<ResumeSearchRequest>(),
             Substitute.For<IMediator>(),
+            new DefaultHttpContext(),
             TestContext.Current.CancellationToken);
 
         var snapshot = await result.ExecuteAsync();
@@ -295,6 +298,7 @@ public sealed class ResumeEndpointDelegateTests
             new ResumeSearchRequest { UserId = 7 },
             new InlineValidator<ResumeSearchRequest>(),
             mediator,
+            HttpContextWithHeaders(userId: "7"),
             cancellationToken);
         var snapshot = await result.ExecuteAsync();
 
@@ -351,15 +355,13 @@ public sealed class ResumeEndpointDelegateTests
         string? userId = null)
     {
         var httpContext = new DefaultHttpContext();
+        var principalId = userId ?? auditUserId;
 
-        if (auditUserId is not null)
+        if (principalId is not null)
         {
-            httpContext.Request.Headers["X-Audit-UserId"] = auditUserId;
-        }
-
-        if (userId is not null)
-        {
-            httpContext.Request.Headers["X-User-Id"] = userId;
+            httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(
+                [new Claim("sub", principalId)],
+                "Test"));
         }
 
         return httpContext;

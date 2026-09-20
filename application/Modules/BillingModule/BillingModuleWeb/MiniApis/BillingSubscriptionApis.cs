@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using ResumeEnhancer.BillingModule.AM.Requests;
 using ResumeEnhancer.BillingModule.SL.Contracts;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 
 namespace ResumeEnhancer.BillingModule.Web.MiniApis;
 
@@ -12,7 +13,8 @@ internal static class BillingSubscriptionApis
 {
     public static IEndpointRouteBuilder MapBillingSubscriptionApis(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/billing/subscriptions").WithTags("Billing Subscriptions");
+        var group = endpoints.MapGroup("/api/billing/subscriptions").WithTags("Billing Subscriptions")
+            .RequireProtectedAccess();
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
                 Results.Ok(await mediator.Send(new ListBillingSubscriptionsQuery(), cancellationToken)))
@@ -35,7 +37,7 @@ internal static class BillingSubscriptionApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new CreateBillingSubscriptionCommand(request, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new CreateBillingSubscriptionCommand(request, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null
                     ? Results.ValidationProblem(new Dictionary<string, string[]> { ["resumeId"] = ["Linked resume was not found."] })
                     : Results.Created($"/api/billing/subscriptions/{response.Id}", response);
@@ -52,7 +54,7 @@ internal static class BillingSubscriptionApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new UpdateBillingSubscriptionCommand(billingSubscriptionId, request, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new UpdateBillingSubscriptionCommand(billingSubscriptionId, request, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null
                     ? Results.NotFound()
                     : Results.Ok(response);
@@ -61,7 +63,7 @@ internal static class BillingSubscriptionApis
 
         group.MapDelete("/{billingSubscriptionId:int}", async (int billingSubscriptionId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
-            var deleted = await mediator.Send(new DeleteBillingSubscriptionCommand(billingSubscriptionId, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+            var deleted = await mediator.Send(new DeleteBillingSubscriptionCommand(billingSubscriptionId, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
         }).WithName("DeleteBillingSubscription");
 

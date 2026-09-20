@@ -16,4 +16,11 @@ public sealed class AuthenticationIdentity : BusinessEntity
     public string PasswordHash { get; set; } = string.Empty;
     public bool EmailVerified { get; set; }
     public DateTime? EmailVerifiedAtUtc { get; set; }
+
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LastFailedLoginAtUtc { get; set; }
+    public DateTime? LockedUntilUtc { get; set; }
+
+    public ICollection<PasswordHistoryEntry> PasswordHistory { get; set; } = [];
+    public ICollection<AuthChallenge> Challenges { get; set; } = [];
 }

@@ -12,6 +12,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.LastName).HasMaxLength(100).IsRequired();
         builder.Property(user => user.Email).HasMaxLength(320).IsRequired();
         builder.Property(user => user.IsDeactivated).HasDefaultValue(false);
+        builder.Property(user => user.IsDeleted).HasDefaultValue(false).IsRequired();
 
         builder.HasIndex(user => user.Email).IsUnique();
     }

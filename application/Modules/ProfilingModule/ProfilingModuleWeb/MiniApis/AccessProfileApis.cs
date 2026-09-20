@@ -3,6 +3,7 @@ using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 using ResumeEnhancer.ProfilingModule.AM.Requests;
 using ResumeEnhancer.ProfilingModule.SL.Contracts;
 
@@ -12,7 +13,8 @@ internal static class AccessProfileApis
 {
     public static IEndpointRouteBuilder MapAccessProfileApis(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/profiling/access-profiles").WithTags("Profiling Access Profiles");
+        var group = endpoints.MapGroup("/api/profiling/access-profiles").WithTags("Profiling Access Profiles")
+            .RequireProtectedAccess(requiredCapabilities: ["ViewAdminPortal"]);
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
                 Results.Ok(await mediator.Send(new ListAccessProfilesQuery(), cancellationToken)))
@@ -35,7 +37,7 @@ internal static class AccessProfileApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new CreateAccessProfileCommand(request, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new CreateAccessProfileCommand(request, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return Results.Created($"/api/profiling/access-profiles/{response.Id}", response);
             });
         }).WithName("CreateAccessProfile");
@@ -50,14 +52,14 @@ internal static class AccessProfileApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new UpdateAccessProfileCommand(accessProfileId, request, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new UpdateAccessProfileCommand(accessProfileId, request, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             });
         }).WithName("UpdateAccessProfile");
 
         group.MapDelete("/{accessProfileId:int}", async (int accessProfileId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
-            var deleted = await mediator.Send(new DeleteAccessProfileCommand(accessProfileId, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+            var deleted = await mediator.Send(new DeleteAccessProfileCommand(accessProfileId, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
         }).WithName("DeleteAccessProfile");
 

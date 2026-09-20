@@ -18,7 +18,11 @@ internal sealed class RegistrationService(
     IPasswordHasher hasher,
     ITokenService tokens,
     IRegistrationThrottle throttle,
-    IEntitlementResolver entitlements
+    IEntitlementResolver entitlements,
+    TimeProvider timeProvider,
+    IAuthAuditRecorder auditRecorder,
+    IAuthChallengeFactory challengeFactory,
+    IAuthChallengeDeliveryProtector deliveryProtector
 ) : IRegistrationService
 {
     private static readonly HashSet<string> Sources =
@@ -61,12 +65,12 @@ internal sealed class RegistrationService(
         }
         if (!await throttle.IsAllowedAsync(email, command.IpAddress, ct))
         {
-            await TryAuditAsync("registration_throttled", command.IpAddress, ct);
+            await auditRecorder.RecordAsync("registration_throttled", null, command.IpAddress, cancellationToken: ct);
             throw new AuthException("AUTH_RATE_LIMITED", "Too many registration attempts.", 429);
         }
         if (!request.TermsConsent || !request.PrivacyConsent)
         {
-            await TryAuditAsync("registration_validation_failed", command.IpAddress, ct);
+            await auditRecorder.RecordAsync("registration_validation_failed", null, command.IpAddress, cancellationToken: ct);
             throw new AuthException(
                 "AUTH_REQUIRED_CONSENT",
                 "Terms and privacy consent are required.",
@@ -75,13 +79,13 @@ internal sealed class RegistrationService(
         }
         if (!Sources.Contains(source))
         {
-            await TryAuditAsync("registration_validation_failed", command.IpAddress, ct);
+            await auditRecorder.RecordAsync("registration_validation_failed", null, command.IpAddress, cancellationToken: ct);
             throw new AuthException("AUTH_INVALID_SOURCE", "Unsupported source.", 422);
         }
         var existing = await repository.FindIdentityAsync(email, ct);
         if (existing is not null)
         {
-            await TryAuditAsync("registration_conflict", command.IpAddress, ct);
+            await auditRecorder.RecordAsync("registration_conflict", null, command.IpAddress, cancellationToken: ct);
             throw new AuthException("AUTH_EMAIL_IN_USE", "The email is already registered.", 409);
         }
         var user = await profiling.CreateRegistrationUserAsync(
@@ -105,12 +109,14 @@ internal sealed class RegistrationService(
             ct
         );
         var refresh = tokens.CreateRefreshToken();
+        var sessionCreatedAtUtc = timeProvider.GetUtcNow().UtcDateTime;
         var session = new RefreshSession
         {
             UserId = user.UserId,
             TokenHash = tokens.HashRefreshToken(refresh),
             FamilyId = Guid.NewGuid(),
-            ExpiresAtUtc = DateTime.UtcNow.AddDays(30),
+            ExpiresAtUtc = sessionCreatedAtUtc.AddDays(30),
+            CreatedAtUtc = sessionCreatedAtUtc,
             IpAddress = command.IpAddress,
             UserAgent = command.UserAgent,
         };
@@ -120,22 +126,17 @@ internal sealed class RegistrationService(
             NormalizedEmail = email,
             PasswordHash = hasher.Hash(request.Password),
         };
-        var now = DateTime.UtcNow;
-        var audits = new[]
-        {
-            new AuthAuditEvent
-            {
-                UserId = user.UserId,
-                EventType = "account_created",
-                MetadataJson = JsonSerializer.Serialize(new { source }),
-            },
-            new AuthAuditEvent
-            {
-                UserId = user.UserId,
-                EventType = "session_created",
-                MetadataJson = "{}",
-            },
-        };
+        var now = sessionCreatedAtUtc;
+        var (verificationChallenge, rawVerificationChallenge) = await challengeFactory.CreateAsync(
+            identity, "email-verification", now, now.AddHours(24), command.IpAddress, command.UserAgent, ct);
+        identity.Challenges.Add(verificationChallenge);
+        var verificationEnvelope = new AuthChallengeDeliveryEnvelope(
+            1,
+            "email-verification",
+            user.UserId,
+            email,
+            deliveryProtector.Protect(rawVerificationChallenge, "email-verification", user.UserId, email));
+        var audits = Array.Empty<AuthAuditEvent>();
         var consents = new[]
         {
             new ConsentRecord
@@ -171,12 +172,15 @@ internal sealed class RegistrationService(
             new AuthOutboxMessage
             {
                 Type = "verification-email",
-                PayloadJson = JsonSerializer.Serialize(new { user.UserId, email }),
+                PayloadJson = JsonSerializer.Serialize(
+                    new AuthSideEffectPayload(user.UserId, email, verificationEnvelope)),
+                AvailableAtUtc = now,
             },
             new AuthOutboxMessage
             {
                 Type = "welcome-email",
-                PayloadJson = JsonSerializer.Serialize(new { user.UserId, email }),
+                PayloadJson = JsonSerializer.Serialize(new AuthSideEffectPayload(user.UserId, email)),
+                AvailableAtUtc = now,
             },
         };
         try
@@ -185,10 +189,13 @@ internal sealed class RegistrationService(
         }
         catch (AuthPersistenceConflictException)
         {
-            await TryAuditAsync("registration_conflict", command.IpAddress, ct);
+            await auditRecorder.RecordAsync("registration_conflict", null, command.IpAddress, cancellationToken: ct);
             throw new AuthException("AUTH_EMAIL_IN_USE", "The email is already registered.", 409);
         }
-        var (AccessToken, ExpiresAtUtc) = tokens.CreateAccessToken(user.UserId, session.SessionKey);
+        await auditRecorder.RecordAsync("account_created", user.UserId, command.IpAddress,
+            JsonSerializer.Serialize(new { source }), ct);
+        await auditRecorder.RecordAsync("session_created", user.UserId, command.IpAddress, cancellationToken: ct);
+        var (AccessToken, ExpiresAtUtc) = await tokens.CreateAccessTokenAsync(user.UserId, session.SessionKey, ct);
         var bootstrap = CalculateBootstrap(
             source,
             request.SelectedTemplateId,
@@ -248,7 +255,7 @@ internal sealed class RegistrationService(
             tokens.HashRefreshToken(command.Request.RefreshToken),
             ct
         );
-        var now = DateTime.UtcNow;
+        var now = timeProvider.GetUtcNow().UtcDateTime;
         if (current is null || current.ExpiresAtUtc <= now)
             throw new AuthException(
                 "AUTH_REFRESH_INVALID",
@@ -266,16 +273,38 @@ internal sealed class RegistrationService(
             );
         }
         var refresh = tokens.CreateRefreshToken();
+        var sessionCreatedAtUtc = current.CreatedAtUtc ?? now;
         var replacement = new RefreshSession
         {
             UserId = current.UserId,
             FamilyId = current.FamilyId,
             TokenHash = tokens.HashRefreshToken(refresh),
             ExpiresAtUtc = now.AddDays(30),
+            CreatedAtUtc = sessionCreatedAtUtc,
             IpAddress = current.IpAddress,
             UserAgent = current.UserAgent,
         };
-        if (!await repository.TryRotateSessionAsync(current.Id, now, replacement, ct))
+        RefreshRotationResult rotation;
+        try
+        {
+            rotation = await repository.TryRotateSessionIfCurrentAsync(
+                current.Id,
+                current.UserId,
+                current.SessionKey,
+                now,
+                replacement,
+                ct);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            throw new AuthException(
+                "AUTH_CONFIGURATION_UNAVAILABLE",
+                "Authentication state is unavailable.",
+                503);
+        }
+        if (rotation == RefreshRotationResult.CurrentStateInvalid)
+            throw new AuthException("AUTH_REFRESH_INVALID", "The refresh session is invalid or expired.", 401);
+        if (rotation != RefreshRotationResult.Rotated)
         {
             await repository.RevokeFamilyAsync(current.FamilyId, now, ct);
             await repository.SaveAsync(ct);
@@ -285,9 +314,15 @@ internal sealed class RegistrationService(
                 401
             );
         }
-        var (AccessToken, ExpiresAtUtc) = tokens.CreateAccessToken(
+        // The repository operation evaluates current Auth/Profiling state in the
+        // same serializable boundary as conditional rotation. A second read here
+        // would reintroduce the race after rotation.
+        if (rotation == RefreshRotationResult.CurrentStateInvalid)
+            throw new AuthException("AUTH_REFRESH_INVALID", "The refresh session is invalid or expired.", 401);
+        var (AccessToken, ExpiresAtUtc) = await tokens.CreateAccessTokenAsync(
             current.UserId,
-            replacement.SessionKey
+            replacement.SessionKey,
+            ct
         );
         return new AuthTokens(AccessToken, refresh, ExpiresAtUtc, replacement.ExpiresAtUtc);
     }
@@ -300,7 +335,7 @@ internal sealed class RegistrationService(
         );
         if (session is null)
             return true;
-        await repository.RevokeFamilyAsync(session.FamilyId, DateTime.UtcNow, ct);
+        await repository.RevokeFamilyAsync(session.FamilyId, timeProvider.GetUtcNow().UtcDateTime, ct);
         await repository.SaveAsync(ct);
         return true;
     }
@@ -314,11 +349,23 @@ internal sealed class RegistrationService(
         var identity = await repository.FindIdentityAsync(email, ct);
         if (identity is null || identity.EmailVerified)
             return true;
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var (verificationChallenge, rawVerificationChallenge) = await challengeFactory.CreateAsync(
+            identity, "email-verification", now, now.AddHours(24), null, null, ct);
+        await repository.AddChallengeAsync(verificationChallenge, ct);
+        var verificationEnvelope = new AuthChallengeDeliveryEnvelope(
+            1,
+            "email-verification",
+            identity.UserId,
+            email,
+            deliveryProtector.Protect(rawVerificationChallenge, "email-verification", identity.UserId, email));
         await repository.AddOutboxAsync(
             new AuthOutboxMessage
             {
                 Type = "verification-email",
-                PayloadJson = JsonSerializer.Serialize(new { identity.UserId, email }),
+                PayloadJson = JsonSerializer.Serialize(
+                    new AuthSideEffectPayload(identity.UserId, email, verificationEnvelope)),
+                AvailableAtUtc = now,
             },
             ct
         );
@@ -390,23 +437,6 @@ internal sealed class RegistrationService(
             .ToLowerInvariant();
     }
 
-    private async Task TryAuditAsync(string eventType, string? ipAddress, CancellationToken ct)
-    {
-        try
-        {
-            await repository.AddAuditAsync(
-                new AuthAuditEvent
-                {
-                    EventType = eventType,
-                    MetadataJson = "{}",
-                    IpAddress = ipAddress,
-                },
-                ct
-            );
-            await repository.SaveAsync(ct);
-        }
-        catch (Exception) when (!ct.IsCancellationRequested) { }
-    }
 }
 
 public interface IRegistrationService

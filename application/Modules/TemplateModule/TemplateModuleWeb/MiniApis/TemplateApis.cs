@@ -3,6 +3,7 @@ using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 using ResumeEnhancer.TemplateModule.AM.Requests;
 using ResumeEnhancer.TemplateModule.SL.Contracts;
 
@@ -16,14 +17,16 @@ internal static class TemplateApis
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
                 Results.Ok(await mediator.Send(new ListTemplatesQuery(), cancellationToken)))
-            .WithName("ListTemplates");
+            .WithName("ListTemplates")
+            .AllowGuest("Guest", "TemplateView");
 
         group.MapGet("/{templateId:int}", async (int templateId, IMediator mediator, CancellationToken cancellationToken) =>
             {
                 var response = await mediator.Send(new GetTemplateQuery(templateId), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             })
-            .WithName("GetTemplate");
+            .WithName("GetTemplate")
+            .AllowGuest("Guest", "TemplateView");
 
         group.MapPost("/", async (CreateTemplateRequest? request, IValidator<CreateTemplateRequest> validator, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
@@ -35,7 +38,7 @@ internal static class TemplateApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new CreateTemplateCommand(request, TemplateEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new CreateTemplateCommand(request, TemplateEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null
                     ? Results.ValidationProblem(new Dictionary<string, string[]>
                     {
@@ -44,7 +47,7 @@ internal static class TemplateApis
                     })
                     : Results.Created($"/api/templates/{response.Id}", response);
             });
-        }).WithName("CreateTemplate");
+        }).WithName("CreateTemplate").RequireProtectedAccess();
 
         group.MapPut("/{templateId:int}", async (int templateId, UpdateTemplateRequest? request, IValidator<UpdateTemplateRequest> validator, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
@@ -56,16 +59,16 @@ internal static class TemplateApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new UpdateTemplateCommand(templateId, request, TemplateEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new UpdateTemplateCommand(templateId, request, TemplateEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             });
-        }).WithName("UpdateTemplate");
+        }).WithName("UpdateTemplate").RequireProtectedAccess();
 
         group.MapDelete("/{templateId:int}", async (int templateId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
-            var deleted = await mediator.Send(new DeleteTemplateCommand(templateId, TemplateEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+            var deleted = await mediator.Send(new DeleteTemplateCommand(templateId, TemplateEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
-        }).WithName("DeleteTemplate");
+        }).WithName("DeleteTemplate").RequireProtectedAccess();
 
         return endpoints;
     }

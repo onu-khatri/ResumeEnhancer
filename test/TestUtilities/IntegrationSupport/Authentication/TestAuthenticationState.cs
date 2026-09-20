@@ -43,6 +43,17 @@ internal sealed class TestAuthenticationState
         }
     }
 
+    public IReadOnlyCollection<string> Privileges
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _current?.Privileges ?? [];
+            }
+        }
+    }
+
     public void Set(TestAuthenticatedAccess access)
     {
         ArgumentNullException.ThrowIfNull(access);

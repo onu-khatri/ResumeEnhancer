@@ -24,3 +24,33 @@ public sealed class ResendVerificationRequest
     public string Email { get; set; } = string.Empty;
     public string? IdempotencyKey { get; set; }
 }
+
+public sealed class LoginRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public sealed class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+}
+
+public sealed class ForgotPasswordRequest
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public sealed class ResetPasswordRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Challenge { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+}
+
+public sealed class VerifyEmailRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Challenge { get; set; } = string.Empty;
+}

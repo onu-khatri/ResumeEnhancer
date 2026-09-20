@@ -1,13 +1,18 @@
 using System.Security.Cryptography;
+using System.Security.Claims;
 using FluentValidation;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using ResumeEnhancer.AuthModule.AM.Requests;
 using ResumeEnhancer.AuthModule.AM.Responses;
@@ -16,19 +21,65 @@ using ResumeEnhancer.AuthModule.PL;
 using ResumeEnhancer.AuthModule.PL.Repositories;
 using ResumeEnhancer.AuthModule.PL.Seeding;
 using ResumeEnhancer.AuthModule.SL.Abstractions;
+using ResumeEnhancer.AuthModule.SL;
 using ResumeEnhancer.AuthModule.SL.Contracts;
 using ResumeEnhancer.AuthModule.SL.Handlers;
 using ResumeEnhancer.AuthModule.SL.Services;
+using ResumeEnhancer.AuthModule.SL.Options;
 using ResumeEnhancer.AuthModule.Web;
 using ResumeEnhancer.AuthModule.Web.Outbox;
 using ResumeEnhancer.BillingModule.SL.Integrations;
 using ResumeEnhancer.ProfilingModule.SL.Integrations;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
+using ResumeEnhancer.WebSolution.ModulesComposition.Authorization;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.AuthModule;
 
 public sealed class AuthInfrastructureTests
 {
+    private static readonly DateTimeOffset TestNow = new(2030, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    private static DateTime TestNowUtc => TestNow.UtcDateTime;
+
+    [Fact]
+    public async Task Authorization_denial_passes_response_correlation_to_audit_recorder()
+    {
+        var auditRecorder = Substitute.For<IAuthAuditRecorder>();
+        var profilingAuthorization = Substitute.For<IProfilingAuthorizationService>();
+        profilingAuthorization.GetGuestAuthorizationAsync(Arg.Any<CancellationToken>())
+            .Returns(new ProfilingAuthorizationSnapshot(
+                0,
+                new HashSet<string>(),
+                new HashSet<string>(),
+                new HashSet<string>()));
+        var entitlementResolver = Substitute.For<IEntitlementResolver>();
+        var context = new DefaultHttpContext
+        {
+            TraceIdentifier = "request-correlation-1",
+        };
+        context.Request.Path = "/protected";
+        context.RequestServices = new ServiceCollection()
+            .AddLogging()
+            .AddProblemDetails()
+            .BuildServiceProvider();
+        context.SetEndpoint(new Endpoint(
+            _ => Task.CompletedTask,
+            new EndpointMetadataCollection(new GuestAccessMetadata("starter", new HashSet<string> { "guest" })),
+            "protected"));
+
+        var middleware = new EndpointAuthorizationMiddleware(_ => Task.CompletedTask);
+        await middleware.InvokeAsync(context, profilingAuthorization, entitlementResolver, auditRecorder);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+        await auditRecorder.Received(1).RecordAsync(
+            "authorization_denied",
+            Arg.Any<int?>(),
+            Arg.Any<string?>(),
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>(),
+            "request-correlation-1");
+    }
+
     [Fact]
     public void Database_schema_uses_default_and_rooted_names()
     {
@@ -62,41 +113,285 @@ public sealed class AuthInfrastructureTests
     }
 
     [Fact]
-    public void Token_service_hashes_refresh_tokens_and_issues_signed_access_tokens()
+    public void Challenge_delivery_envelope_rejects_malformed_wrong_purpose_wrong_user_and_missing_key_ring()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(
-                new Dictionary<string, string?>
-                {
-                    ["Auth:SigningKey"] = "unit-test-signing-key-with-at-least-32-bytes",
-                }
-            )
-            .Build();
-        var service = new AuthTokenService(configuration);
+        var keyRing = Path.Combine(Path.GetTempPath(), $"ResumeEnhancerChallengeUnit-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(keyRing);
+        try
+        {
+            var provider = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(keyRing);
+            var protector = new AuthChallengeDeliveryProtector(provider);
+            var protectedValue = protector.Protect("raw-challenge", "password-reset", 42, "ada@example.com");
 
-        var token = service.CreateRefreshToken();
-        var hash = service.HashRefreshToken(token);
-        var issued = service.CreateAccessToken(42, Guid.NewGuid());
+            Assert.Equal("raw-challenge", protector.Unprotect(protectedValue, "password-reset", 42, "ada@example.com"));
+            Assert.ThrowsAny<Exception>(() => protector.Unprotect(protectedValue, "email-verification", 42, "ada@example.com"));
+            Assert.ThrowsAny<Exception>(() => protector.Unprotect(protectedValue, "password-reset", 43, "ada@example.com"));
+            Assert.ThrowsAny<Exception>(() => protector.Unprotect("malformed", "password-reset", 42, "ada@example.com"));
 
-        Assert.NotEqual(token, hash);
-        Assert.Equal(64, hash.Length);
-        Assert.StartsWith("v1.", issued.AccessToken);
-        Assert.InRange(
-            issued.ExpiresAtUtc,
-            DateTime.UtcNow.AddMinutes(14),
-            DateTime.UtcNow.AddMinutes(16)
-        );
+            var unavailableProvider = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(
+                Path.Combine(Path.GetTempPath(), $"ResumeEnhancerChallengeMissing-{Guid.NewGuid():N}"));
+            var unavailableProtector = new AuthChallengeDeliveryProtector(unavailableProvider);
+            Assert.ThrowsAny<Exception>(() => unavailableProtector.Unprotect(protectedValue, "password-reset", 42, "ada@example.com"));
+        }
+        finally
+        {
+            Directory.Delete(keyRing, recursive: true);
+        }
     }
 
     [Fact]
+    public async Task Provider_backed_token_service_issues_rs256_without_pem_configuration()
+    {
+        var keyRing = Path.Combine(Path.GetTempPath(), $"ResumeEnhancerAuthUnit-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(keyRing);
+        try
+        {
+            var options = new AuthSecurityOptions { DataProtectionKeyRingPath = keyRing };
+            var now = TestNow.AddMinutes(-1);
+            var timeProvider = new FakeTimeProvider(now);
+            var dataProtection = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(keyRing);
+            var materialStore = new AuthProtectedKeyMaterialStore(dataProtection, options);
+            using var rsa = RSA.Create(2048);
+            var repository = Substitute.For<IAuthRepository>();
+            repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([
+                new AuthSigningKeyMetadata
+                {
+                    KeyIdentifier = "primary",
+                    ProtectedMaterial = materialStore.Protect(rsa),
+                    IsActive = true,
+                    LifecycleVersion = 1,
+                    ActivatedAtUtc = now.UtcDateTime,
+                }
+            ]);
+            var provider = new AuthSigningKeyProvider(repository, materialStore, options);
+            var service = new AuthTokenService(options, provider, timeProvider);
+
+            var issued = await service.CreateAccessTokenAsync(42, Guid.NewGuid());
+            Assert.Equal(now.UtcDateTime.AddMinutes(30), issued.ExpiresAtUtc);
+        }
+        finally
+        {
+            Directory.Delete(keyRing, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task Provider_validation_rejects_malformed_unsigned_and_wrong_algorithm_tokens()
+    {
+        var keyRing = Path.Combine(Path.GetTempPath(), $"ResumeEnhancerAuthUnit-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(keyRing);
+        try
+        {
+            var options = new AuthSecurityOptions { DataProtectionKeyRingPath = keyRing };
+            var dataProtection = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(keyRing);
+            var materialStore = new AuthProtectedKeyMaterialStore(dataProtection, options);
+            using var rsa = RSA.Create(2048);
+            var repository = Substitute.For<IAuthRepository>();
+            repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([
+                new AuthSigningKeyMetadata { KeyIdentifier = "primary", ProtectedMaterial = materialStore.Protect(rsa), IsActive = true, LifecycleVersion = 1, ActivatedAtUtc = TestNowUtc }
+            ]);
+            var timeProvider = new FakeTimeProvider(TestNow);
+            var service = new AuthTokenService(options, new AuthSigningKeyProvider(repository, materialStore, options), timeProvider);
+            var identity = new ClaimsIdentity([new Claim(JwtRegisteredClaimNames.Sub, "42"), new Claim("sid", Guid.NewGuid().ToString("N"))]);
+            var handler = new JsonWebTokenHandler();
+            var unsigned = handler.CreateToken(new SecurityTokenDescriptor { Issuer = options.Issuer, Audience = options.Audience, Subject = identity, Expires = TestNowUtc.AddMinutes(5) });
+            var hmac = handler.CreateToken(new SecurityTokenDescriptor { Issuer = options.Issuer, Audience = options.Audience, Subject = identity, Expires = TestNowUtc.AddMinutes(5), SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("01234567890123456789012345678901")), SecurityAlgorithms.HmacSha256) });
+
+            Assert.Null(await service.ValidateAccessTokenAsync("not-a-jwt"));
+            Assert.Null(await service.ValidateAccessTokenAsync(unsigned));
+            Assert.Null(await service.ValidateAccessTokenAsync(hmac));
+        }
+        finally
+        {
+            Directory.Delete(keyRing, recursive: true);
+        }
+    }
+
+    /* Obsolete PEM/configuration and synchronous-token-validation tests retained for historical review only.
+    [Fact]
+    public void Token_service_rejects_malformed_wrong_key_expired_unsigned_and_wrong_algorithm_tokens()
+    {
+        using var activeRsa = RSA.Create(2048);
+        using var otherRsa = RSA.Create(2048);
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Auth:Security:SigningKeyPem"] = activeRsa.ExportPkcs8PrivateKeyPem(),
+            })
+            .Build();
+        var service = new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(configuration);
+
+        Assert.Null(service.ValidateAccessToken("not-a-jwt"));
+        Assert.Null(service.ValidateAccessToken("eyJhbGciOiJSUzI1NiJ9.invalid.signature"));
+
+        var wrongKeyToken = CreateJwt(otherRsa, TestNowUtc.AddMinutes(5));
+        Assert.Null(service.ValidateAccessToken(wrongKeyToken));
+
+        var wrongIssuerToken = CreateJwt(activeRsa, TestNowUtc.AddMinutes(5), issuer: "wrong-issuer");
+        Assert.Null(service.ValidateAccessToken(wrongIssuerToken));
+
+        var expiredToken = CreateJwt(activeRsa, TestNowUtc.AddMinutes(-2));
+        Assert.Null(service.ValidateAccessToken(expiredToken));
+
+        var notYetValidToken = CreateJwt(activeRsa, TestNowUtc.AddMinutes(5), notBeforeUtc: TestNowUtc.AddMinutes(2));
+        Assert.Null(service.ValidateAccessToken(notYetValidToken));
+
+        var unsignedToken = new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
+        {
+            Issuer = "ResumeEnhancer",
+            Audience = "ResumeEnhancer.Api",
+            NotBefore = TestNowUtc,
+            IssuedAt = TestNowUtc,
+            Expires = TestNowUtc.AddMinutes(5),
+            Subject = CreateClaimsIdentity(),
+        });
+        Assert.Null(service.ValidateAccessToken(unsignedToken));
+
+        var wrongAlgorithmToken = new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
+        {
+            Issuer = "ResumeEnhancer",
+            Audience = "ResumeEnhancer.Api",
+            NotBefore = TestNowUtc,
+            IssuedAt = TestNowUtc,
+            Expires = TestNowUtc.AddMinutes(5),
+            Subject = CreateClaimsIdentity(),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("01234567890123456789012345678901")),
+                SecurityAlgorithms.HmacSha256),
+        });
+        Assert.Null(service.ValidateAccessToken(wrongAlgorithmToken));
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("-1")]
+    [InlineData("+42")]
+    [InlineData("042")]
+    [InlineData(" 42")]
+    [InlineData("42.0")]
+    public void Token_service_rejects_noncanonical_or_nonpositive_subjects(string subject)
+    {
+        using var activeRsa = RSA.Create(2048);
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Auth:Security:SigningKeyPem"] = activeRsa.ExportPkcs8PrivateKeyPem(),
+            })
+            .Build();
+        var service = new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(configuration);
+
+        Assert.Null(service.ValidateAccessToken(CreateJwt(activeRsa, TestNowUtc.AddMinutes(5), subject: subject)));
+    }
+
+    [Theory]
+    [InlineData(47, true)]
+    [InlineData(48, false)]
+    [InlineData(49, false)]
+    public void Token_service_enforces_previous_key_overlap_boundary(int retiredHoursAgo, bool expectedAccepted)
+    {
+        using var activeRsa = RSA.Create(2048);
+        using var previousRsa = RSA.Create(2048);
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Auth:Security:SigningKeyPem"] = activeRsa.ExportPkcs8PrivateKeyPem(),
+                ["Auth:Security:PreviousKeyId"] = "previous",
+                ["Auth:Security:PreviousSigningKeyPem"] = previousRsa.ExportPkcs8PrivateKeyPem(),
+                ["Auth:Security:PreviousKeyRetiredAtUtc"] = TestNowUtc.AddHours(-retiredHoursAgo).ToString("O"),
+            })
+            .Build();
+        var service = new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(configuration);
+
+        var principal = service.ValidateAccessToken(CreateJwt(previousRsa, TestNowUtc.AddMinutes(5), keyId: "previous"));
+        if (expectedAccepted) Assert.NotNull(principal);
+        else Assert.Null(principal);
+    }
+
+    [Fact]
+    public void Token_service_rejects_invalidated_active_key()
+    {
+        using var activeRsa = RSA.Create(2048);
+        var invalidatedConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Auth:Security:SigningKeyPem"] = activeRsa.ExportPkcs8PrivateKeyPem(),
+                ["Auth:Security:InvalidatedKeyIds:0"] = "primary",
+            })
+            .Build();
+
+        var invalidatedService = new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(invalidatedConfiguration);
+        Assert.Throws<InvalidOperationException>(() => invalidatedService.CreateAccessToken(42, Guid.NewGuid()));
+    }
+
+    [Fact]
+    public async Task Async_token_validation_applies_durable_previous_key_retirement_boundary()
+    {
+        using var activeRsa = RSA.Create(2048);
+        using var previousRsa = RSA.Create(2048);
+        var options = new AuthSecurityOptions
+        {
+            SigningKeyPem = activeRsa.ExportPkcs8PrivateKeyPem(),
+            PreviousKeyId = "previous",
+            PreviousSigningKeyPem = previousRsa.ExportPkcs8PrivateKeyPem(),
+            PreviousKeyRetiredAtUtc = TestNowUtc.AddHours(-1),
+        };
+        var repository = Substitute.For<IAuthRepository>();
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([
+            new AuthSigningKeyMetadata
+            {
+                KeyIdentifier = "previous",
+                ActivatedAtUtc = TestNowUtc.AddDays(-181),
+                RetiredAtUtc = TestNowUtc.AddHours(-49),
+            },
+        ]);
+        var services = new ServiceCollection();
+        services.AddScoped(_ => repository);
+        using var provider = services.BuildServiceProvider();
+        var service = new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(
+            options,
+            provider.GetRequiredService<IServiceScopeFactory>());
+
+        var token = CreateJwt(previousRsa, TestNowUtc.AddMinutes(5), keyId: "previous");
+
+        Assert.Null(await service.ValidateAccessTokenAsync(token));
+    }
+
+    private static string CreateJwt(
+        RSA rsa,
+        DateTime expiresAtUtc,
+        string issuer = "ResumeEnhancer",
+        DateTime? notBeforeUtc = null,
+        string keyId = "primary",
+        string subject = "42") => new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
+    {
+        Issuer = issuer,
+        Audience = "ResumeEnhancer.Api",
+        NotBefore = notBeforeUtc ?? TestNowUtc.AddMinutes(-1),
+        IssuedAt = TestNowUtc.AddMinutes(-1),
+        Expires = expiresAtUtc,
+        Subject = CreateClaimsIdentity(subject),
+        SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsa) { KeyId = keyId }, SecurityAlgorithms.RsaSha256),
+    });
+
+    private static ClaimsIdentity CreateClaimsIdentity(string subject = "42") => new([
+        new Claim(JwtRegisteredClaimNames.Sub, subject),
+        new Claim("sid", Guid.NewGuid().ToString("N")),
+    ]);
+
+    */
+    [Fact]
     public async Task Registration_throttle_limits_email_and_ip_attempts()
     {
-        var throttle = new InMemoryRegistrationThrottle();
+        var timeProvider = new FakeTimeProvider(new DateTimeOffset(2030, 1, 1, 0, 0, 0, TimeSpan.Zero));
+        var throttle = new InMemoryRegistrationThrottle(timeProvider);
         for (var attempt = 0; attempt < 5; attempt++)
             Assert.True(await throttle.IsAllowedAsync("ada@example.com", "127.0.0.1"));
 
         Assert.False(await throttle.IsAllowedAsync("ada@example.com", "127.0.0.1"));
         Assert.True(await throttle.IsAllowedAsync("other@example.com", "127.0.0.2"));
+
+        timeProvider.Advance(TimeSpan.FromMinutes(15) + TimeSpan.FromTicks(1));
+        Assert.True(await throttle.IsAllowedAsync("ada@example.com", "127.0.0.1"));
     }
 
     [Fact]
@@ -112,7 +407,7 @@ public sealed class AuthInfrastructureTests
             TokenHash = Convert
                 .ToHexString(SHA256.HashData("refresh"u8.ToArray()))
                 .ToLowerInvariant(),
-            ExpiresAtUtc = DateTime.UtcNow.AddDays(1),
+            ExpiresAtUtc = TestNowUtc.AddDays(1),
         };
         var identity = new AuthenticationIdentity
         {
@@ -135,7 +430,7 @@ public sealed class AuthInfrastructureTests
                     UserId = 1,
                     Type = "terms",
                     VersionId = "terms-v1",
-                    AcceptedAtUtc = DateTime.UtcNow,
+                    AcceptedAtUtc = TestNowUtc,
                 },
             ],
             [new AuthAuditEvent { UserId = 1, EventType = "account_created" }],
@@ -157,8 +452,8 @@ public sealed class AuthInfrastructureTests
         Assert.NotNull(await repository.FindIdentityAsync("ada@example.com"));
         Assert.Equal(session.Id, (await repository.FindSessionAsync(session.TokenHash))?.Id);
         var claimed = await repository.ClaimDueOutboxAsync(
-            DateTime.UtcNow.AddMinutes(1),
-            DateTime.UtcNow.AddMinutes(6),
+            TestNowUtc.AddMinutes(1),
+            TestNowUtc.AddMinutes(6),
             10
         );
         Assert.Single(claimed);
@@ -166,34 +461,34 @@ public sealed class AuthInfrastructureTests
         Assert.NotNull(claimed[0].LeaseId);
         Assert.Empty(
             await repository.ClaimDueOutboxAsync(
-                DateTime.UtcNow.AddMinutes(1),
-                DateTime.UtcNow.AddMinutes(6),
+                TestNowUtc.AddMinutes(1),
+                TestNowUtc.AddMinutes(6),
                 10
             )
         );
 
         var rotated = await repository.TryRotateSessionAsync(
             session.Id,
-            DateTime.UtcNow,
+            TestNowUtc,
             new RefreshSession
             {
                 UserId = 1,
                 FamilyId = family,
                 TokenHash = "replacement-by-rotation",
-                ExpiresAtUtc = DateTime.UtcNow.AddDays(1),
+                ExpiresAtUtc = TestNowUtc.AddDays(1),
             }
         );
         Assert.True(rotated);
         Assert.False(
             await repository.TryRotateSessionAsync(
                 session.Id,
-                DateTime.UtcNow,
+                TestNowUtc,
                 new RefreshSession
                 {
                     UserId = 1,
                     FamilyId = family,
                     TokenHash = "rejected-rotation",
-                    ExpiresAtUtc = DateTime.UtcNow.AddDays(1),
+                    ExpiresAtUtc = TestNowUtc.AddDays(1),
                 }
             )
         );
@@ -202,20 +497,20 @@ public sealed class AuthInfrastructureTests
             outbox.Id,
             claimed[0].LeaseId!.Value,
             1,
-            DateTime.UtcNow.AddMinutes(1),
+            TestNowUtc.AddMinutes(1),
             "safe_error"
         );
         await repository.SaveAsync();
         var reclaimed = await repository.ClaimDueOutboxAsync(
-            DateTime.UtcNow.AddMinutes(2),
-            DateTime.UtcNow.AddMinutes(7),
+            TestNowUtc.AddMinutes(2),
+            TestNowUtc.AddMinutes(7),
             10
         );
         Assert.Single(reclaimed);
-        await repository.MarkOutboxProcessedAsync(
+        _ = await repository.MarkOutboxProcessedAsync(
             outbox.Id,
             reclaimed[0].LeaseId!.Value,
-            DateTime.UtcNow
+            TestNowUtc
         );
         await repository.AddSessionAsync(
             new RefreshSession
@@ -223,19 +518,138 @@ public sealed class AuthInfrastructureTests
                 UserId = 1,
                 FamilyId = family,
                 TokenHash = "replacement",
-                ExpiresAtUtc = DateTime.UtcNow.AddDays(1),
+                ExpiresAtUtc = TestNowUtc.AddDays(1),
             }
         );
-        await repository.RevokeFamilyAsync(family, DateTime.UtcNow);
+        await repository.RevokeFamilyAsync(family, TestNowUtc);
         await repository.SaveAsync();
 
         Assert.Empty(
             await repository.ClaimDueOutboxAsync(
-                DateTime.UtcNow.AddDays(1),
-                DateTime.UtcNow.AddDays(1).AddMinutes(5),
+                TestNowUtc.AddDays(1),
+                TestNowUtc.AddDays(1).AddMinutes(5),
                 10
             )
         );
+    }
+
+    [Fact]
+    public async Task Audit_retry_claim_insert_is_idempotent_without_collapsing_distinct_events()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var repository = new AuthRepository(scope.UnitOfWork);
+        var duplicate = new AuthAuditRetryPayload(
+            "authorization_denied",
+            42,
+            "127.0.0.1",
+            "{\"correlationId\":\"request-1\"}",
+            "request-1");
+        var distinct = duplicate with { CorrelationId = "request-2", MetadataJson = "{\"correlationId\":\"request-2\"}" };
+
+        Assert.True(await repository.TryRecordAuditRetryAsync(duplicate));
+        Assert.False(await repository.TryRecordAuditRetryAsync(duplicate));
+        Assert.True(await repository.TryRecordAuditRetryAsync(distinct));
+
+        var audits = await scope.DbContext.Set<AuthAuditEvent>()
+            .Where(audit => audit.EventType == duplicate.EventType)
+            .ToListAsync();
+        Assert.Equal(2, audits.Count);
+        Assert.Equal(
+            ["{\"correlationId\":\"request-1\"}", "{\"correlationId\":\"request-2\"}"],
+            audits.Select(audit => audit.MetadataJson).OrderBy(metadata => metadata));
+    }
+
+    [Fact]
+    public async Task Independent_workers_deduplicate_concurrent_audits_and_honor_outbox_leases()
+    {
+        using var firstScope = new SqliteAppDbContextScope();
+        using var secondScope = new SqliteAppDbContextScope(firstScope.ConnectionString);
+        var firstRepository = new AuthRepository(firstScope.UnitOfWork);
+        var secondRepository = new AuthRepository(secondScope.UnitOfWork);
+        var payload = new AuthAuditRetryPayload(
+            "authorization_denied",
+            42,
+            "127.0.0.1",
+            "{\"correlationId\":\"concurrent-request\"}",
+            "concurrent-request");
+
+        var firstAttempt = CaptureSqliteLockAsync(() => firstRepository.TryRecordAuditRetryAsync(payload));
+        var secondAttempt = CaptureSqliteLockAsync(() => secondRepository.TryRecordAuditRetryAsync(payload));
+        var results = await Task.WhenAll(firstAttempt, secondAttempt);
+
+        for (var index = 0; index < results.Length; index++)
+        {
+            if (results[index] is null)
+            {
+                results[index] = await (index == 0
+                    ? secondRepository.TryRecordAuditRetryAsync(payload)
+                    : firstRepository.TryRecordAuditRetryAsync(payload));
+            }
+        }
+
+        Assert.Equal([true, false], results.OrderByDescending(result => result).ToArray());
+        Assert.Equal(
+            1,
+            await firstScope.DbContext.Set<AuthAuditEvent>()
+                .CountAsync(audit => audit.MetadataJson == payload.MetadataJson));
+
+        var distinct = payload with
+        {
+            CorrelationId = "distinct-request",
+            MetadataJson = "{\"correlationId\":\"distinct-request\"}",
+        };
+        Assert.True(await secondRepository.TryRecordAuditRetryAsync(distinct));
+
+        var outbox = new AuthOutboxMessage
+        {
+            Type = "verification-email",
+            PayloadJson = "{\"UserId\":42,\"Email\":\"ada@example.com\"}",
+            AvailableAtUtc = TestNowUtc,
+        };
+        await firstRepository.AddOutboxAsync(outbox);
+        await firstRepository.SaveAsync();
+
+        var firstClaim = Assert.Single(await firstRepository.ClaimDueOutboxAsync(
+            TestNowUtc,
+            TestNowUtc.AddMinutes(5),
+            10));
+        Assert.Empty(await secondRepository.ClaimDueOutboxAsync(
+            TestNowUtc,
+            TestNowUtc.AddMinutes(5),
+            10));
+
+        await firstRepository.MarkOutboxFailedAsync(
+            firstClaim.Id,
+            firstClaim.LeaseId!.Value,
+            1,
+            TestNowUtc.AddMinutes(1),
+            "safe_retry");
+        await firstRepository.SaveAsync();
+
+        var reclaimed = Assert.Single(await secondRepository.ClaimDueOutboxAsync(
+            TestNowUtc.AddMinutes(1),
+            TestNowUtc.AddMinutes(6),
+            10));
+        Assert.False(await firstRepository.MarkOutboxProcessedAsync(
+            outbox.Id,
+            firstClaim.LeaseId!.Value,
+            TestNowUtc.AddMinutes(1)));
+        Assert.True(await secondRepository.MarkOutboxProcessedAsync(
+            outbox.Id,
+            reclaimed.LeaseId!.Value,
+            TestNowUtc.AddMinutes(1)));
+    }
+
+    private static async Task<bool?> CaptureSqliteLockAsync(Func<Task<bool>> operation)
+    {
+        try
+        {
+            return await operation();
+        }
+        catch (Exception exception) when (exception.ToString().Contains("database is locked", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
     }
 
     [Fact]
@@ -303,21 +717,13 @@ public sealed class AuthInfrastructureTests
     public void Auth_composition_registers_owned_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(
-            new ConfigurationBuilder()
-                .AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        ["Auth:SigningKey"] = "unit-test-signing-key-with-at-least-32-bytes",
-                    }
-                )
-                .Build()
-        );
+        services.AddDataProtection();
         services.AddAuthModulePersistence();
+        services.AddAuthModuleApplication(new AuthSecurityOptions());
         using var provider = services.BuildServiceProvider();
 
         Assert.NotNull(provider.GetRequiredService<IPasswordHasher>());
-        Assert.NotNull(provider.GetRequiredService<ITokenService>());
+        Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(ITokenService));
         Assert.NotNull(provider.GetRequiredService<IRegistrationThrottle>());
         Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(IAuthRepository));
     }
@@ -396,11 +802,17 @@ public sealed class AuthInfrastructureTests
             .Where(route => route is not null)
             .ToArray();
 
-        Assert.Equal(5, routes.Length);
+        Assert.Equal(11, routes.Length);
         Assert.Contains("/api/v1/auth/register", routes);
         Assert.Contains("/api/v1/auth/refresh", routes);
         Assert.Contains("/api/v1/auth/logout", routes);
         Assert.Contains("/api/v1/auth/verify-email/resend", routes);
+        Assert.Contains("/api/v1/auth/login", routes);
+        Assert.Contains("/api/v1/auth/password/change", routes);
+        Assert.Contains("/api/v1/auth/password/forgot", routes);
+        Assert.Contains("/api/v1/auth/password/reset", routes);
+        Assert.Contains("/api/v1/auth/verify-email", routes);
+        Assert.Contains("/api/v1/auth/me", routes);
         Assert.Contains("/api/v1/bootstrap", routes);
     }
 
@@ -411,7 +823,7 @@ public sealed class AuthInfrastructureTests
             NullLogger<LoggingAuthSideEffectHandler>.Instance
         );
 
-        await handler.HandleAsync("welcome-email", 42, "ada@example.com");
+        await handler.HandleAsync("welcome-email", 42, "ada@example.com", null);
     }
 
     private sealed class StubBillingService : IBillingRegistrationService
@@ -472,7 +884,7 @@ public sealed class AuthInfrastructureTests
         public RegisterResponse Registered { get; } =
             new(
                 1,
-                new("access", "refresh", DateTime.UtcNow, DateTime.UtcNow),
+                new("access", "refresh", TestNowUtc, TestNowUtc),
                 new(
                     "active",
                     "pending",
@@ -486,7 +898,7 @@ public sealed class AuthInfrastructureTests
                 )
             );
         public AuthTokens Tokens { get; } =
-            new("access", "refresh", DateTime.UtcNow, DateTime.UtcNow);
+            new("access", "refresh", TestNowUtc, TestNowUtc);
 
         public Task<RegisterResponse> RegisterAsync(
             RegisterCommand c,

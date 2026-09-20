@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.0.0" />
     <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
     <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModuleAM\ResumeEnhancer.BillingModule.AM.csproj" />
     <ProjectReference Include="..\..\application\Modules\BillingModule\BillingModuleDM\ResumeEnhancer.BillingModule.DM.csproj" />

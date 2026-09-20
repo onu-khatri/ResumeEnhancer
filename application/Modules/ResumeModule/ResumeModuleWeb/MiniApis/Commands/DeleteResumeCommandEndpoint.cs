@@ -18,8 +18,8 @@ internal static partial class ResumeCommandEndpoints
             async () => Results.Ok(await mediator.Send(
                 new DeleteResumeCommand(
                     resumeId,
-                    ResumeEndpointHeaders.ReadAuditUserId(httpContext),
-                    ResumeEndpointHeaders.ReadUserId(httpContext)),
+                    ResumeEndpointHeaders.GetPrincipalAuditUserId(httpContext),
+                    ResumeEndpointHeaders.GetPrincipalUserId(httpContext)),
                 cancellationToken)));
 }
 

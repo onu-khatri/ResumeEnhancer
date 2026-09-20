@@ -50,7 +50,8 @@ public sealed class ApiEndpointExecutorTests
         var snapshot = await result.ExecuteAsync();
 
         snapshot.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
-        snapshot.Body.ShouldContain("missing");
+        snapshot.Body.ShouldContain("Resource not found");
+        snapshot.Body.ShouldNotContain("missing");
     }
 
     [Fact]
@@ -61,7 +62,8 @@ public sealed class ApiEndpointExecutorTests
         var snapshot = await result.ExecuteAsync();
 
         snapshot.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        snapshot.Body.ShouldContain("denied");
+        snapshot.Body.ShouldContain("not authorized");
+        snapshot.Body.ShouldNotContain("denied");
     }
 
     [Fact]
@@ -72,7 +74,8 @@ public sealed class ApiEndpointExecutorTests
         var snapshot = await result.ExecuteAsync();
 
         snapshot.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
-        snapshot.Body.ShouldContain("bad input");
+        snapshot.Body.ShouldContain("request is invalid");
+        snapshot.Body.ShouldNotContain("bad input");
     }
 
     [Fact]
@@ -83,7 +86,8 @@ public sealed class ApiEndpointExecutorTests
         var snapshot = await result.ExecuteAsync();
 
         snapshot.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
-        snapshot.Body.ShouldContain("bad state");
+        snapshot.Body.ShouldContain("could not be completed");
+        snapshot.Body.ShouldNotContain("bad state");
     }
 }
 

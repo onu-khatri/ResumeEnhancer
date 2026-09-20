@@ -90,10 +90,7 @@ public static class AuthApiTestData
                         .GetProperty("accessToken")
                         .GetString()
                         .ShouldNotBeNullOrWhiteSpace();
-                    json.RootElement.GetProperty("tokens")
-                        .GetProperty("refreshToken")
-                        .GetString()
-                        .ShouldNotBeNullOrWhiteSpace();
+                    json.RootElement.GetProperty("tokens").ToString().ShouldNotContain("refreshToken");
                     json.RootElement.GetProperty("bootstrap")
                         .GetProperty("workspaceRoute")
                         .GetString()
@@ -151,7 +148,7 @@ public static class AuthApiTestData
                         HttpStatusCode.Unauthorized,
                         cancellationToken
                     );
-                    json.RootElement.GetProperty("errorCode")
+                    json.RootElement.GetProperty("code")
                         .GetString()
                         .ShouldBe("AUTH_REFRESH_INVALID");
                 }

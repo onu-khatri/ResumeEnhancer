@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using ResumeEnhancer.Core.CommonLibrary.Exceptions;
 
 namespace EmptyProjectTesting.Middleware
 {
@@ -25,23 +27,11 @@ namespace EmptyProjectTesting.Middleware
             catch (Exception ex)
             {
                 // 1. Log the Error
-                _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
+                var correlationId = context.TraceIdentifier;
+                _logger.LogError(ex, "Unhandled request failure. CorrelationId: {CorrelationId}", correlationId);
 
                 // 2. Set Response Metadata
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                context.Response.ContentType = "application/json";
-
-                // 3. Prepare Error Response Body
-                var errorResponse = new
-                {
-                    context.Response.StatusCode,
-                    ex.Message,
-                    InnerException = ex.InnerException?.Message,
-                    // Security Best Practice: StackTrace sirf Development Environment me show hoga
-                    DetailMessage = _env.IsDevelopment() ? ex.StackTrace : null
-                };
-
-                await context.Response.WriteAsJsonAsync(errorResponse);
+                await ApiProblemDetails.WriteAsync(context, "UNEXPECTED_ERROR", StatusCodes.Status500InternalServerError);
             }
         }
     }

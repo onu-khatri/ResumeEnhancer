@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.DataProtection;
 using ResumeEnhancer.AuthModule.PL;
 using ResumeEnhancer.BillingModule.PL;
 using ResumeEnhancer.Infrastructure.DatabaseMigration;
@@ -99,6 +100,9 @@ internal static class MigrationConsole
         services.AddAuthModulePersistence();
         services.AddTemplateModulePersistence();
         services.AddResumeModulePersistence();
+        var keyRingPath = Environment.GetEnvironmentVariable("AUTH_DATA_PROTECTION_KEY_RING_PATH");
+        if (!string.IsNullOrWhiteSpace(keyRingPath))
+            services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keyRingPath)).SetApplicationName("ResumeEnhancer");
         services.AddAppDbContext(
             (_, options) =>
             {

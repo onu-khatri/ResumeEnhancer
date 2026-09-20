@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ResumeEnhancer.Infrastructure.Persistence.Limiting;
 
 namespace ResumeEnhancer.Infrastructure.Persistence;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.TryAddScoped<IUnitOfWorkFactory<AppDbContext>, UnitOfWorkFactory<AppDbContext>>();
         services.TryAddScoped(typeof(IAuditEntityRepository<>), typeof(AuditEntityRepository<>));
         services.TryAddTransient(typeof(IModelLoader<>), typeof(ModelLoader<>));
+        services.TryAddScoped<IAtomicLimiterStore, DbCacheLimiterStore>();
 
         return services;
     }

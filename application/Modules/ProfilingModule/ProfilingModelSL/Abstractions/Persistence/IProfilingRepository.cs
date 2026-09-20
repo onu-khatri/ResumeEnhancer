@@ -52,6 +52,14 @@ public interface IProfilingRepository
         CancellationToken cancellationToken = default
     );
     public Task<bool> UserExistsAsync(int userId, CancellationToken cancellationToken = default);
+    public Task<User?> GetUserStateAsync(int userId, CancellationToken cancellationToken = default);
+    public Task<ProfilingAuthorizationSnapshot?> GetUserAuthorizationAsync(
+        int userId,
+        CancellationToken cancellationToken = default
+    );
+    public Task<ProfilingAuthorizationSnapshot?> GetGuestAuthorizationAsync(
+        CancellationToken cancellationToken = default
+    );
 
     public Task<Role> AddRoleAsync(
         Role role,
