@@ -65,6 +65,56 @@ public sealed class AuthTokenAuthenticationHandlerTests
         context.User.Identity?.IsAuthenticated.ShouldBeFalse();
     }
 
+    [Fact]
+    public async Task Authentication_returns_no_result_without_a_bearer_header()
+    {
+        var handler = CreateHandler(new ValidBearerTokenService(Guid.NewGuid()), new InvalidCurrentStateService());
+        var context = new DefaultHttpContext();
+
+        await handler.InitializeAsync(
+            new AuthenticationScheme("Bearer", "Bearer", typeof(AuthTokenAuthenticationHandler)),
+            context);
+
+        var result = await handler.AuthenticateAsync();
+
+        result.None.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Authentication_rejects_invalid_tokens_and_claims_before_current_state_lookup()
+    {
+        var invalidTokenHandler = CreateHandler(new InvalidBearerTokenService(), new InvalidCurrentStateService());
+        var invalidTokenContext = new DefaultHttpContext();
+        invalidTokenContext.Request.Headers.Authorization = "Bearer invalid";
+        await invalidTokenHandler.InitializeAsync(
+            new AuthenticationScheme("Bearer", "Bearer", typeof(AuthTokenAuthenticationHandler)),
+            invalidTokenContext);
+
+        var invalidToken = await invalidTokenHandler.AuthenticateAsync();
+        invalidToken.Succeeded.ShouldBeFalse();
+        invalidToken.Failure!.Message.ShouldBe("Invalid access token.");
+
+        var invalidClaimsHandler = CreateHandler(new InvalidClaimsTokenService(), new InvalidCurrentStateService());
+        var invalidClaimsContext = new DefaultHttpContext();
+        invalidClaimsContext.Request.Headers.Authorization = "Bearer malformed-claims";
+        await invalidClaimsHandler.InitializeAsync(
+            new AuthenticationScheme("Bearer", "Bearer", typeof(AuthTokenAuthenticationHandler)),
+            invalidClaimsContext);
+
+        var invalidClaims = await invalidClaimsHandler.AuthenticateAsync();
+        invalidClaims.Succeeded.ShouldBeFalse();
+        invalidClaims.Failure!.Message.ShouldBe("Invalid access token claims.");
+    }
+
+    private static AuthTokenAuthenticationHandler CreateHandler(ITokenService tokens, IAuthCurrentStateService currentState) =>
+        new(
+            new FixedOptionsMonitor<AuthenticationSchemeOptions>(new AuthenticationSchemeOptions()),
+            NullLoggerFactory.Instance,
+            UrlEncoder.Default,
+            TimeProvider.System,
+            tokens,
+            currentState);
+
     private sealed class FixedOptionsMonitor<T>(T value) : IOptionsMonitor<T>
     {
         public T CurrentValue => value;
@@ -77,9 +127,9 @@ public sealed class AuthTokenAuthenticationHandlerTests
         public void Dispose() { }
     }
 
-    private sealed class ValidBearerTokenService(Guid sessionId) : ITokenService
+    private class ValidBearerTokenService(Guid sessionId) : ITokenService
     {
-        public Task<ClaimsPrincipal?> ValidateAccessTokenAsync(string token, CancellationToken cancellationToken = default) =>
+        public virtual Task<ClaimsPrincipal?> ValidateAccessTokenAsync(string token, CancellationToken cancellationToken = default) =>
             Task.FromResult<ClaimsPrincipal?>(new ClaimsPrincipal(new ClaimsIdentity(
                 [
                     new Claim("sub", "42"),
@@ -105,5 +155,21 @@ public sealed class AuthTokenAuthenticationHandlerTests
     {
         public Task<AuthCurrentState> EvaluateAsync(int userId, Guid sessionKey, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AuthCurrentState(false, "profile_invalid"));
+    }
+
+    private sealed class InvalidBearerTokenService : ValidBearerTokenService
+    {
+        public InvalidBearerTokenService() : base(Guid.NewGuid()) { }
+
+        public override Task<ClaimsPrincipal?> ValidateAccessTokenAsync(string token, CancellationToken cancellationToken = default) =>
+            Task.FromResult<ClaimsPrincipal?>(null);
+    }
+
+    private sealed class InvalidClaimsTokenService : ValidBearerTokenService
+    {
+        public InvalidClaimsTokenService() : base(Guid.NewGuid()) { }
+
+        public override Task<ClaimsPrincipal?> ValidateAccessTokenAsync(string token, CancellationToken cancellationToken = default) =>
+            Task.FromResult<ClaimsPrincipal?>(new ClaimsPrincipal(new ClaimsIdentity([new Claim("sub", "not-an-int")], "Bearer")));
     }
 }

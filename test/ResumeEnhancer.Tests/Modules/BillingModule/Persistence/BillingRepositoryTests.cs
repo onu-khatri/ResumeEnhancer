@@ -150,6 +150,76 @@ public sealed class BillingRepositoryTests
         result.Select(item => item.Code).ShouldBe(["BASIC", "FREE"]);
     }
 
+    [Fact]
+    public async Task BillingRepository_MissingEntitiesAndEmptyDatabaseReturnExpectedResults()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var repository = new BillingRepository(scope.UnitOfWork, CreateCacheProvider());
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        (await repository.GetBillingAccountAsync(999, cancellationToken: cancellationToken)).ShouldBeNull();
+        (await repository.GetBillingPlanAsync(999, cancellationToken: cancellationToken)).ShouldBeNull();
+        (await repository.GetBillingSubscriptionAsync(999, cancellationToken: cancellationToken)).ShouldBeNull();
+        (await repository.ListBillingAccountsAsync(cancellationToken)).ShouldBeEmpty();
+        (await repository.ListBillingSubscriptionsAsync(cancellationToken)).ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task BillingRepository_ListsOnlyActiveAndUnendedSubscriptionsForPlan()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var plan = ResumeTestData.BillingPlan(id: 2, code: "PRO", order: 2);
+        scope.DbContext.Add(plan);
+        scope.DbContext.AddRange(
+            new BillingSubscriptionStatus { Id = 2, Code = "Cancelled", Description = "Cancelled", DisplayName = "Cancelled", Guid = Guid.NewGuid(), Order = 2 },
+            new BillingAccount { Id = 2, UserId = ResumeTestData.OtherUserId, AccountNumber = "ACC-OTHER", StatusId = 1 },
+            new BillingAccount { Id = 3, UserId = ResumeTestData.UserId, AccountNumber = "ACC-TARGET", StatusId = 1 });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        scope.DbContext.AddRange(
+            new BillingSubscription { BillingAccountId = 3, UserId = ResumeTestData.UserId, BillingPlanId = 2, StatusId = 1, EndDateUtc = null },
+            new BillingSubscription { BillingAccountId = 3, UserId = ResumeTestData.UserId, BillingPlanId = 2, StatusId = 1, EndDateUtc = DateTime.UtcNow.AddDays(1) },
+            new BillingSubscription { BillingAccountId = 3, UserId = ResumeTestData.UserId, BillingPlanId = 2, StatusId = 1, EndDateUtc = DateTime.UtcNow.AddDays(-1) },
+            new BillingSubscription { BillingAccountId = 3, UserId = ResumeTestData.UserId, BillingPlanId = 2, StatusId = 2, EndDateUtc = null },
+            new BillingSubscription { BillingAccountId = 2, UserId = ResumeTestData.OtherUserId, BillingPlanId = 1, StatusId = 1, EndDateUtc = null });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        var result = await new BillingRepository(scope.UnitOfWork, CreateCacheProvider())
+            .ListActiveSubscriptionsForPlanAsync(2, cancellationToken);
+
+        result.Count.ShouldBe(2);
+        result.ShouldAllBe(subscription => subscription.StatusId == 1 && subscription.BillingPlanId == 2);
+    }
+
+    [Fact]
+    public async Task BillingRepository_CancellationIsPropagated()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var repository = new BillingRepository(scope.UnitOfWork, CreateCacheProvider());
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+
+        await Should.ThrowAsync<OperationCanceledException>(() =>
+            repository.ListBillingPlansAsync(cancellation.Token));
+    }
+
+    [Fact]
+    public async Task BillingRepository_CacheFailurePropagatesAfterSave()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var cacheProvider = CreateCacheProvider();
+        cacheProvider.RemoveAsync("billing:setup:plans", Arg.Any<CancellationToken>())
+            .Returns<Task>(_ => throw new InvalidOperationException("cache unavailable"));
+        var repository = new BillingRepository(scope.UnitOfWork, cacheProvider);
+
+        await Should.ThrowAsync<InvalidOperationException>(() =>
+            repository.AddBillingPlanAsync(ResumeTestData.BillingPlan(id: 2, code: "PRO"), 10, cancellationToken));
+        (await scope.DbContext.Set<BillingPlan>().AnyAsync(plan => plan.Code == "PRO", cancellationToken))
+            .ShouldBeTrue();
+    }
+
     private static ICacheProvider CreateCacheProvider()
     {
         var cacheProvider = Substitute.For<ICacheProvider>();

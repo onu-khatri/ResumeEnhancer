@@ -51,6 +51,24 @@ public sealed class AuthDurableStateTests
     }
 
     [Fact]
+    public void Auth_security_options_reject_all_security_boundary_violations_and_restore_missing_delays()
+    {
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { Issuer = " " }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { AccessTokenLifetime = TimeSpan.FromHours(2) }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { ClockSkew = TimeSpan.FromMinutes(6) }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { KeyRotationPeriod = TimeSpan.FromDays(1), PreviousKeyOverlap = TimeSpan.FromDays(2) }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { ActiveKeyId = new string('x', 129) }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { DataProtectionApplicationName = " " }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { RefreshCookieName = "refresh" }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { TrustedOrigins = ["https://resume.example/path"] }));
+        Assert.Throws<InvalidOperationException>(() => AuthSecurityOptionsValidator.Validate(new AuthSecurityOptions { ProgressiveLoginDelays = [TimeSpan.FromHours(2), TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero] }));
+
+        var options = new AuthSecurityOptions { ProgressiveLoginDelays = null! };
+        AuthSecurityOptionsValidator.Validate(options);
+        Assert.Equal(5, options.ProgressiveLoginDelays.Length);
+    }
+
+    [Fact]
     public void Durable_auth_model_has_hash_only_entities_and_expected_indexes()
     {
         using var scope = new SqliteAppDbContextScope();

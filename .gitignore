@@ -8,3 +8,4 @@ application/WebSolution/websolution.client/coverage/
 /tmp/
 /.tmp/
 /.worktrees/
+**/.tmp/

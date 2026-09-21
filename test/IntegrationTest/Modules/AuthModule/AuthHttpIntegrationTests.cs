@@ -54,6 +54,275 @@ public sealed class AuthHttpIntegrationTests(IntegrationTestAssemblyFixture fixt
     }
 
     [Fact]
+    public async Task Profiling_role_and_access_profile_routes_allow_a_privileged_authenticated_principal()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var setupper = fixture.RealUtilities.CreateSetupper();
+        using var client = fixture.RealUtilities.CreateClient();
+        using var register = await client.PostAsJsonAsync(
+            "/api/v1/auth/register",
+            AuthApiTestData.ValidRegistration("profiling-admin@example.com"),
+            cancellationToken);
+        using var registration = await register.ReadJsonAsync(HttpStatusCode.Created, cancellationToken);
+        var userId = registration.RootElement.GetProperty("userId").GetInt32();
+        await VerifyIdentityAsync(setupper, "profiling-admin@example.com", cancellationToken);
+
+        var dbContext = (AppDbContext)setupper.GetFreshDbContext();
+        var user = await dbContext.Set<User>()
+            .Include(item => item.UserAccessProfiles)
+            .SingleAsync(item => item.Id == userId, cancellationToken);
+        var administrator = await dbContext.Set<AccessProfile>()
+            .SingleAsync(item => item.Code == "Administrator", cancellationToken);
+        var adminSource = await dbContext.Set<AccessProfileSource>()
+            .SingleAsync(item => item.Code == "admin", cancellationToken);
+        var adminRole = await dbContext.Set<Role>()
+            .SingleAsync(item => item.Code == "ViewAdminPortal", cancellationToken);
+        adminRole.Capability = "ViewAdminPortal";
+        if (!await dbContext.Set<AccessProfileRole>()
+                .AnyAsync(item => item.AccessProfileId == administrator.Id && item.RoleId == adminRole.Id, cancellationToken))
+        {
+            dbContext.Add(new AccessProfileRole
+            {
+                Guid = Guid.NewGuid(),
+                Code = $"{administrator.Code}:{adminRole.Id}",
+                AccessProfileId = administrator.Id,
+                RoleId = adminRole.Id,
+            });
+        }
+
+        var assignment = user.UserAccessProfiles.Single();
+        assignment.AccessProfileId = administrator.Id;
+        assignment.AccessProfileSourceId = adminSource.Id;
+        assignment.Enabled = true;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        using var login = await client.PostAsJsonAsync(
+            "/api/v1/auth/login",
+            new { Email = "profiling-admin@example.com", Password = "Password!1234" },
+            cancellationToken);
+        using var loginJson = await login.ReadJsonAsync(HttpStatusCode.OK, cancellationToken);
+        var accessToken = loginJson.RootElement.GetProperty("accessToken").GetString();
+        accessToken.ShouldNotBeNullOrWhiteSpace();
+        var principal = await fixture.RealUtilities.Services.GetRequiredService<ITokenService>()
+            .ValidateAccessTokenAsync(accessToken!, cancellationToken);
+        principal.ShouldNotBeNull();
+        var subject = principal!.FindFirst("sub")?.Value;
+        var session = principal.FindFirst("sid")?.Value;
+        int.TryParse(subject, out var authenticatedUserId).ShouldBeTrue();
+        Guid.TryParseExact(session, "N", out var sessionKey).ShouldBeTrue();
+        var state = await fixture.RealUtilities.Services.GetRequiredService<IAuthCurrentStateService>()
+            .EvaluateAsync(authenticatedUserId, sessionKey, cancellationToken);
+        state.IsValid.ShouldBeTrue(state.FailureCode);
+
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        using var roles = await client.GetAsync("/api/profiling/roles/", cancellationToken);
+        using var accessProfiles = await client.GetAsync(
+            "/api/profiling/access-profiles/",
+            cancellationToken);
+
+        var rolesBody = await roles.Content.ReadAsStringAsync(cancellationToken);
+        roles.StatusCode.ShouldBe(HttpStatusCode.OK, rolesBody);
+        accessProfiles.StatusCode.ShouldBe(HttpStatusCode.OK);
+        using var rolesJson = await roles.ReadJsonAsync(HttpStatusCode.OK, cancellationToken);
+        using var profilesJson = await accessProfiles.ReadJsonAsync(HttpStatusCode.OK, cancellationToken);
+        rolesJson.RootElement.EnumerateArray()
+            .Any(item => item.GetProperty("code").GetString() == "ViewAdminPortal")
+            .ShouldBeTrue();
+        profilesJson.RootElement.EnumerateArray()
+            .Any(item => item.GetProperty("code").GetString() == "Administrator")
+            .ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Registration_throttle_tracks_email_and_ip_windows_independently()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        var throttle = fixture.RealUtilities.Services.GetRequiredService<IRegistrationThrottle>();
+
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            var allowed = await throttle.TryConsumeAsync(
+                LimiterOperation.Login,
+                "same@example.com",
+                null,
+                "198.51.100.10",
+                cancellationToken);
+            allowed.Allowed.ShouldBeTrue();
+        }
+
+        // The email window is independent of the IP window.
+        (await throttle.TryConsumeAsync(
+            LimiterOperation.Login,
+            "same@example.com",
+            null,
+            "198.51.100.11",
+            cancellationToken)).Allowed.ShouldBeFalse();
+
+        // The IP window is independent of the email window.
+        (await throttle.TryConsumeAsync(
+            LimiterOperation.Login,
+            "different@example.com",
+            null,
+            "198.51.100.10",
+            cancellationToken)).Allowed.ShouldBeFalse();
+
+        (await throttle.TryConsumeAsync(
+            LimiterOperation.Login,
+            "different@example.com",
+            null,
+            "198.51.100.11",
+            cancellationToken)).Allowed.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Real_bearer_handler_rejects_malformed_expired_and_forged_tokens_safely()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var client = fixture.RealUtilities.CreateClient();
+
+        using var register = await client.PostAsJsonAsync(
+            "/api/v1/auth/register",
+            AuthApiTestData.ValidRegistration("bearer-validation@example.com"),
+            cancellationToken);
+        using var registration = await register.ReadJsonAsync(HttpStatusCode.Created, cancellationToken);
+        var accessToken = registration.RootElement.GetProperty("tokens")
+            .GetProperty("accessToken").GetString();
+        accessToken.ShouldNotBeNullOrWhiteSpace();
+        fixture.RealUtilities.Services.GetRequiredService<TimeProvider>()
+            .ShouldBeSameAs(fixture.TimeProvider);
+
+        async Task<HttpResponseMessage> SendBearerAsync(string token)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/auth/me");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            return await client.SendAsync(request, cancellationToken);
+        }
+
+        using var malformed = await SendBearerAsync("not-a-jwt");
+        malformed.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+
+        using var forged = await SendBearerAsync($"{accessToken}.forged");
+        forged.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+
+        fixture.TimeProvider.Advance(TimeSpan.FromMinutes(31));
+        using var expired = await SendBearerAsync(accessToken);
+        expired.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        (await expired.Content.ReadAsStringAsync(cancellationToken)).ShouldNotContain(accessToken);
+    }
+
+    [Fact]
+    public async Task Logout_rate_limit_returns_safe_problem_details_without_refresh_secret()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var client = fixture.Utilities.CreateClient();
+        const string refreshToken = "invalid-logout-refresh-token";
+        const string csrfToken = "synthetic-csrf-proof";
+
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            using var allowed = new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/logout");
+            AddBrowserHeaders(allowed, refreshToken, csrfToken, "https://localhost");
+            using var response = await client.SendAsync(allowed, cancellationToken);
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        }
+
+        using var limited = new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/logout");
+        AddBrowserHeaders(limited, refreshToken, csrfToken, "https://localhost");
+        using var limitedResponse = await client.SendAsync(limited, cancellationToken);
+        using var limitedJson = await limitedResponse.ReadJsonAsync(
+            HttpStatusCode.TooManyRequests,
+            cancellationToken);
+        limitedJson.RootElement.GetProperty("code").GetString().ShouldBe("AUTH_RATE_LIMITED");
+        limitedJson.RootElement.GetProperty("detail").GetString().ShouldBe("Too many authentication attempts.");
+        limitedJson.RootElement.ToString().ShouldNotContain(refreshToken);
+    }
+
+    [Fact]
+    public async Task Authenticated_principal_controls_me_and_resume_search_despite_forged_identity_headers()
+    {
+        using var setupper = fixture.RealUtilities.CreateSetupper();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var client = fixture.RealUtilities.CreateClient();
+        const string email = "principal-ownership@example.com";
+
+        using var register = await client.PostAsJsonAsync(
+            "/api/v1/auth/register",
+            AuthApiTestData.ValidRegistration(email),
+            cancellationToken);
+        using var registration = await register.ReadJsonAsync(HttpStatusCode.Created, cancellationToken);
+        var userId = registration.RootElement.GetProperty("userId").GetInt32();
+        await VerifyIdentityAsync(setupper, email, cancellationToken);
+
+        using var login = await client.PostAsJsonAsync(
+            "/api/v1/auth/login",
+            new { Email = email, Password = "Password!1234" },
+            cancellationToken);
+        using var loginJson = await login.ReadJsonAsync(HttpStatusCode.OK, cancellationToken);
+        var accessToken = loginJson.RootElement.GetProperty("accessToken").GetString();
+        accessToken.ShouldNotBeNullOrWhiteSpace();
+
+        using var me = new HttpRequestMessage(HttpMethod.Get, "/api/v1/auth/me");
+        me.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        me.Headers.Add("X-User-Id", "999999");
+        me.Headers.Add("X-Audit-UserId", "999999");
+        using var meResponse = await client.SendAsync(me, cancellationToken);
+        using var meJson = await meResponse.ReadJsonAsync(HttpStatusCode.OK, cancellationToken);
+        meJson.RootElement.GetProperty("userId").GetInt32().ShouldBe(userId);
+
+        using var search = new HttpRequestMessage(HttpMethod.Post, "/api/resumes/search")
+        {
+            Content = JsonContent.Create(new { UserId = 999999, PageNumber = 1, PageSize = 10 }),
+        };
+        search.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        search.Headers.Add("X-User-Id", "999999");
+        using var searchResponse = await client.SendAsync(search, cancellationToken);
+        searchResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Profiling_role_and_access_profile_routes_reject_guest_requests()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var client = fixture.RealUtilities.CreateClient();
+
+        using var roles = await client.GetAsync("/api/profiling/roles/", cancellationToken);
+        using var accessProfiles = await client.GetAsync(
+            "/api/profiling/access-profiles/",
+            cancellationToken);
+
+        roles.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        accessProfiles.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Invalid_refresh_transport_redacts_the_supplied_secret()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await fixture.ResetAndSeedAsync(cancellationToken);
+        using var client = fixture.RealUtilities.CreateClient();
+        const string suppliedSecret = "refresh-secret-that-must-not-appear";
+
+        using var response = await client.PostAsJsonAsync(
+            "/api/v1/auth/refresh",
+            new { RefreshToken = suppliedSecret },
+            cancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        body.ShouldNotContain(suppliedSecret);
+        if (response.Headers.TryGetValues("Set-Cookie", out var setCookies))
+            setCookies.ShouldAllBe(cookie => !cookie.Contains(suppliedSecret, StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task Guest_template_endpoint_is_reachable_without_authentication_when_guest_access_is_allowed()
     {
         var cancellationToken = TestContext.Current.CancellationToken;

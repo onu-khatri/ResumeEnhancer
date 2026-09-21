@@ -33,6 +33,7 @@ using ResumeEnhancer.ProfilingModule.SL.Integrations;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 using ResumeEnhancer.WebSolution.ModulesComposition.Authorization;
 using ResumeEnhancer.Core.WebLibrary.Authorization;
+using ResumeEnhancer.Core.CommonLibrary.Resilience;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.AuthModule;
 
@@ -147,7 +148,10 @@ public sealed class AuthInfrastructureTests
         try
         {
             var options = new AuthSecurityOptions { DataProtectionKeyRingPath = keyRing };
-            var now = TestNow.AddMinutes(-1);
+            // JsonWebTokenHandler performs lifetime validation against the system clock;
+            // keep this issuance/validation round-trip close to that clock while still
+            // exercising the service's injected time provider.
+            var now = DateTimeOffset.UtcNow.AddMinutes(-1);
             var timeProvider = new FakeTimeProvider(now);
             var dataProtection = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(keyRing);
             var materialStore = new AuthProtectedKeyMaterialStore(dataProtection, options);
@@ -168,6 +172,9 @@ public sealed class AuthInfrastructureTests
 
             var issued = await service.CreateAccessTokenAsync(42, Guid.NewGuid());
             Assert.Equal(now.UtcDateTime.AddMinutes(30), issued.ExpiresAtUtc);
+            Assert.NotNull(await service.ValidateAccessTokenAsync(issued.AccessToken));
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => service.CreateAccessTokenAsync(0, Guid.NewGuid()));
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => service.CreateAccessTokenAsync(42, Guid.Empty));
         }
         finally
         {
@@ -205,6 +212,293 @@ public sealed class AuthInfrastructureTests
         {
             Directory.Delete(keyRing, recursive: true);
         }
+    }
+
+    [Fact]
+    public async Task Current_state_service_classifies_session_identity_and_profile_failures()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var users = Substitute.For<IUserLookupService>();
+        var now = TestNowUtc;
+        var sessionKey = Guid.NewGuid();
+        var time = new FakeTimeProvider(TestNow);
+        var service = new AuthCurrentStateService(repository, users, time);
+
+        repository.FindSessionBySessionKeyAsync(sessionKey, Arg.Any<CancellationToken>())
+            .Returns((RefreshSession?)null);
+        var result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("session_invalid", result.FailureCode);
+
+        repository.FindSessionBySessionKeyAsync(sessionKey, Arg.Any<CancellationToken>())
+            .Returns(new RefreshSession { UserId = 7, ExpiresAtUtc = now.AddHours(1) });
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("session_invalid", result.FailureCode);
+
+        repository.FindSessionBySessionKeyAsync(sessionKey, Arg.Any<CancellationToken>())
+            .Returns(new RefreshSession { UserId = 42, ExpiresAtUtc = now.AddHours(-1) });
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("session_invalid", result.FailureCode);
+
+        repository.FindSessionBySessionKeyAsync(sessionKey, Arg.Any<CancellationToken>())
+            .Returns(new RefreshSession { UserId = 42, ExpiresAtUtc = now.AddHours(1) });
+        repository.FindIdentityForUserIdAsync(42, Arg.Any<CancellationToken>())
+            .Returns((AuthenticationIdentity?)null);
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("identity_invalid", result.FailureCode);
+
+        repository.FindIdentityForUserIdAsync(42, Arg.Any<CancellationToken>())
+            .Returns(new AuthenticationIdentity { UserId = 42, EmailVerified = true, LockedUntilUtc = now.AddMinutes(1) });
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("identity_invalid", result.FailureCode);
+
+        repository.FindIdentityForUserIdAsync(42, Arg.Any<CancellationToken>())
+            .Returns(new AuthenticationIdentity { UserId = 42, EmailVerified = true });
+        users.GetUserStateAsync(42, Arg.Any<CancellationToken>())
+            .Returns((ProfilingUserStateSnapshot?)null);
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.Equal("profile_invalid", result.FailureCode);
+
+        users.GetUserStateAsync(42, Arg.Any<CancellationToken>())
+            .Returns(new ProfilingUserStateSnapshot(42, false, false));
+        result = await service.EvaluateAsync(42, sessionKey);
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task Lifecycle_service_covers_login_identity_lifecycle_and_safe_unknown_account_paths()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var users = Substitute.For<IUserLookupService>();
+        var hasher = Substitute.For<IPasswordHasher>();
+        var tokens = Substitute.For<ITokenService>();
+        var security = Substitute.For<IAuthSecurityStateService>();
+        var limiter = Substitute.For<IRegistrationThrottle>();
+        var profiling = Substitute.For<IProfilingAuthorizationService>();
+        var audit = Substitute.For<IAuthAuditRecorder>();
+        var challengeFactory = Substitute.For<IAuthChallengeFactory>();
+        var protector = Substitute.For<IAuthChallengeDeliveryProtector>();
+        limiter.TryConsumeAsync(Arg.Any<LimiterOperation>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(new LimiterDecision(true, 1, 5, TestNowUtc.AddMinutes(15)));
+        var service = new AuthLifecycleService(
+            repository, users, hasher, tokens, security, limiter, profiling, audit,
+            new FakeTimeProvider(TestNow), challengeFactory, protector);
+
+        repository.FindIdentityAsync("unknown@example.com", Arg.Any<CancellationToken>())
+            .Returns((AuthenticationIdentity?)null);
+        await Assert.ThrowsAsync<AuthException>(() => service.LoginAsync(new LoginCommand(new LoginRequest { Email = "unknown@example.com", Password = "bad" }, "127.0.0.1", null), CancellationToken.None));
+        await audit.Received(1).RecordAsync("login_failed", null, "127.0.0.1", cancellationToken: Arg.Any<CancellationToken>());
+
+        var identity = new AuthenticationIdentity
+        {
+            Id = 5, UserId = 42, NormalizedEmail = "ADA@EXAMPLE.COM", PasswordHash = "stored", EmailVerified = true,
+        };
+        repository.FindIdentityAsync("ada@example.com", Arg.Any<CancellationToken>()).Returns(identity);
+        users.GetUserStateAsync(42, Arg.Any<CancellationToken>()).Returns(new ProfilingUserStateSnapshot(42, false, false));
+        hasher.Verify("stored", "correct").Returns(true);
+        tokens.CreateRefreshToken().Returns("refresh");
+        tokens.HashRefreshToken("refresh").Returns("refresh-hash");
+        tokens.CreateAccessTokenAsync(42, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(("access", TestNowUtc.AddMinutes(30)));
+        var response = await service.LoginAsync(new LoginCommand(new LoginRequest { Email = "ada@example.com", Password = "correct" }, "127.0.0.1", "agent"), CancellationToken.None);
+        Assert.Equal(42, response.UserId);
+        Assert.Equal("access", response.Tokens.AccessToken);
+        await repository.Received(1).ClearLockoutAsync(5, Arg.Any<CancellationToken>());
+
+        repository.FindIdentityForUserIdAsync(42, Arg.Any<CancellationToken>()).Returns((AuthenticationIdentity?)null);
+        await Assert.ThrowsAsync<AuthException>(() => service.ChangePasswordAsync(new ChangePasswordCommand(new ChangePasswordRequest { CurrentPassword = "old", NewPassword = "new" }, 42), CancellationToken.None));
+
+        repository.FindIdentityForUserIdAsync(42, Arg.Any<CancellationToken>()).Returns(identity);
+        profiling.GetUserAuthorizationAsync(42, Arg.Any<CancellationToken>()).Returns(ProfilingAuthorizationSnapshot.Empty(42) with { IsDeactivated = true });
+        await Assert.ThrowsAsync<AuthException>(() => service.ChangePasswordAsync(new ChangePasswordCommand(new ChangePasswordRequest { CurrentPassword = "old", NewPassword = "new" }, 42), CancellationToken.None));
+
+        repository.FindIdentityAsync("missing@example.com", Arg.Any<CancellationToken>()).Returns((AuthenticationIdentity?)null);
+        Assert.True(await service.ForgotPasswordAsync(new ForgotPasswordCommand(new ForgotPasswordRequest { Email = "missing@example.com" }, null, null), CancellationToken.None));
+        Assert.True(await service.ResetPasswordAsync(new ResetPasswordCommand(new ResetPasswordRequest { Email = "missing@example.com", Challenge = "x", NewPassword = "new" }, null), CancellationToken.None));
+        Assert.True(await service.VerifyEmailAsync(new VerifyEmailCommand(new VerifyEmailRequest { Email = "missing@example.com", Challenge = "x" }, null), CancellationToken.None));
+
+        users.GetUserStateAsync(42, Arg.Any<CancellationToken>()).Returns((ProfilingUserStateSnapshot?)null);
+        Assert.Null(await service.GetMeAsync(42, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Challenge_factory_requires_setup_purpose_and_hashes_created_challenges()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var identity = new AuthenticationIdentity { Id = 7, UserId = 42, NormalizedEmail = "ada@example.com" };
+        var factory = new AuthChallengeFactory(repository);
+
+        repository.FindActiveChallengePurposeIdAsync("password-reset", Arg.Any<CancellationToken>())
+            .Returns((int?)null);
+        await Assert.ThrowsAsync<AuthException>(() => factory.CreateAsync(identity, "password-reset", TestNowUtc, TestNowUtc.AddMinutes(5), null, null));
+
+        repository.FindActiveChallengePurposeIdAsync("password-reset", Arg.Any<CancellationToken>())
+            .Returns(19);
+        var (challenge, raw) = await factory.CreateAsync(identity, "password-reset", TestNowUtc, TestNowUtc.AddMinutes(5), "127.0.0.1", "agent", CancellationToken.None);
+        Assert.Equal(19, challenge.AuthChallengePurposeId);
+        Assert.NotEqual(raw, challenge.TokenHash);
+        Assert.Equal(Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(raw))).ToLowerInvariant(), challenge.TokenHash);
+    }
+
+    [Fact]
+    public async Task Audit_recorder_adds_correlation_and_queues_redacted_retry_when_delivery_fails()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var failureSignal = Substitute.For<IAuthAuditFailureSignal>();
+        var resilience = new ThrowingResilienceExecutor();
+        var recorder = new AuthAuditRecorder(repository, failureSignal, resilience);
+
+        await recorder.RecordAsync("login_failed", 42, "127.0.0.1", "{\"safe\":true}", correlationId: "corr-1");
+
+        await repository.Received(1).QueueAuditRetryAsync(
+            Arg.Is<AuthAuditRetryPayload>(payload => payload.CorrelationId == "corr-1" && payload.MetadataJson.Contains("corr-1", StringComparison.Ordinal)),
+            Arg.Any<CancellationToken>());
+        await failureSignal.Received(1).SignalAsync("login_failed", true, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Signing_key_startup_validator_requires_one_active_importable_key()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var material = Substitute.For<IAuthProtectedKeyMaterialStore>();
+        var validator = new AuthSigningKeyStartupValidator(repository, material);
+
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([]);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => validator.ValidateAsync());
+
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([
+            new AuthSigningKeyMetadata { KeyIdentifier = "a", IsActive = true },
+            new AuthSigningKeyMetadata { KeyIdentifier = "b", IsActive = true },
+        ]);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => validator.ValidateAsync());
+    }
+
+    [Fact]
+    public async Task Signing_key_startup_validator_ignores_retired_and_invalidated_active_records()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var material = Substitute.For<IAuthProtectedKeyMaterialStore>();
+        using var importedKey = RSA.Create(2048);
+        var usable = new AuthSigningKeyMetadata { KeyIdentifier = "usable", IsActive = true };
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([
+            new AuthSigningKeyMetadata
+            {
+                KeyIdentifier = "retired",
+                IsActive = true,
+                RetiredAtUtc = TestNowUtc.AddMinutes(-1),
+            },
+            new AuthSigningKeyMetadata
+            {
+                KeyIdentifier = "invalidated",
+                IsActive = true,
+                InvalidatedAtUtc = TestNowUtc.AddMinutes(-1),
+            },
+            usable,
+        ]);
+        material.Import(Arg.Any<AuthSigningKeyMetadata>()).Returns(importedKey);
+
+        await new AuthSigningKeyStartupValidator(repository, material).ValidateAsync();
+
+        material.Received(1).Import(usable);
+    }
+
+    [Fact]
+    public async Task Signing_key_startup_validator_propagates_unreadable_key_material()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var material = Substitute.For<IAuthProtectedKeyMaterialStore>();
+        var active = new AuthSigningKeyMetadata { KeyIdentifier = "primary", IsActive = true };
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([active]);
+        material.Import(Arg.Any<AuthSigningKeyMetadata>())
+            .Returns(_ => throw new CryptographicException("protected signing key cannot be opened"));
+
+        var exception = await Assert.ThrowsAsync<CryptographicException>(
+            () => new AuthSigningKeyStartupValidator(repository, material).ValidateAsync());
+
+        Assert.Equal("protected signing key cannot be opened", exception.Message);
+    }
+
+    [Fact]
+    public async Task Signing_key_provider_rotates_at_boundary_and_materializes_committed_state()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var material = Substitute.For<IAuthProtectedKeyMaterialStore>();
+        var options = new AuthSecurityOptions { KeyRotationPeriod = TimeSpan.FromDays(180) };
+        var oldKey = new AuthSigningKeyMetadata
+        {
+            KeyIdentifier = "primary",
+            ProtectedMaterial = [1],
+            IsActive = true,
+            LifecycleVersion = 7,
+            ActivatedAtUtc = TestNowUtc.AddDays(-180),
+        };
+        var committedKey = new AuthSigningKeyMetadata
+        {
+            KeyIdentifier = "primary-rotated",
+            ProtectedMaterial = [2],
+            IsActive = true,
+            LifecycleVersion = 8,
+            ActivatedAtUtc = TestNowUtc,
+        };
+        var retiredKey = new AuthSigningKeyMetadata
+        {
+            KeyIdentifier = oldKey.KeyIdentifier,
+            ProtectedMaterial = oldKey.ProtectedMaterial,
+            LifecycleVersion = oldKey.LifecycleVersion,
+            ActivatedAtUtc = oldKey.ActivatedAtUtc,
+            RetiredAtUtc = TestNowUtc,
+        };
+        var initialRead = (IReadOnlyList<AuthSigningKeyMetadata>)[oldKey];
+        var committedRead = (IReadOnlyList<AuthSigningKeyMetadata>)[committedKey, retiredKey];
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>())
+            .Returns(initialRead, committedRead);
+        material.Protect(Arg.Any<RSA>()).Returns([]);
+        material.Import(Arg.Any<AuthSigningKeyMetadata>()).Returns(_ => RSA.Create(2048));
+
+        using var keySet = await new AuthSigningKeyProvider(repository, material, options)
+            .GetIssuanceKeySetAsync(TestNowUtc);
+
+        Assert.Equal("primary-rotated", keySet!.Active.KeyIdentifier);
+        Assert.Equal(["primary-rotated", "primary"], keySet.ValidationKeys.Select(x => x.KeyIdentifier));
+        await repository.Received(1).TryRotateSigningKeyAsync(
+            "primary",
+            7,
+            Arg.Is<AuthSigningKeyMetadata>(x =>
+                x.IsActive && x.LifecycleVersion == 8 && x.ActivatedAtUtc == TestNowUtc),
+            TestNowUtc,
+            Arg.Any<CancellationToken>());
+        await repository.Received(2).GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Signing_key_provider_does_not_publish_candidate_when_rotation_fails()
+    {
+        var repository = Substitute.For<IAuthRepository>();
+        var material = Substitute.For<IAuthProtectedKeyMaterialStore>();
+        var options = new AuthSecurityOptions { KeyRotationPeriod = TimeSpan.FromDays(180) };
+        var active = new AuthSigningKeyMetadata
+        {
+            KeyIdentifier = "primary",
+            ProtectedMaterial = [1],
+            IsActive = true,
+            LifecycleVersion = 2,
+            ActivatedAtUtc = TestNowUtc.AddDays(-181),
+        };
+        repository.GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>()).Returns([active]);
+        repository.TryRotateSigningKeyAsync(
+                Arg.Any<string>(),
+                Arg.Any<long>(),
+                Arg.Any<AuthSigningKeyMetadata>(),
+                Arg.Any<DateTime>(),
+                Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<bool>(new InvalidOperationException("rotation unavailable")));
+        material.Protect(Arg.Any<RSA>()).Returns([]);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            new AuthSigningKeyProvider(repository, material, options)
+                .GetIssuanceKeySetAsync(TestNowUtc));
+
+        Assert.Equal("rotation unavailable", exception.Message);
+        await repository.Received(1).GetSigningKeyMetadataAsync(Arg.Any<CancellationToken>());
     }
 
     /* Obsolete PEM/configuration and synchronous-token-validation tests retained for historical review only.
@@ -392,6 +686,55 @@ public sealed class AuthInfrastructureTests
 
         timeProvider.Advance(TimeSpan.FromMinutes(15) + TimeSpan.FromTicks(1));
         Assert.True(await throttle.IsAllowedAsync("ada@example.com", "127.0.0.1"));
+    }
+
+    [Fact]
+    public async Task Operation_throttle_returns_retry_window_resets_and_handles_nullable_dimensions()
+    {
+        var timeProvider = new FakeTimeProvider(new DateTimeOffset(2030, 1, 1, 0, 0, 0, TimeSpan.Zero));
+        var throttle = new InMemoryRegistrationThrottle(timeProvider);
+
+        LimiterDecision decision = default!;
+        for (var attempt = 0; attempt < 5; attempt++)
+            decision = await throttle.TryConsumeAsync(LimiterOperation.Login, null, null, null);
+
+        Assert.True(decision.Allowed);
+        Assert.Equal(5, decision.Count);
+        decision = await throttle.TryConsumeAsync(LimiterOperation.Login, null, null, null);
+        Assert.False(decision.Allowed);
+        Assert.True(decision.RetryAtUtc > timeProvider.GetUtcNow().UtcDateTime);
+
+        throttle.Reset();
+        Assert.True((await throttle.TryConsumeAsync(LimiterOperation.Login, null, null, null)).Allowed);
+    }
+
+    [Fact]
+    public void Protected_key_material_store_rejects_empty_and_unreadable_material()
+    {
+        var keyRing = Path.Combine(Path.GetTempPath(), $"ResumeEnhancerAuthMaterial-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(keyRing);
+        try
+        {
+            var options = new AuthSecurityOptions();
+            var provider = Microsoft.AspNetCore.DataProtection.DataProtectionProvider.Create(keyRing);
+            var store = new AuthProtectedKeyMaterialStore(provider, options);
+
+            Assert.Throws<InvalidOperationException>(() => store.Import(new AuthSigningKeyMetadata
+            {
+                KeyIdentifier = "empty",
+                ProtectedMaterial = [],
+            }));
+            var exception = Assert.Throws<InvalidOperationException>(() => store.Import(new AuthSigningKeyMetadata
+            {
+                KeyIdentifier = "invalid",
+                ProtectedMaterial = [1, 2, 3],
+            }));
+            Assert.Contains("invalid", exception.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(keyRing, recursive: true);
+        }
     }
 
     [Fact]
@@ -824,6 +1167,25 @@ public sealed class AuthInfrastructureTests
         );
 
         await handler.HandleAsync("welcome-email", 42, "ada@example.com", null);
+    }
+
+    private sealed class ThrowingResilienceExecutor : IResilienceExecutor
+    {
+        public Task<T> ExecuteAsync<T>(
+            string profileName,
+            ResilienceOperation operation,
+            Func<CancellationToken, Task<T>> callback,
+            ResilienceRetryPredicate? retryPredicate = null,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException<T>(new InvalidOperationException("audit unavailable"));
+
+        public Task ExecuteAsync(
+            string profileName,
+            ResilienceOperation operation,
+            Func<CancellationToken, Task> callback,
+            ResilienceRetryPredicate? retryPredicate = null,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException(new InvalidOperationException("audit unavailable"));
     }
 
     private sealed class StubBillingService : IBillingRegistrationService

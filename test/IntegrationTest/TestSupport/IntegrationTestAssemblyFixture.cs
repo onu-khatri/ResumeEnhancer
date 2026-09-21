@@ -21,7 +21,8 @@ public sealed class IntegrationTestCollection : ICollectionFixture<IntegrationTe
 
 public sealed class IntegrationTestAssemblyFixture : IDisposable
 {
-    internal static readonly DateTimeOffset InitialUtcNow = new(2030, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    // JsonWebTokenHandler validates nbf/exp against the system clock, so keep the fake clock near now.
+    internal static readonly DateTimeOffset InitialUtcNow = DateTimeOffset.UtcNow;
 
     private readonly string keyRingPath = Path.Combine(Path.GetTempPath(), $"ResumeEnhancerAuthKeys-{Guid.NewGuid():N}");
     private readonly string? priorDataProtectionKeyRingPath;
@@ -71,6 +72,7 @@ public sealed class IntegrationTestAssemblyFixture : IDisposable
                     }))
             .WithConfigureServices(services =>
             {
+                services.Replace(ServiceDescriptor.Singleton<TimeProvider>(timeProvider));
                 services.Replace(ServiceDescriptor.Singleton<IRegistrationThrottle, IntegrationTestRegistrationThrottle>());
                 services.RemoveAll<AuthSecurityOptions>();
                 services.AddSingleton(new AuthSecurityOptions
@@ -169,6 +171,7 @@ internal sealed class IntegrationTestRegistrationThrottle(TimeProvider timeProvi
         };
 
     private readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> attempts = new(StringComparer.Ordinal);
+    private readonly object synchronization = new();
 
     public async Task<bool> IsAllowedAsync(
         string normalizedEmail,
@@ -193,20 +196,37 @@ internal sealed class IntegrationTestRegistrationThrottle(TimeProvider timeProvi
         cancellationToken.ThrowIfCancellationRequested();
         var policy = Policies[operation];
         var now = timeProvider.GetUtcNow().UtcDateTime;
-        var key = string.Join('|', operation, normalizedEmail ?? string.Empty, subject ?? string.Empty, ipAddress ?? "unknown");
-        var queue = attempts.GetOrAdd(key, _ => new ConcurrentQueue<DateTime>());
-        while (queue.TryPeek(out var timestamp) && now - timestamp > policy.Window)
-            queue.TryDequeue(out _);
-
-        if (queue.Count >= policy.Limit)
+        var keys = new[]
         {
-            queue.TryPeek(out var first);
-            return Task.FromResult(new LimiterDecision(false, queue.Count, policy.Limit, first.Add(policy.Window)));
-        }
+            normalizedEmail is null ? null : $"{operation}|email:{normalizedEmail}",
+            subject is null ? null : $"{operation}|subject:{subject}",
+            $"{operation}|ip:{ipAddress ?? "unknown"}",
+        }.Where(key => key is not null).Select(key => key!).ToArray();
+        lock (synchronization)
+        {
+            var queues = keys.Select(key => attempts.GetOrAdd(key, _ => new ConcurrentQueue<DateTime>())).ToArray();
+            foreach (var queue in queues)
+            {
+                while (queue.TryPeek(out var timestamp) && now - timestamp > policy.Window)
+                    queue.TryDequeue(out _);
+            }
 
-        queue.Enqueue(now);
-        return Task.FromResult(new LimiterDecision(true, queue.Count, policy.Limit, now.Add(policy.Window)));
+            var deniedQueue = queues.FirstOrDefault(queue => queue.Count >= policy.Limit);
+            if (deniedQueue is not null)
+            {
+                deniedQueue.TryPeek(out var first);
+                return Task.FromResult(new LimiterDecision(false, deniedQueue.Count, policy.Limit, first.Add(policy.Window)));
+            }
+
+            foreach (var queue in queues)
+                queue.Enqueue(now);
+            return Task.FromResult(new LimiterDecision(true, queues.Max(queue => queue.Count), policy.Limit, now.Add(policy.Window)));
+        }
     }
 
-    public void Reset() => attempts.Clear();
+    public void Reset()
+    {
+        lock (synchronization)
+            attempts.Clear();
+    }
 }

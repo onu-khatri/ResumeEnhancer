@@ -99,4 +99,53 @@ public sealed class AuthBrowserTransportTests
         result.Transport.ShouldBe(AuthBrowserTransport.RefreshTransport.LegacyBody);
         result.Token.ShouldBe("body-token");
     }
+
+    [Fact]
+    public async Task Empty_and_malformed_legacy_bodies_do_not_produce_refresh_tokens()
+    {
+        var emptyRequest = new DefaultHttpContext().Request;
+        emptyRequest.Body = new MemoryStream(" \r\n "u8.ToArray());
+
+        var empty = await AuthBrowserTransport.ReadRefreshTransportAsync(emptyRequest, new AuthSecurityOptions());
+
+        empty.Transport.ShouldBe(AuthBrowserTransport.RefreshTransport.LegacyBody);
+        empty.Token.ShouldBeNull();
+
+        var malformedRequest = new DefaultHttpContext().Request;
+        malformedRequest.Body = new MemoryStream("{not-json}"u8.ToArray());
+
+        var malformed = await AuthBrowserTransport.ReadRefreshTransportAsync(malformedRequest, new AuthSecurityOptions());
+
+        malformed.Transport.ShouldBe(AuthBrowserTransport.RefreshTransport.LegacyBody);
+        malformed.Token.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Refresh_cookie_clearance_expires_both_cookies()
+    {
+        var context = new DefaultHttpContext();
+        var options = new AuthSecurityOptions();
+
+        AuthBrowserTransport.ClearRefreshCookies(context.Response, options);
+
+        var cookies = context.Response.Headers["Set-Cookie"].ToArray();
+        cookies.Length.ShouldBe(2);
+        cookies.ShouldAllBe(cookie => cookie.Contains("expires=Thu, 01 Jan 1970", StringComparison.OrdinalIgnoreCase));
+        cookies.ShouldAllBe(cookie => cookie.Contains("Max-Age=0", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void Trusted_origin_matching_accepts_explicit_scheme_host_and_rejects_invalid_origin()
+    {
+        AuthBrowserTransport.IsTrustedOrigin(
+            "https://resume.example/",
+            ["", "*", "https://resume.example"])
+            .ShouldBeTrue();
+        AuthBrowserTransport.IsTrustedOrigin(
+            "https://resume.example:444",
+            ["https://resume.example"])
+            .ShouldBeFalse();
+        AuthBrowserTransport.IsTrustedOrigin("not-an-origin", ["https://resume.example"]).ShouldBeFalse();
+        AuthBrowserTransport.IsTrustedOrigin("https://resume.example", ["https://resume.example/path"]).ShouldBeFalse();
+    }
 }
