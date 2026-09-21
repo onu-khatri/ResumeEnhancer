@@ -27,7 +27,6 @@ public static class DependencyInjection
             ServiceDescriptor.Scoped<IAppDbContextSeeder, AuthModuleSeeder>()
         );
         services.TryAddScoped<IAuthRepository, AuthRepository>();
-        services.TryAddScoped<IAuthProtectedKeyMaterialStore, AuthProtectedKeyMaterialStore>();
         services.TryAddScoped<IRegistrationThrottle, DbCacheRegistrationThrottle>();
         return services;
     }

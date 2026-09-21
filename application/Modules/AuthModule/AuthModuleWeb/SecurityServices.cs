@@ -4,7 +4,7 @@ using ResumeEnhancer.AuthModule.DM.Entities;
 using ResumeEnhancer.AuthModule.SL.Abstractions;
 using ResumeEnhancer.AuthModule.SL.Options;
 
-namespace ResumeEnhancer.AuthModule.PL;
+namespace ResumeEnhancer.AuthModule.Web;
 
 public sealed class AuthProtectedKeyMaterialStore(IDataProtectionProvider provider, AuthSecurityOptions options) : IAuthProtectedKeyMaterialStore
 {

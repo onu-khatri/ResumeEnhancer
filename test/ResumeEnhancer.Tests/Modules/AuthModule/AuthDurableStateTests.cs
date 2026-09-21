@@ -7,6 +7,7 @@ using ResumeEnhancer.AuthModule.PL.Repositories;
 using ResumeEnhancer.AuthModule.SL.Abstractions;
 using ResumeEnhancer.AuthModule.SL.Services;
 using ResumeEnhancer.AuthModule.SL.Options;
+using ResumeEnhancer.AuthModule.Web;
 using ResumeEnhancer.Tests.Unit.TestInfrastructure;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.AuthModule;

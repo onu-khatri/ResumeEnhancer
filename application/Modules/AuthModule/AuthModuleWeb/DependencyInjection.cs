@@ -38,6 +38,7 @@ public static class DependencyInjection
                 .SetApplicationName(options.DataProtectionApplicationName);
         }
         services.AddAuthModuleApplication(options, requirePersistedKeyRing: configuration is not null);
+        services.TryAddScoped<IAuthProtectedKeyMaterialStore, AuthProtectedKeyMaterialStore>();
         services.AddAuthentication("Bearer").AddScheme<AuthenticationSchemeOptions, AuthTokenAuthenticationHandler>("Bearer", _ => { });
         services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
         services.TryAddScoped<IAuthSideEffectHandler, LoggingAuthSideEffectHandler>();
