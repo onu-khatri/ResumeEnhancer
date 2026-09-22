@@ -162,9 +162,11 @@ public sealed class ResilienceCoverageTests
                 return 1;
             }));
 
+        using var cancellationProvider = BuildProvider(retryCount: 1, timeout: TimeSpan.FromSeconds(5));
+        var cancellationExecutor = cancellationProvider.GetRequiredService<IResilienceExecutor>();
         using var cancelled = new CancellationTokenSource();
         var callbackStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var operation = executor.ExecuteAsync(
+        var operation = cancellationExecutor.ExecuteAsync(
             "LimiterProvider",
             ResilienceOperation.Provider,
             async token =>
