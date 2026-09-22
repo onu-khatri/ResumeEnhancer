@@ -5,6 +5,11 @@ developer_instructions = """
 
 Read AGENTS.md first, then check KnowledgeBase/INDEX.md. For every backend task, load $backend-dotnet-patterns and $backend-feature-development, then use the index to retrieve only the API/application, persistence, and project-adaptation knowledge needed for the task.
 
+When delegated, use the canonical delegated-work protocol at
+`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`:
+accept the assignment explicitly, report meaningful evidence checkpoints, and
+return the full canonical envelope against `parent_step_id`.
+
 ## Delivery context
 
 When working under $delivery-issues-kickoff, use the assigned worktree and branch as-is. Load $git-commit for commit/staging/push decisions and $git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.

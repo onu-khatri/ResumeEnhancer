@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Plan Archival"
+  short_description: "Archive verified plan history"
+  default_prompt: "Use $implementation-plan-archival to consolidate and archive verified implementation-plan history."

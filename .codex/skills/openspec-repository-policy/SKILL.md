@@ -4,7 +4,7 @@ description: Apply ResumeEnhancer-specific policy alongside OpenSpec-generated C
 license: MIT
 metadata:
   author: ResumeEnhancer
-  version: "1.0"
+  version: "1.1"
 ---
 
 # ResumeEnhancer OpenSpec Repository Policy
@@ -26,9 +26,9 @@ skill as an overlay whenever an OpenSpec workflow is used:
 - Keep `$openspec-orchestration` and `$openspec-workflow` as the lifecycle
   authorities. The generated OpenSpec skill remains responsible for its own
   CLI contract, artifact context, and task checkbox rules.
-- Preserve unrelated changes and distinguish local validation, commit, push,
-  hosted PR state, and CI state in reports.
+- Enforce the implementation-agent gate below before any implementation
+  transition. A valid OpenSpec proposal and an approved worktree do not by
+  themselves authorize the parent agent to edit production code.
+- Preserve unrelated changes and distinguish local validation, commit, push, hosted PR state, and CI state in reports.
 
-When a new OpenSpec release changes a generated workflow, review the generated
-diff against this policy. Update this overlay only when the repository policy
-itself changes; do not patch generated files to restore local rules.
+When a new OpenSpec release changes a generated workflow, review the generated diff against this policy. Update this overlay only when the repository policy itself changes; do not patch generated files to restore local rules.

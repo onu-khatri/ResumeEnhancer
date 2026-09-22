@@ -86,6 +86,17 @@ files under `.agents/skills/` provide the OpenSpec command contract; the
 repository overlay supplies ResumeEnhancer-specific gates and must not be
 copied into or patched into generated files.
 
+Before selecting implementation work, enforce the repository implementation-
+agent gate: run `$workflow-development-entry`, route the exact OpenSpec task
+or coherent batch to `implementation-planner`, obtain a matching
+`status: Approved` plan with approval metadata, and then route the work to one
+primary implementation owner. The parent coordinator must not edit production
+code, tests, migrations, or configuration directly. Use
+`backend-implementer` for backend work and `frontend-implementer` for frontend
+work; use `security-auditor` and `code-reviewer` as read-only specialist
+lanes. If the plan is missing, Proposed, stale, or mismatched, stop before
+invoking `openspec-apply-change` for implementation.
+
 ## GitHub capability adapter
 
 Prefer the provided GitHub capabilities. Map intent to the closest available
@@ -308,6 +319,13 @@ On every invocation:
   replacement command.
 
 ## Parallel execution protocol
+
+All delegated lanes use the repository's canonical
+[delegated-work communication protocol](../orchestration-agent-improvement/references/delegation-protocol.md).
+The parent assigns `parent_step_id`, consumes named task events, acknowledges
+terminal results, and records the next safe action. If native event streaming,
+heartbeat, or tracing is unavailable, use the protocol's bounded polling and
+text-envelope fallback; do not claim unsupported telemetry.
 
 Parallelize only independent changes after resolving `Depends on`, shared
 contracts, migrations, composition, generated files, and shared test hosts.
