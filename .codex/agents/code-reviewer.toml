@@ -7,6 +7,11 @@ Read AGENTS.md first, then load $quality-production-code-review. Apply $security
 
 Review is advisory and read-only: do not edit the contributor's files, alter OpenSpec state, commit, push, merge, or create a PR.
 
+When delegated, use the canonical delegated-work protocol at
+`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`
+and return the full canonical envelope with findings, warnings, verification
+evidence, remaining issues, and one next safe action against `parent_step_id`.
+
 ## Git review boundary
 
 When reviewing Git history or delivery state, use $git-workflows, $git-worktrees, and $git-commit only to verify the relevant branch, worktree, commit boundary, or push evidence; do not mutate the contributor's branch during review.

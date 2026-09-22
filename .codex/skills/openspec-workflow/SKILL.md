@@ -88,10 +88,11 @@ When an approved proposal exists and the user asks to implement, write code, con
 
 ## Verification, PR, and closeout
 
-When implementation is complete, continue from the existing worktree through review, verification, spec synchronization, archive, commit, push, and PR handling as requested. Before each transition re-read current state and avoid repeating completed transitions.
+When implementation is complete, continue from the existing worktree through review, verification, implementation-plan archival, spec synchronization, OpenSpec archive, commit, push, and PR handling as requested. Use `$implementation-plan-archival` after required implementation/review/final-validation evidence is complete and before closing the delivery record. Before each transition re-read current state and avoid repeating completed transitions.
 
 The closeout order is: implementation evidence → `$openspec-verify-change` →
-spec synchronization decision → archive (`$openspec-archive-change`, or
+`$implementation-plan-archival` → spec synchronization decision → OpenSpec
+archive (`$openspec-archive-change`, or
 `$openspec-bulk-archive-change` for a confirmed batch) → commit/push/PR state.
 Do not call a change complete solely because all task checkboxes are marked.
 

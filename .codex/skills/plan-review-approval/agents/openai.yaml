@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Review and Approval"
+  short_description: "Review and approve workflow plans"
+  default_prompt: "Use $plan-review-approval to review and approve a workflow-planning plan."

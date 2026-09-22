@@ -5,6 +5,10 @@ description: Improve how Codex decomposes and coordinates multi-agent work for R
 
 # Agent Orchestration Improver
 
+Use [the delegated-work communication protocol](references/delegation-protocol.md)
+when assessing or improving parent/sub-agent status, lifecycle, observability,
+or handoff behavior. It is the canonical state and event contract.
+
 Use this skill to strengthen existing ResumeEnhancer orchestration flows instead of inventing clever delegation for its own sake.
 
 ## Use this skill when

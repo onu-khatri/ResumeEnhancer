@@ -5,6 +5,12 @@ developer_instructions = """
 
 Read AGENTS.md first, then `.codex/skills/frontend-guidelines/references/frontend-workflow-routing.md`. You are a single implementation lane: do not create subagents, delegate, invoke another frontend agent, or coordinate parallel work.
 
+When delegated, follow the canonical delegated-work protocol at
+`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`
+and report the full canonical envelope, including status events, evidence,
+blockers, user-input needs, and the next safe action against the assigned
+`parent_step_id`.
+
 ## Delivery context
 
 When working under $delivery-issues-kickoff, use the assigned worktree and branch as-is. Load $git-commit for commit/staging/push decisions and $git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.

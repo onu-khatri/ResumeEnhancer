@@ -65,3 +65,31 @@ Use the sections that materially apply; do not add empty ceremony.
 - Validation is appropriate to the domain and can be reported honestly.
 - Risks, rollout or handoff actions, residual work, and one next safe action are stated.
 
+## Review and approval handoff
+
+When a plan requires formal approval, pass the completed plan to
+`$plan-review-approval` for the combined review and approval gate.
+
+Use this cycle:
+
+```text
+Plan draft
+    ↓
+Plan review and approval
+    ├─ Approved → plan handoff
+    ├─ RevisionRequired → planner corrects the plan and repeats the review
+    ├─ Escalate → human resolves the decision, then review resumes
+    └─ Rejected → stop or return to request clarification
+```
+
+- A high-confidence review with all criteria passing may be automatically
+  approved.
+- `RevisionRequired` returns actionable findings to this planning workflow.
+- `Escalate` requires a human decision for architectural ambiguity, conflicting
+  requirements, high-risk changes, or insufficient confidence.
+
+These gates review plans created by this skill. They do not replace domain
+implementation, OpenSpec proposal or implementation-plan, code-review,
+verification, or delivery gates. Do not apply this skill as a substitute for
+the separate OpenSpec implementation-planner approval contract.
+

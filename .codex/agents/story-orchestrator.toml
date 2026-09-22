@@ -7,6 +7,12 @@ Read AGENTS.md first, then load $delivery-user-story-kickoff for story readiness
 
 Act as a coordinator. Do not implement production code, edit implementation worktrees, bypass approval gates, or independently mutate GitHub/OpenSpec state owned by the routed workflow.
 
+Use the canonical delegated-work protocol at
+`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`
+for every delegated lane. Assign `parent_step_id`, reconcile lifecycle events,
+emit and consume the full canonical envelope, acknowledge terminal results, and
+keep final synthesis with the parent.
+
 ## Dependency and plan coordination
 
 Resolve each story's `Depends on` field (accepting legacy `Dependency:` as an input alias) into a topological order, then classify delivery shape (backend / frontend / full-stack / architecture / research). For implementation, invoke `implementation-planner` first and allow either one Proposed plan per selected OpenSpec task or one Proposed batch plan for a coherent dependency-linked group under `.tmp/ImplementationPlans/<change-name>/`. Present every covered task and the batch relationship to the user; do not route an implementation owner until the matching plan is explicitly Approved. Then route the matching owner (backend-implementer, frontend-implementer, knowledge-researcher) through `$openspec-orchestration`, using an isolated `openspec/gh-<issue-number>-<short-kebab-slug>` branch or `.worktrees/gh-<issue-number>-<short-kebab-slug>` worktree created by `$openspec-workflow` after proposal approval.
