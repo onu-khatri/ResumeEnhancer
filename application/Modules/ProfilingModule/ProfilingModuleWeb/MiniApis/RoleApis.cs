@@ -3,6 +3,7 @@ using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 using ResumeEnhancer.ProfilingModule.AM.Requests;
 using ResumeEnhancer.ProfilingModule.SL.Contracts;
 
@@ -12,7 +13,8 @@ internal static class RoleApis
 {
     public static IEndpointRouteBuilder MapRoleApis(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/profiling/roles").WithTags("Profiling Roles");
+        var group = endpoints.MapGroup("/api/profiling/roles").WithTags("Profiling Roles")
+            .RequireProtectedAccess(requiredCapabilities: ["ViewAdminPortal"]);
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
                 Results.Ok(await mediator.Send(new ListRolesQuery(), cancellationToken)))
@@ -35,7 +37,7 @@ internal static class RoleApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new CreateRoleCommand(request, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new CreateRoleCommand(request, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return Results.Created($"/api/profiling/roles/{response.Id}", response);
             });
         }).WithName("CreateRole");
@@ -50,14 +52,14 @@ internal static class RoleApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new UpdateRoleCommand(roleId, request, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new UpdateRoleCommand(roleId, request, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             });
         }).WithName("UpdateRole");
 
         group.MapDelete("/{roleId:int}", async (int roleId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
-            var deleted = await mediator.Send(new DeleteRoleCommand(roleId, ProfilingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+            var deleted = await mediator.Send(new DeleteRoleCommand(roleId, ProfilingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
         }).WithName("DeleteRole");
 

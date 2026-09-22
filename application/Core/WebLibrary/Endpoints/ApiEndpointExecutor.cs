@@ -17,23 +17,23 @@ public static class ApiEndpointExecutor
         {
             return await action();
         }
-        catch (KeyNotFoundException exception)
+        catch (KeyNotFoundException)
         {
-            return Results.NotFound(new { error = exception.Message });
+            return Results.Problem(title: "Resource not found.", statusCode: StatusCodes.Status404NotFound, extensions: new Dictionary<string, object?> { ["code"] = "NOT_FOUND" });
         }
-        catch (UnauthorizedAccessException exception)
+        catch (UnauthorizedAccessException)
         {
             return Results.Problem(
-                detail: exception.Message,
+                detail: "The request is not authorized.",
                 statusCode: StatusCodes.Status403Forbidden);
         }
-        catch (ArgumentException exception)
+        catch (ArgumentException)
         {
-            return Results.BadRequest(new { error = exception.Message });
+            return Results.Problem(title: "The request is invalid.", statusCode: StatusCodes.Status400BadRequest, extensions: new Dictionary<string, object?> { ["code"] = "INVALID_REQUEST" });
         }
-        catch (InvalidOperationException exception)
+        catch (InvalidOperationException)
         {
-            return Results.BadRequest(new { error = exception.Message });
+            return Results.Problem(title: "The request could not be completed.", statusCode: StatusCodes.Status400BadRequest, extensions: new Dictionary<string, object?> { ["code"] = "INVALID_OPERATION" });
         }
     }
 }

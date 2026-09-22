@@ -18,7 +18,7 @@ internal static partial class ResumeQueryEndpoints
             async () => Results.Ok(await mediator.Send(
                 new ResumeExistsQuery(
                     resumeId,
-                    ResumeEndpointHeaders.ReadUserId(httpContext)),
+                    ResumeEndpointHeaders.GetPrincipalUserId(httpContext)),
                 cancellationToken)));
 }
 

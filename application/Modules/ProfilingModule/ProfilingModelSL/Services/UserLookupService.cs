@@ -11,4 +11,13 @@ internal sealed class UserLookupService : IUserLookupService
 
     public Task<bool> UserExistsAsync(int userId, CancellationToken cancellationToken = default) =>
         _repository.UserExistsAsync(userId, cancellationToken);
+
+    public async Task<ProfilingUserStateSnapshot?> GetUserStateAsync(
+        int userId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var user = await _repository.GetUserStateAsync(userId, cancellationToken);
+        return user is null ? null : new ProfilingUserStateSnapshot(user.Id, user.IsDeactivated, user.IsDeleted);
+    }
 }

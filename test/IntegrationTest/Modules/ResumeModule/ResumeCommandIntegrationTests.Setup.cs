@@ -51,8 +51,8 @@ public sealed partial class ResumeCommandIntegrationTests
 
                     saved.ShouldNotBeNull();
                     saved!.Title.ShouldBe(fullGraphRequest.Title.Trim());
-                    saved.App_CreateUserId.ShouldBe(41);
-                    saved.App_UpdateUserId.ShouldBe(41);
+                    saved.App_CreateUserId.ShouldBe(1001);
+                    saved.App_UpdateUserId.ShouldBe(1001);
                     saved.PersonalInformation.ShouldNotBeNull();
                     saved.PersonalInformation!.Address.ShouldNotBeNull();
                     saved.PersonalInformation.Awards.Count.ShouldBe(1);
@@ -111,7 +111,7 @@ public sealed partial class ResumeCommandIntegrationTests
                     saved.Skills.ShouldBeEmpty();
                     saved.WorkExperiences.ShouldBeEmpty();
                     saved.Projects.ShouldBeEmpty();
-                    saved.App_CreateUserId.ShouldBe(42);
+                    saved.App_CreateUserId.ShouldBe(1001);
                 }
             ),
         ];
@@ -200,7 +200,7 @@ public sealed partial class ResumeCommandIntegrationTests
                     saved.Summary.ShouldBe("Updated summary from API");
                     saved.ResumeTemplate.ShouldBe("Focused");
                     saved.App_CreateUserId.ShouldBe(11);
-                    saved.App_UpdateUserId.ShouldBe(51);
+                    saved.App_UpdateUserId.ShouldBe(1001);
                     saved.PersonalInformation.ShouldNotBeNull();
                     saved.PersonalInformation!.Email.ShouldBe("updated-201@example.com");
                     saved.PersonalInformation.Address.ShouldBeNull();

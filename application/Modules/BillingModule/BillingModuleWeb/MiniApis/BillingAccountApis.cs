@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using ResumeEnhancer.BillingModule.AM.Requests;
 using ResumeEnhancer.BillingModule.SL.Contracts;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 
 namespace ResumeEnhancer.BillingModule.Web.MiniApis;
 
@@ -12,7 +13,8 @@ internal static class BillingAccountApis
 {
     public static IEndpointRouteBuilder MapBillingAccountApis(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/billing/accounts").WithTags("Billing Accounts");
+        var group = endpoints.MapGroup("/api/billing/accounts").WithTags("Billing Accounts")
+            .RequireProtectedAccess();
 
         group.MapGet("/", async (IMediator mediator, CancellationToken cancellationToken) =>
                 Results.Ok(await mediator.Send(new ListBillingAccountsQuery(), cancellationToken)))
@@ -35,7 +37,7 @@ internal static class BillingAccountApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new CreateBillingAccountCommand(request, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new CreateBillingAccountCommand(request, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return Results.Created($"/api/billing/accounts/{response.Id}", response);
             });
         }).WithName("CreateBillingAccount");
@@ -50,14 +52,14 @@ internal static class BillingAccountApis
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             return await ApiEndpointExecutor.ValidateOrExecute(validationResult.ToDictionary(), async () =>
             {
-                var response = await mediator.Send(new UpdateBillingAccountCommand(billingAccountId, request, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+                var response = await mediator.Send(new UpdateBillingAccountCommand(billingAccountId, request, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
                 return response is null ? Results.NotFound() : Results.Ok(response);
             });
         }).WithName("UpdateBillingAccount");
 
         group.MapDelete("/{billingAccountId:int}", async (int billingAccountId, IMediator mediator, HttpContext httpContext, CancellationToken cancellationToken) =>
         {
-            var deleted = await mediator.Send(new DeleteBillingAccountCommand(billingAccountId, BillingEndpointHeaders.ReadAuditUserId(httpContext)), cancellationToken);
+            var deleted = await mediator.Send(new DeleteBillingAccountCommand(billingAccountId, BillingEndpointHeaders.GetPrincipalAuditUserId(httpContext)), cancellationToken);
             return deleted ? Results.NoContent() : Results.NotFound();
         }).WithName("DeleteBillingAccount");
 

@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\CommonLibrary\ResumeEnhancer.Core.CommonLibrary.csproj" />
     <ProjectReference Include="..\..\Core\DomainLibrary\ResumeEnhancer.Core.DomainLibrary.csproj" />
   </ItemGroup>
 

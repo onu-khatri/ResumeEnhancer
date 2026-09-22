@@ -1,7 +1,7 @@
 using FluentValidation.TestHelper;
-using Microsoft.Extensions.Configuration;
 using ResumeEnhancer.AuthModule.AM.Requests;
 using ResumeEnhancer.AuthModule.PL;
+using ResumeEnhancer.AuthModule.SL.Services;
 using ResumeEnhancer.AuthModule.Web;
 
 namespace ResumeEnhancer.Tests.Unit.Modules.AuthModule;
@@ -34,8 +34,7 @@ public sealed class AuthBehaviorTests
     [Fact]
     public void Token_service_requires_shared_signing_material()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        Assert.Throws<InvalidOperationException>(() => new AuthTokenService(configuration));
+        Assert.Throws<ArgumentNullException>(() => new ResumeEnhancer.AuthModule.SL.Services.AuthTokenService(new(), null!));
     }
 
     [Fact]

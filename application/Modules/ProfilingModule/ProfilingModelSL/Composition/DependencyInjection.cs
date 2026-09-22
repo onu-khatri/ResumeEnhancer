@@ -11,6 +11,7 @@ public static class DependencyInjection
     {
         services.TryAddScoped<IUserLookupService, UserLookupService>();
         services.TryAddScoped<IProfilingRegistrationService, ProfilingRegistrationService>();
+        services.TryAddScoped<IProfilingAuthorizationService, ProfilingAuthorizationService>();
 
         return services;
     }

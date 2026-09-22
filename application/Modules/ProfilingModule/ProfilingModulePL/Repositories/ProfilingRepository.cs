@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.EntityFrameworkCore;
 using ResumeEnhancer.Infrastructure.Caching;
 using ResumeEnhancer.Infrastructure.Persistence;
@@ -214,6 +215,118 @@ public sealed class ProfilingRepository(
     )
     {
         return await _unitOfWork.GetRepo<User>().ExistsAsync(userId, cancellationToken);
+    }
+
+    public Task<User?> GetUserStateAsync(
+        int userId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return _unitOfWork
+            .GetRepo<User>()
+            .Query()
+            .AsNoTracking()
+            .Where(user => user.Id == userId)
+            .Select(user => new User { Id = user.Id, IsDeactivated = user.IsDeactivated, IsDeleted = user.IsDeleted })
+            .SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<ProfilingAuthorizationSnapshot?> GetUserAuthorizationAsync(
+        int userId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var assignments = await _unitOfWork
+            .GetRepo<UserAccessProfile>()
+            .Query()
+            .AsNoTracking()
+            .Include(assignment => assignment.AccessProfile!)
+                .ThenInclude(profile => profile.AccessProfileRoles)
+                    .ThenInclude(profileRole => profileRole.Role)
+            .Where(assignment =>
+                assignment.UserId == userId
+                && assignment.Enabled
+                && (assignment.ValidTillUtc == null || assignment.ValidTillUtc > DateTime.UtcNow)
+                && assignment.AccessProfile != null
+                && !assignment.AccessProfile.ObsoleteFlag)
+            .ToListAsync(cancellationToken);
+
+        var user = await _unitOfWork
+            .GetRepo<User>()
+            .Query()
+            .AsNoTracking()
+            .Where(user => user.Id == userId)
+            .Select(user => new { user.IsDeactivated, user.IsDeleted })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (user is null)
+        {
+            return null;
+        }
+
+        return CreateAuthorizationSnapshot(userId, assignments, user.IsDeactivated, user.IsDeleted);
+    }
+
+    public async Task<ProfilingAuthorizationSnapshot?> GetGuestAuthorizationAsync(
+        CancellationToken cancellationToken = default
+    )
+    {
+        var guest = await _unitOfWork
+            .GetRepo<AccessProfile>()
+            .Query()
+            .AsNoTracking()
+            .Include(profile => profile.AccessProfileRoles)
+                .ThenInclude(profileRole => profileRole.Role)
+            .SingleOrDefaultAsync(
+                profile => profile.Code == "Guest" && !profile.ObsoleteFlag,
+                cancellationToken);
+
+        return guest is null ? null : CreateAuthorizationSnapshot(0, guest);
+    }
+
+    private static ProfilingAuthorizationSnapshot CreateAuthorizationSnapshot(
+        int userId,
+        IReadOnlyCollection<UserAccessProfile> assignments,
+        bool isDeactivated = false,
+        bool isDeleted = false
+    )
+    {
+        var profiles = assignments
+            .Where(assignment => assignment.AccessProfile is not null)
+            .Select(assignment => assignment.AccessProfile!.Code)
+            .Where(code => !string.IsNullOrWhiteSpace(code))
+            .ToFrozenSet(StringComparer.Ordinal);
+        var roles = assignments
+            .SelectMany(assignment => assignment.AccessProfile!.AccessProfileRoles)
+            .Where(profileRole => profileRole.Role is not null && !profileRole.ObsoleteFlag && !profileRole.Role.ObsoleteFlag)
+            .Select(profileRole => profileRole.Role!.Code)
+            .Where(code => !string.IsNullOrWhiteSpace(code))
+            .ToFrozenSet(StringComparer.Ordinal);
+        var capabilities = assignments
+            .SelectMany(assignment => assignment.AccessProfile!.AccessProfileRoles)
+            .Where(profileRole => profileRole.Role is not null && !profileRole.ObsoleteFlag && !profileRole.Role.ObsoleteFlag)
+            .Select(profileRole => profileRole.Role!.Capability)
+            .Where(capability => !string.IsNullOrWhiteSpace(capability))
+            .ToFrozenSet(StringComparer.Ordinal);
+
+        return new ProfilingAuthorizationSnapshot(userId, profiles, roles, capabilities, isDeactivated, isDeleted);
+    }
+
+    private static ProfilingAuthorizationSnapshot CreateAuthorizationSnapshot(
+        int userId,
+        AccessProfile profile
+    )
+    {
+        var roles = profile.AccessProfileRoles
+            .Where(profileRole => profileRole.Role is not null && !profileRole.ObsoleteFlag && !profileRole.Role.ObsoleteFlag)
+            .Select(profileRole => profileRole.Role!);
+
+        return new ProfilingAuthorizationSnapshot(
+            userId,
+            string.IsNullOrWhiteSpace(profile.Code)
+                ? System.Collections.Frozen.FrozenSet<string>.Empty
+                : new[] { profile.Code }.ToFrozenSet(StringComparer.Ordinal),
+            roles.Select(role => role.Code).Where(code => !string.IsNullOrWhiteSpace(code)).ToFrozenSet(StringComparer.Ordinal),
+            roles.Select(role => role.Capability).Where(capability => !string.IsNullOrWhiteSpace(capability)).ToFrozenSet(StringComparer.Ordinal));
     }
 
     public async Task<Role> AddRoleAsync(

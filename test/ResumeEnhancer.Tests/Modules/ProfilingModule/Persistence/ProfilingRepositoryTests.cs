@@ -11,6 +11,249 @@ namespace ResumeEnhancer.Tests.Unit.Modules.ProfilingModule.Persistence;
 
 public sealed class ProfilingRepositoryTests
 {
+    [Fact]
+    public async Task GetUserAuthorizationAsync_ProjectsOnlyEligibleAssignmentsAndActiveRoles()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        scope.DbContext.AddRange(
+            new AccessProfile
+            {
+                Id = 10,
+                Code = "ACTIVE",
+                Description = "Active",
+                DisplayName = "Active",
+                Order = 10,
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfile
+            {
+                Id = 11,
+                Code = "DISABLED",
+                Description = "Disabled",
+                DisplayName = "Disabled",
+                Order = 11,
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfile
+            {
+                Id = 12,
+                Code = "EXPIRED",
+                Description = "Expired",
+                DisplayName = "Expired",
+                Order = 12,
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfile
+            {
+                Id = 13,
+                Code = "OBSOLETE",
+                Description = "Obsolete",
+                DisplayName = "Obsolete",
+                Order = 13,
+                Guid = Guid.NewGuid(),
+                ObsoleteFlag = true
+            },
+            new Role
+            {
+                Id = 10,
+                Code = "MEMBER",
+                Capability = "resume.read",
+                Description = "Member",
+                DisplayName = "Member",
+                Order = 10,
+                Guid = Guid.NewGuid()
+            },
+            new Role
+            {
+                Id = 11,
+                Code = "OBSOLETE_ROLE",
+                Capability = "resume.delete",
+                Description = "Obsolete role",
+                DisplayName = "Obsolete role",
+                Order = 11,
+                Guid = Guid.NewGuid(),
+                ObsoleteFlag = true
+            },
+            new AccessProfileRole
+            {
+                Id = 10,
+                AccessProfileId = 10,
+                RoleId = 10,
+                Code = "ACTIVE_MEMBER",
+                Description = "Active member",
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfileRole
+            {
+                Id = 11,
+                AccessProfileId = 10,
+                RoleId = 11,
+                Code = "OBSOLETE_LINK",
+                Description = "Obsolete link",
+                Guid = Guid.NewGuid(),
+                ObsoleteFlag = true
+            },
+            new UserAccessProfile
+            {
+                Id = 10,
+                UserId = ResumeTestData.UserId,
+                AccessProfileId = 10,
+                AccessProfileSourceId = 1,
+                AssignedOnUtc = DateTime.UtcNow.AddMinutes(-5),
+                Enabled = true
+            },
+            new UserAccessProfile
+            {
+                Id = 11,
+                UserId = ResumeTestData.UserId,
+                AccessProfileId = 11,
+                AccessProfileSourceId = 1,
+                AssignedOnUtc = DateTime.UtcNow.AddMinutes(-5),
+                Enabled = false
+            },
+            new UserAccessProfile
+            {
+                Id = 12,
+                UserId = ResumeTestData.UserId,
+                AccessProfileId = 12,
+                AccessProfileSourceId = 1,
+                AssignedOnUtc = DateTime.UtcNow.AddMinutes(-5),
+                ValidTillUtc = DateTime.UtcNow.AddMinutes(-1),
+                Enabled = true
+            },
+            new UserAccessProfile
+            {
+                Id = 13,
+                UserId = ResumeTestData.UserId,
+                AccessProfileId = 13,
+                AccessProfileSourceId = 1,
+                AssignedOnUtc = DateTime.UtcNow.AddMinutes(-5),
+                Enabled = true
+            });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+        var result = await repository.GetUserAuthorizationAsync(ResumeTestData.UserId, cancellationToken);
+
+        result.ShouldNotBeNull();
+        result!.UserId.ShouldBe(ResumeTestData.UserId);
+        result.AccessProfileCodes.ShouldBe(["ACTIVE"]);
+        result.RoleCodes.ShouldBe(["MEMBER"]);
+        result.Capabilities.ShouldBe(["resume.read"]);
+    }
+
+    [Fact]
+    public async Task GetGuestAuthorizationAsync_ProjectsConfiguredGuestAndFiltersObsoleteRows()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        scope.DbContext.AddRange(
+            new AccessProfile
+            {
+                Id = 20,
+                Code = "Guest",
+                Description = "Guest",
+                DisplayName = "Guest",
+                Order = 20,
+                Guid = Guid.NewGuid()
+            },
+            new Role
+            {
+                Id = 20,
+                Code = "PUBLIC",
+                Capability = "resume.read",
+                Description = "Public",
+                DisplayName = "Public",
+                Order = 20,
+                Guid = Guid.NewGuid()
+            },
+            new Role
+            {
+                Id = 21,
+                Code = "OBSOLETE_PUBLIC",
+                Capability = "resume.write",
+                Description = "Obsolete public",
+                DisplayName = "Obsolete public",
+                Order = 21,
+                Guid = Guid.NewGuid(),
+                ObsoleteFlag = true
+            },
+            new AccessProfileRole
+            {
+                Id = 20,
+                AccessProfileId = 20,
+                RoleId = 20,
+                Code = "GUEST_PUBLIC",
+                Description = "Guest public",
+                Guid = Guid.NewGuid()
+            },
+            new AccessProfileRole
+            {
+                Id = 21,
+                AccessProfileId = 20,
+                RoleId = 21,
+                Code = "GUEST_OBSOLETE",
+                Description = "Guest obsolete",
+                Guid = Guid.NewGuid()
+            });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+        var result = await repository.GetGuestAuthorizationAsync(cancellationToken);
+
+        result.ShouldNotBeNull();
+        result!.UserId.ShouldBe(0);
+        result.AccessProfileCodes.ShouldBe(["Guest"]);
+        result.RoleCodes.ShouldBe(["PUBLIC"]);
+        result.Capabilities.ShouldBe(["resume.read"]);
+    }
+
+    [Fact]
+    public async Task GetGuestAuthorizationAsync_ReturnsAbsentForMissingOrObsoleteGuest()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+
+        (await repository.GetGuestAuthorizationAsync(cancellationToken)).ShouldBeNull();
+
+        scope.DbContext.Add(new AccessProfile
+        {
+            Id = 30,
+            Code = "Guest",
+            Description = "Obsolete Guest",
+            DisplayName = "Obsolete Guest",
+            Order = 30,
+            Guid = Guid.NewGuid(),
+            ObsoleteFlag = true
+        });
+        await scope.DbContext.SaveChangesAsync(cancellationToken);
+
+        (await repository.GetGuestAuthorizationAsync(cancellationToken)).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Authorization_projections_preserve_missing_user_empty_existing_user_and_cancellation()
+    {
+        using var scope = new SqliteAppDbContextScope();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var repository = new ProfilingRepository(scope.UnitOfWork, CreateCacheProvider());
+
+        (await repository.GetUserAuthorizationAsync(999, cancellationToken)).ShouldBeNull();
+
+        var empty = await repository.GetUserAuthorizationAsync(ResumeTestData.UserId, cancellationToken);
+        empty.ShouldNotBeNull();
+        empty!.UserId.ShouldBe(ResumeTestData.UserId);
+        empty.AccessProfileCodes.ShouldBeEmpty();
+        empty.RoleCodes.ShouldBeEmpty();
+        empty.Capabilities.ShouldBeEmpty();
+
+        var canceled = new CancellationToken(canceled: true);
+        await Should.ThrowAsync<OperationCanceledException>(
+            () => repository.GetUserAuthorizationAsync(ResumeTestData.UserId, canceled));
+    }
+
     public static TheoryData<int, int, string, int> InvalidRevisionInputs => new()
     {
         { 0, 10, "FREE", 2 },

@@ -4,11 +4,10 @@ using ResumeEnhancer.AuthModule.SL.Abstractions;
 
 namespace ResumeEnhancer.AuthModule.Web.Outbox;
 
-internal sealed record AuthSideEffectPayload(int UserId, string Email);
-
 public sealed class AuthOutboxDispatcher(
     IServiceScopeFactory scopeFactory,
-    ILogger<AuthOutboxDispatcher> logger
+    ILogger<AuthOutboxDispatcher> logger,
+    TimeProvider timeProvider
 ) : BackgroundService
 {
     private const int BatchSize = 25;
@@ -18,8 +17,22 @@ public sealed class AuthOutboxDispatcher(
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await ProcessOnceAsync(stoppingToken);
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            try
+            {
+                await ProcessOnceAsync(stoppingToken);
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(
+                    exception,
+                    "Auth side-effect outbox processing failed; retrying on the next cycle.");
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(5), timeProvider, stoppingToken);
         }
     }
 
@@ -28,7 +41,8 @@ public sealed class AuthOutboxDispatcher(
         await using var scope = scopeFactory.CreateAsyncScope();
         var repository = scope.ServiceProvider.GetRequiredService<IAuthRepository>();
         var handler = scope.ServiceProvider.GetRequiredService<IAuthSideEffectHandler>();
-        var nowUtc = DateTime.UtcNow;
+        var recorder = scope.ServiceProvider.GetRequiredService<IAuthAuditRecorder>();
+        var nowUtc = timeProvider.GetUtcNow().UtcDateTime;
         var messages = await repository.ClaimDueOutboxAsync(
             nowUtc,
             nowUtc.AddMinutes(5),
@@ -41,22 +55,57 @@ public sealed class AuthOutboxDispatcher(
         {
             try
             {
+                if (message.Type == "auth-audit-retry")
+                {
+                    var audit = JsonSerializer.Deserialize<AuthAuditRetryPayload>(message.PayloadJson)
+                        ?? throw new JsonException("audit_payload_invalid");
+                    await repository.TryRecordAuditRetryAsync(audit, cancellationToken);
+
+                    var acknowledged = await repository.MarkOutboxProcessedAsync(
+                        message.Id,
+                        message.LeaseId!.Value,
+                        timeProvider.GetUtcNow().UtcDateTime,
+                        cancellationToken);
+                    if (!acknowledged)
+                        continue;
+                    await repository.SaveAsync(cancellationToken);
+                }
+                else
+                {
                 var payload =
                     JsonSerializer.Deserialize<AuthSideEffectPayload>(message.PayloadJson)
                     ?? throw new JsonException("outbox_payload_invalid");
+                var challenge = payload.Challenge;
+                var expectedPurpose = ExpectedPurpose(message.Type);
+                if ((expectedPurpose is not null && challenge is null)
+                    || (challenge is not null
+                    && (challenge.Version != 1
+                        || string.IsNullOrWhiteSpace(challenge.Purpose)
+                        || !string.Equals(expectedPurpose, challenge.Purpose, StringComparison.Ordinal)
+                        || challenge.UserId != payload.UserId
+                        || !string.Equals(challenge.Email, payload.Email, StringComparison.OrdinalIgnoreCase)
+                        || string.IsNullOrWhiteSpace(challenge.ProtectedValue))))
+                    throw new JsonException("challenge_envelope_invalid");
                 await handler.HandleAsync(
                     message.Type,
                     payload.UserId,
                     payload.Email,
+                    challenge is null
+                        ? null
+                        : scope.ServiceProvider.GetRequiredService<IAuthChallengeDeliveryProtector>()
+                            .Unprotect(challenge.ProtectedValue, challenge.Purpose, challenge.UserId, challenge.Email),
                     cancellationToken
                 );
-                await repository.MarkOutboxProcessedAsync(
+                var acknowledged = await repository.MarkOutboxProcessedAsync(
                     message.Id,
                     message.LeaseId!.Value,
-                    DateTime.UtcNow,
+                    timeProvider.GetUtcNow().UtcDateTime,
                     cancellationToken
                 );
+                if (!acknowledged)
+                    continue;
                 await repository.SaveAsync(cancellationToken);
+                }
                 processed++;
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
@@ -70,31 +119,36 @@ public sealed class AuthOutboxDispatcher(
                     exception is JsonException ? "side_effect_payload_invalid"
                     : exhausted ? "side_effect_delivery_exhausted"
                     : "side_effect_delivery_failed";
-                await repository.MarkOutboxFailedAsync(
-                    message.Id,
-                    message.LeaseId!.Value,
-                    attempts,
-                    exhausted ? DateTime.MaxValue : DateTime.UtcNow.Add(delay),
-                    safeError,
-                    cancellationToken
-                );
-                await repository.AddAuditAsync(
-                    new AuthAuditEvent
-                    {
-                        UserId = TryGetUserId(message.PayloadJson),
-                        EventType = "side_effect_failed",
-                        MetadataJson = JsonSerializer.Serialize(
-                            new
-                            {
-                                message.Type,
-                                attempts,
-                                retryable = !exhausted,
-                            }
-                        ),
-                    },
-                    cancellationToken
-                );
-                await repository.SaveAsync(cancellationToken);
+                try
+                {
+                    await repository.MarkOutboxFailedAsync(
+                        message.Id,
+                        message.LeaseId!.Value,
+                        attempts,
+                        exhausted ? DateTime.MaxValue : timeProvider.GetUtcNow().UtcDateTime.Add(delay),
+                        safeError,
+                        cancellationToken);
+                    await repository.SaveAsync(cancellationToken);
+                }
+                catch (Exception failure) when (failure is not OperationCanceledException)
+                {
+                    logger.LogWarning("Auth side effect retry state could not be persisted for message {MessageId}.", message.Id);
+                }
+
+                try
+                {
+                    await recorder.RecordAsync(
+                        "side_effect_failed",
+                        TryGetUserId(message.PayloadJson),
+                        null,
+                        JsonSerializer.Serialize(new { message.Type, attempts, retryable = !exhausted }),
+                        cancellationToken,
+                        $"outbox:{message.Id}");
+                }
+                catch (Exception failure) when (failure is not OperationCanceledException)
+                {
+                    logger.LogWarning("Auth side effect failure audit could not be persisted for message {MessageId}.", message.Id);
+                }
                 logger.LogWarning(
                     "Auth side effect {SideEffectType} failed on attempt {Attempt}; retry scheduled.",
                     message.Type,
@@ -105,6 +159,13 @@ public sealed class AuthOutboxDispatcher(
 
         return processed;
     }
+
+    private static string? ExpectedPurpose(string messageType) => messageType switch
+    {
+        "verification-email" => "email-verification",
+        "password-reset-email" => "password-reset",
+        _ => null,
+    };
 
     private static int? TryGetUserId(string payload)
     {
@@ -126,6 +187,7 @@ public sealed class LoggingAuthSideEffectHandler(ILogger<LoggingAuthSideEffectHa
         string type,
         int userId,
         string email,
+        string? challenge,
         CancellationToken cancellationToken = default
     )
     {

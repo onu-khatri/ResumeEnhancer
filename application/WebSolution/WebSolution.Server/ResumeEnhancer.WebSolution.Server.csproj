@@ -33,7 +33,7 @@
     <ProjectReference Include="..\..\Infrastructure\Caching\ResumeEnhancer.Infrastructure.Caching.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Persistence\ResumeEnhancer.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\ModulesComposition\ResumeEnhancer.WebSolution.ModulesComposition.csproj" />
-    <ProjectReference Include="..\websolution.client\ResumeEnhancer.WebSolution.Client.esproj">
+    <ProjectReference Include="..\websolution.client\ResumeEnhancer.WebSolution.Client.esproj" Condition="'$(SkipClientProjectReference)' != 'true'">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using ResumeEnhancer.Infrastructure.Persistence;
 using System.Collections.Concurrent;
+using ResumeEnhancer.ProfilingModule.SL.Integrations;
 
 namespace ResumeEnhancer.TestUtilities.IntegrationSupport;
 
@@ -23,6 +25,7 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
     where TProgram : class
 {
     private readonly List<Action<IServiceCollection>> _configureServices = [];
+    private readonly List<Action<IConfigurationBuilder>> _configureAppConfiguration = [];
     private readonly TestAuthenticationState _authenticationState = new();
     private SqliteConnection? _sqliteConnection;
 
@@ -55,6 +58,7 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
         _configureServices.Add(services =>
         {
             services.AddSingleton(_authenticationState);
+            services.Replace(ServiceDescriptor.Scoped<IProfilingAuthorizationService, TestProfilingAuthorizationService>());
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = FakeAuthenticationHandler.SchemeName;
@@ -82,9 +86,21 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
         return this;
     }
 
+    public IntegrationTestUtilitiesBuilder<TProgram> WithRealAuthentication() => this;
+
+    public IntegrationTestUtilitiesBuilder<TProgram> WithConfigureAppConfiguration(
+        Action<IConfigurationBuilder> configureConfiguration)
+    {
+        ArgumentNullException.ThrowIfNull(configureConfiguration);
+
+        _configureAppConfiguration.Add(configureConfiguration);
+
+        return this;
+    }
+
     public IntegrationTestUtilities<TProgram> Build()
     {
-        var factory = new IntegrationTestWebApplicationFactory<TProgram>(_configureServices);
+        var factory = new IntegrationTestWebApplicationFactory<TProgram>(_configureServices, _configureAppConfiguration);
         var utilities = new IntegrationTestUtilities<TProgram>(
             factory,
             _authenticationState,
@@ -113,7 +129,8 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
     }
 
     private sealed class IntegrationTestWebApplicationFactory<TEntryPoint>(
-        IReadOnlyList<Action<IServiceCollection>> configureServices)
+        IReadOnlyList<Action<IServiceCollection>> configureServices,
+        IReadOnlyList<Action<IConfigurationBuilder>> configureAppConfiguration)
         : WebApplicationFactory<TEntryPoint>
         where TEntryPoint : class
     {
@@ -121,6 +138,13 @@ public sealed class IntegrationTestUtilitiesBuilder<TProgram>
         {
             builder.UseEnvironment("IntegrationTest");
             builder.ConfigureLogging(logging => logging.ClearProviders());
+            builder.ConfigureAppConfiguration((_, configuration) =>
+            {
+                foreach (var configureConfiguration in configureAppConfiguration)
+                {
+                    configureConfiguration(configuration);
+                }
+            });
             builder.ConfigureServices(services =>
             {
                 foreach (var configureService in configureServices)

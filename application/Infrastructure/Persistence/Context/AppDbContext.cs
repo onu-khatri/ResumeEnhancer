@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ResumeEnhancer.Core.DomainLibrary.DomainModel;
 using Microsoft.EntityFrameworkCore;
+using ResumeEnhancer.Infrastructure.Persistence.Limiting;
 
 namespace ResumeEnhancer.Infrastructure.Persistence;
 
@@ -26,6 +27,8 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfiguration(new DbCacheLimiterEntryConfiguration());
 
         foreach (var modelConfiguration in _modelConfigurations)
         {

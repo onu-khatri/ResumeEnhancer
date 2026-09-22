@@ -10,7 +10,7 @@ public sealed class AuthOutboxMessage : BusinessEntity
 
     [MaxLength(2000)]
     public string PayloadJson { get; set; } = "{}";
-    public DateTime AvailableAtUtc { get; set; } = DateTime.UtcNow;
+    public DateTime AvailableAtUtc { get; set; } = DateTime.UnixEpoch;
     public DateTime? ProcessedAtUtc { get; set; }
     public Guid? LeaseId { get; set; }
     public DateTime? LeaseExpiresAtUtc { get; set; }

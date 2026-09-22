@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Shouldly;
 using ResumeEnhancer.ResumeModule.Web.MiniApis;
 using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
@@ -69,14 +70,15 @@ public sealed class ResumeEndpointValidationTests
     }
 
     [Fact]
-    public void ResumeEndpointHeaders_ReadOptionalHeaders_ReturnTypedValues()
+    public void ResumeEndpointHeaders_DerivesIdentityFromPrincipal()
     {
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.Headers["X-Audit-UserId"] = "42";
-        httpContext.Request.Headers["X-User-Id"] = "7";
+        httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(
+            [new Claim("sub", "7")],
+            "Test"));
 
-        ResumeEndpointHeaders.ReadAuditUserId(httpContext).ShouldBe(42);
-        ResumeEndpointHeaders.ReadUserId(httpContext).ShouldBe(7);
+        ResumeEndpointHeaders.GetPrincipalAuditUserId(httpContext).ShouldBe(7);
+        ResumeEndpointHeaders.GetPrincipalUserId(httpContext).ShouldBe(7);
     }
 }
 

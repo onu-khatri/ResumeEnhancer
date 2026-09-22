@@ -32,25 +32,10 @@ public sealed class IntegrationTestUtilities<TProgram> : IDisposable
 
     public HttpClient CreateClient()
     {
-        var client = _factory.CreateClient(
-            new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = false,
-                BaseAddress = new Uri("https://localhost"),
-            }
-        );
-
-        if (_authenticationState.AuditUserId is { } auditUserId)
+        var client = new HttpClient(_factory.Server.CreateHandler(), disposeHandler: false)
         {
-            client.DefaultRequestHeaders.Remove("X-Audit-UserId");
-            client.DefaultRequestHeaders.Add("X-Audit-UserId", auditUserId.ToString());
-        }
-
-        if (!string.IsNullOrWhiteSpace(_authenticationState.UserId))
-        {
-            client.DefaultRequestHeaders.Remove("X-User-Id");
-            client.DefaultRequestHeaders.Add("X-User-Id", _authenticationState.UserId);
-        }
+            BaseAddress = new Uri("https://localhost"),
+        };
 
         return client;
     }

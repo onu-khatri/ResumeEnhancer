@@ -5,6 +5,7 @@ using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.SL.Contracts;
 using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 
 namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
 
@@ -31,6 +32,16 @@ internal static partial class ResumeCommandEndpoints
         async Task<IResult> ValidateAndUpdateAsync()
         {
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+
+            var subjectId = httpContext.User.GetSubjectId();
+            if (subjectId is null || request.UserId is not null && request.UserId != subjectId)
+            {
+                return Results.StatusCode(StatusCodes.Status403Forbidden);
+            }
 
             return await ApiEndpointExecutor.ValidateOrExecute(
                 ResumeEndpointValidation.Merge(routeErrors, validationResult.ToDictionary()),
@@ -38,8 +49,8 @@ internal static partial class ResumeCommandEndpoints
                     new UpdateResumeCommand(
                         resumeId,
                         request,
-                        ResumeEndpointHeaders.ReadAuditUserId(httpContext),
-                        ResumeEndpointHeaders.ReadUserId(httpContext)),
+                        ResumeEndpointHeaders.GetPrincipalAuditUserId(httpContext),
+                        ResumeEndpointHeaders.GetPrincipalUserId(httpContext)),
                     cancellationToken)));
         }
     }

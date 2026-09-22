@@ -5,6 +5,7 @@ using ResumeEnhancer.ResumeModule.AM.Requests;
 using ResumeEnhancer.ResumeModule.SL.Contracts;
 using ResumeEnhancer.ResumeModule.Web.Validation.Shared;
 using ResumeEnhancer.Core.WebLibrary.Endpoints;
+using ResumeEnhancer.Core.WebLibrary.Authorization;
 
 namespace ResumeEnhancer.ResumeModule.Web.MiniApis.Commands;
 
@@ -26,6 +27,11 @@ internal static partial class ResumeCommandEndpoints
 
         async Task<IResult> ValidateAndDeleteAsync()
         {
+            if (httpContext.User.GetSubjectId() is null)
+            {
+                return Results.Unauthorized();
+            }
+
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             return await ApiEndpointExecutor.ValidateOrExecute(
@@ -33,8 +39,8 @@ internal static partial class ResumeCommandEndpoints
                 async () => Results.Ok(await mediator.Send(
                     new DeleteResumesCommand(
                         request.ResumeIds,
-                        ResumeEndpointHeaders.ReadAuditUserId(httpContext),
-                        ResumeEndpointHeaders.ReadUserId(httpContext)),
+                        ResumeEndpointHeaders.GetPrincipalAuditUserId(httpContext),
+                        ResumeEndpointHeaders.GetPrincipalUserId(httpContext)),
                     cancellationToken)));
         }
     }

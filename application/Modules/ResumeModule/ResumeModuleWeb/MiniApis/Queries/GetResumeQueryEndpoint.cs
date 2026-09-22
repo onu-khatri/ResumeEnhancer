@@ -20,7 +20,7 @@ internal static partial class ResumeQueryEndpoints
                 var response = await mediator.Send(
                     new GetResumeQuery(
                         resumeId,
-                        ResumeEndpointHeaders.ReadUserId(httpContext)),
+                        ResumeEndpointHeaders.GetPrincipalUserId(httpContext)),
                     cancellationToken);
 
                 return response is null

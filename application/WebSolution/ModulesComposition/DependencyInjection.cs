@@ -16,16 +16,18 @@ using ResumeEnhancer.TemplateModule.PL;
 using ResumeEnhancer.TemplateModule.Web;
 using ResumeEnhancer.TemplateModule.Web.MiniApis;
 using ResumeEnhancer.WebSolution.MediatorComposition;
+using Microsoft.Extensions.Configuration;
+using ResumeEnhancer.WebSolution.ModulesComposition.Authorization;
 
 namespace ResumeEnhancer.WebSolution.ModulesComposition;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationModules(this IServiceCollection services)
+    public static IServiceCollection AddApplicationModules(this IServiceCollection services, IConfiguration? configuration = null)
     {
         services.AddApplicationMediator();
         services.AddAuthModulePersistence();
-        services.AddAuthModuleWeb();
+        services.AddAuthModuleWeb(configuration);
 
         services.AddProfilingModulePersistence();
         services.AddProfilingModuleWeb();
@@ -36,6 +38,9 @@ public static class DependencyInjection
         services.AddResumeModulePersistence();
         services.AddResumeModuleWeb();
         services.AddTransient<GlobalExceptionHandler>();
+        services.AddTransient<EndpointAuthorizationMiddleware>();
+        services.AddSingleton<EndpointAuthorizationStartupValidator>();
+        services.AddSingleton<AuthorizationDependencyStartupValidator>();
 
         return services;
     }
