@@ -1,6 +1,6 @@
 ---
 name: quality-production-code-review
-description: Perform production-grade code review for ResumeEnhancer with a defect-first mindset across architecture, correctness, security, tests, and maintainability. Use when Codex needs to review diffs, pull requests, or uncommitted changes before merge.
+description: Review ResumeEnhancer diffs and pull requests for actionable defects, contract risks, and missing verification.
 ---
 
 # Production Code Reviewer
@@ -61,5 +61,5 @@ Distinguish confirmed defects from watch items; never present speculative warnin
 
 ## Verification
 
-- Run the smallest meaningful tests for the touched area before reporting: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore` for backend, and `npm run check` for frontend.
+- Inspect actual verification evidence and perform the smallest meaningful checks allowed by the assigned permissions. A read-only reviewer returns build/test commands that write artifacts to the parent or implementation owner; it does not broaden its permissions. Use AGENTS.md and the approved plan for required commands.
 - Only claim a defect after confirming it against the real code; otherwise mark it as a question or watch item.

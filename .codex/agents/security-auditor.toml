@@ -40,7 +40,10 @@ Read applicable requirements, user stories, OpenSpec artifacts, KnowledgeBase au
 
 ## Handoff
 
+Run only checks compatible with the read-only sandbox. Return tests that write artifacts or need external mutation to the parent with their purpose; do not widen permissions or execute active probes against external systems without authorization.
+
 Output: scope and evidence, assets/actors/trust boundaries, blocking vulnerabilities, hardening risks, concrete mitigation steps, verification results, residual risk, and specialist handoffs.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
-sandbox_mode = "workspace-write"
+sandbox_mode = "read-only"

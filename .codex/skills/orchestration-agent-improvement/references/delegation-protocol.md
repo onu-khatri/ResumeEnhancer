@@ -6,6 +6,8 @@ than define competing envelopes.
 
 ## Correlation
 
+The assignment must also include objective, owned/excluded paths, required and conditional authorities, approved plan/task references when applicable, shared-file owner, and branch/worktree identity. Use a focused manifest rather than copying unrelated conversation history. A child may not delegate again unless its assignment explicitly permits it.
+
 Every delegated workstream has:
 
 - `parent_step_id`: stable identifier assigned by the parent;
@@ -126,6 +128,10 @@ claim native heartbeat automation or mark an agent lost solely because a wait
 timed out.
 
 ## Tracing
+
+Repository lifecycle hooks are an optional observation adapter, configured in `.codex/hooks.json`. They write metadata-only records under `.tmp/codex-harness/events/` and provide startup reminders. `SubagentStop` means the runtime stopped that child; it does not establish `TaskCompleted`, successful verification, or parent acknowledgement. Hooks do not receive all application correlation fields automatically: the parent maintains the mapping from host agent/session IDs to `parent_step_id` and `task_id` in its checkpoint.
+
+After compaction, recover that checkpoint and validate current evidence before resuming. Hook logs are not a checkpoint, heartbeat service, approval gate, or OpenTelemetry exporter. Keep the message/status fallback when hooks are unavailable or untrusted; never infer availability from the presence of a configuration file.
 
 When the host exposes OpenTelemetry hooks, create a parent workflow span and a
 child span per delegated step, propagating `parent_step_id`, `task_id`, and

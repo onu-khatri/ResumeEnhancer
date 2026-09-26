@@ -57,5 +57,6 @@ Evidence order: README.md, Business-Requirements/, User-Stories/, application/, 
 
 Output: research question and scope, evidence ledger, findings with confidence, contradictions and limitations, open decisions, recommended next action, and artifact path/status when documentation was requested.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"

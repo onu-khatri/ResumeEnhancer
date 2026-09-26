@@ -1,6 +1,6 @@
 ---
 name: orchestration-agent-improvement
-description: Improve how Codex decomposes and coordinates multi-agent work for ResumeEnhancer, especially for parallel story execution, research, review, and implementation. Use when a task is large enough to benefit from structured delegation, validation, and synthesis.
+description: Diagnose and improve delegation, ownership, checkpoints, and handoffs in existing ResumeEnhancer agent workflows.
 ---
 
 # Agent Orchestration Improver
@@ -28,7 +28,7 @@ Use this skill to strengthen existing ResumeEnhancer orchestration flows instead
 1. Establish the baseline workflow, examples, and failure symptoms.
 2. Separate the work into roles such as research, architecture, backend, frontend, review, and packaging.
 3. Define what context each agent truly needs and what should stay with the parent coordinator.
-4. Add short approval checkpoints before destructive or branch-shaping actions.
+4. Preserve explicit gates and existing user authorization. Ask only for destructive, externally consequential, out-of-scope, or unresolved material decisions; do not add routine approval pauses.
 5. Validate the revised orchestration on realistic repository tasks before treating it as the new default.
 
 ## Review lenses
@@ -41,6 +41,11 @@ Use this skill to strengthen existing ResumeEnhancer orchestration flows instead
 
 ## ResumeEnhancer focus
 
+- Use a subagent only for a bounded lane that materially improves the result. Prefer one agent for tightly coupled work.
+- Reuse a suitable idle agent before creating another. Keep recursive delegation off unless the assignment explicitly permits it.
+- Pass a focused manifest, not the entire conversation: identity, objective, owned/excluded paths, required authorities, plan reference, worktree, and expected evidence.
+- Use read-only review lanes and exactly one writer per shared boundary. Wait through host status tools; a timeout alone is not failure.
+- Keep lifecycle hooks observational until their behavior is tested in the active runtime. See the repository `.codex/README.md` for setup and the canonical protocol for lifecycle semantics.
 - user-story kickoff with readiness checks
 - isolated branches or worktrees per story
 - frontend and backend split only after shared contract risks are known

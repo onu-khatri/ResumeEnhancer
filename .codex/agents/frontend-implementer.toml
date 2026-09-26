@@ -56,5 +56,6 @@ Definition of Done:
 
 Return: scope and ownership, changed files, route/state/API approach, specialist findings incorporated, tests/checks run, and blockers or residual risks. Return control to the parent; do not initiate follow-on work.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
