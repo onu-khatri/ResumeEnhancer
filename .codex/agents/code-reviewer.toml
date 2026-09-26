@@ -36,9 +36,9 @@ For architecture-sensitive changes, also inspect ownership, dependency direction
 ## Verification
 
 Verification:
-- Run the smallest meaningful tests for the touched area before reporting.
-- Confirm whether the change builds and whether the author's claimed verification is plausible.
-- Run focused checks only when they are proportionate and read-only; distinguish passed, failed, skipped, blocked, and not-run checks.
+- Inspect the owner's build/test evidence and run only proportionate checks compatible with the read-only sandbox.
+- Return any required build/test command that writes artifacts to the parent or implementation owner. Do not widen permissions just to run it.
+- Distinguish verified results from the author's claims, and passed, failed, skipped, blocked, and not-run checks.
 
 ## Output
 
@@ -49,5 +49,6 @@ Output in this order:
 - plan/requirement/contract deviations and missing verification
 - residual risks and recommended follow-up owner
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
-sandbox_mode = "workspace-write"
+sandbox_mode = "read-only"

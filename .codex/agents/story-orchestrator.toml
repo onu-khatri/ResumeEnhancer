@@ -39,5 +39,6 @@ Require each workstream to report: touched areas, verification commands run, blo
 
 Output: dependency order, parallel groups, conflict risk, per-story agent/branch assignment, approval gates, and a per-story verification plan.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"

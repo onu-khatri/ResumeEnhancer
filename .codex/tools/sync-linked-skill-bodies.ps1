@@ -2,49 +2,64 @@ $skillBodies = @{
   "orchestration-agent-improvement" = @'
 ---
 name: orchestration-agent-improvement
-description: Improve how Codex decomposes and coordinates multi-agent work for ResumeEnhancer, especially for parallel story execution, research, review, and implementation. Use when a task is large enough to benefit from structured delegation and synthesis.
+description: Diagnose and improve delegation, ownership, checkpoints, and handoffs in existing ResumeEnhancer agent workflows.
 ---
 
 # Agent Orchestration Improver
 
-Systematic improvement of existing ResumeEnhancer-oriented agent workflows through performance analysis, prompt refinement, delegation boundaries, and validation loops.
+Use [the delegated-work communication protocol](references/delegation-protocol.md)
+when assessing or improving parent/sub-agent status, lifecycle, observability,
+or handoff behavior. It is the canonical state and event contract.
+
+Use this skill to strengthen existing ResumeEnhancer orchestration flows instead of inventing clever delegation for its own sake.
 
 ## Use this skill when
 
-- Improving an existing Codex workflow, subagent pattern, or orchestration plan
-- Diagnosing why delegated work is inefficient, overlapping, or low quality
-- Designing safer multi-agent delivery for ResumeEnhancer
+- a story or initiative is large enough to split across specialized agents
+- an existing kickoff or background-agent flow is producing overlap, rework, or missed context
+- you need a safer pattern for branch isolation, sequencing, or synthesis
 
 ## Do not use this skill when
 
-- You are creating a brand-new agent from scratch without any workflow to improve
-- There are no examples, failures, or evaluation targets to learn from
-- A single agent can complete the work safely without delegation
+- one focused agent can complete the work safely end to end
+- there is no baseline workflow, failure mode, or evaluation target to improve
+- delegation would add ceremony without reducing risk
 
-## Instructions
+## Improvement workflow
 
-1. Establish baseline examples, failure modes, or coordination pain points.
-2. Identify where delegation boundaries, context size, sequencing, or approval timing are hurting results.
-3. Improve prompts, synthesis responsibilities, and approval checkpoints.
-4. Validate changes on realistic repository tasks before trusting them broadly.
-5. Favor smaller, clearer agent responsibilities over overly clever orchestration graphs.
+1. Establish the baseline workflow, examples, and failure symptoms.
+2. Separate the work into roles such as research, architecture, backend, frontend, review, and packaging.
+3. Define what context each agent truly needs and what should stay with the parent coordinator.
+4. Preserve explicit gates and existing user authorization. Ask only for destructive, externally consequential, out-of-scope, or unresolved material decisions; do not add routine approval pauses.
+5. Validate the revised orchestration on realistic repository tasks before treating it as the new default.
+
+## Review lenses
+
+- context size and prompt clarity
+- duplicated work across agents
+- unsafe parallel edits to shared contracts, migrations, or cross-cutting UI state
+- unclear synthesis ownership
+- missing validation or rollback points
 
 ## ResumeEnhancer focus
 
-- story kickoff and branch isolation
-- research versus implementation splits
-- backend versus frontend ownership
-- conflict-aware parallelization around contracts, validators, migrations, and shared UI state
+- Use a subagent only for a bounded lane that materially improves the result. Prefer one agent for tightly coupled work.
+- Reuse a suitable idle agent before creating another. Keep recursive delegation off unless the assignment explicitly permits it.
+- Pass a focused manifest, not the entire conversation: identity, objective, owned/excluded paths, required authorities, plan reference, worktree, and expected evidence.
+- Use read-only review lanes and exactly one writer per shared boundary. Wait through host status tools; a timeout alone is not failure.
+- Keep lifecycle hooks observational until their behavior is tested in the active runtime. See the repository `.codex/README.md` for setup and the canonical protocol for lifecycle semantics.
+- user-story kickoff with readiness checks
+- isolated branches or worktrees per story
+- frontend and backend split only after shared contract risks are known
+- final synthesis that reports touched layers, verification, and blockers
 
 ## Output requirements
 
 - baseline issues
-- proposed orchestration improvements
-- validation strategy
-- rollback or simplification guidance if the orchestration gets too complex
-
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/agent-orchestration-improve-agent
+- recommended delegation boundaries
+- required approval checkpoints
+- validation plan
+- simplification guidance if orchestration becomes heavier than the task
 '@
   "architecture-adr" = @'
 ---
@@ -271,52 +286,69 @@ Reduce technical debt in ResumeEnhancer through targeted, reviewable refactoring
   "quality-production-code-review" = @'
 ---
 name: quality-production-code-review
-description: Perform production-grade code review for ResumeEnhancer with a defect-first mindset across architecture, correctness, security, tests, and maintainability. Use when Codex needs to review diffs, pull requests, or uncommitted changes before merge.
+description: Review ResumeEnhancer diffs and pull requests for actionable defects, contract risks, and missing verification.
 ---
 
 # Production Code Reviewer
 
-Transform code review from gatekeeping into high-signal defect detection, architectural alignment, and knowledge sharing for ResumeEnhancer.
+Use this skill to produce high-signal review findings that protect correctness and delivery quality without devolving into style nitpicks.
 
 ## Use this skill when
 
-- Reviewing pull requests or diffs in ResumeEnhancer
-- Auditing for correctness, security, performance, or architecture drift
-- Establishing review standards for this repository
+- reviewing pull requests, staged changes, or local diffs
+- auditing risk before merge
+- preparing or teaching repository-specific review standards
 
 ## Do not use this skill when
 
-- There are no code changes to inspect
-- The task is design-only and contains no implementation
-- The goal is to implement fixes rather than review
+- there are no implementation changes to inspect
+- the task is only to write code, not review it
+- the user needs architecture advice without a concrete diff
 
-## Instructions
+## Review workflow
 
-1. Read `AGENTS.md` and the relevant story or requirement.
-2. Inspect the actual diff and enough surrounding code to understand the changed path.
-3. Check whether the change respects module boundaries and existing patterns.
-4. Validate behavior through tests, call sites, validators, mappers, and API contracts.
-5. Report findings by severity, with concrete impact and narrow file references.
-6. If you need more detailed patterns and examples, open:
-   - `references/implementation-playbook.md`
-   - `references/review-playbook.md`
+1. Read `AGENTS.md`, the user story, and any touched requirements.
+2. Inspect the real diff and enough surrounding code to understand the full execution path.
+3. Check architecture fit, correctness, validation, mapping, persistence behavior, and tests.
+4. Look for security, performance, and rollout risks in proportion to the change.
+5. Report findings by severity with concrete impact and narrow file references.
 
-## Review mindset
+## Review lenses
 
-- catch bugs and regressions
-- protect maintainability
-- surface security and performance risks
-- distinguish blocking issues from suggestions
+- correctness and regression risk
+- module boundary discipline
+- validator, mapper, and contract consistency
+- query shape, transaction safety, and error handling
+- user-facing loading, error, and permission states
+- tests that prove the changed behavior
+
+## Read these references when needed
+
+- `references/implementation-playbook.md` for detailed code-review patterns
+- `references/review-playbook.md` for the ResumeEnhancer review sequence
+- `references/review-checklist.md` for systematic checklist coverage
+- `references/ai-review-playbook.md` for AI-assisted review and triage patterns
 
 ## Output requirements
 
 - findings first
 - severity-ordered issues
-- brief overall risk summary
-- test and verification gaps
+- concise risk summary
+- verification and testing gaps
 
-## Upstream URL
-- https://github.com/benjaminasterA/antigravity-awesome-skills/tree/main/skills/code-review-excellence
+## Severity model
+
+- **Blocking** — must fix before merge: correctness, security, or regression risk.
+- **Important** — should fix; discuss if the author disagrees (architecture drift, missing tests, contract inconsistency).
+- **Minor / nit** — nice to have, non-blocking (naming, redundant code, style).
+- **Question** — intent unclear; ask instead of asserting.
+
+Distinguish confirmed defects from watch items; never present speculative warnings as confirmed bugs.
+
+## Verification
+
+- Inspect actual verification evidence and perform the smallest meaningful checks allowed by the assigned permissions. A read-only reviewer returns build/test commands that write artifacts to the parent or implementation owner; it does not broaden its permissions. Use AGENTS.md and the approved plan for required commands.
+- Only claim a defect after confirming it against the real code; otherwise mark it as a question or watch item.
 '@
   "research-deep" = @'
 ---

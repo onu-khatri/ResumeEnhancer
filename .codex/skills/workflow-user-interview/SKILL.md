@@ -1,6 +1,6 @@
 ---
 name: workflow-user-interview
-description: Systematically resolve a plan's material design decisions through a repository-first, dependency-aware interview with the active user. Use when another skill needs shared understanding of scope, behavior, constraints, tradeoffs, or approval before proceeding.
+description: Resolve material scope and design decisions through a repository-first interview using Codex's native question tool when available.
 ---
 
 # User Interview
@@ -24,12 +24,20 @@ Use this skill to establish shared understanding of a plan before the calling sk
 1. Frame the outcome, known facts, constraints, and decision the calling workflow needs.
 2. Explore relevant repository evidence before selecting a material branch. Do not ask the user for an answer already available from an authoritative source.
 3. Keep only the compact state needed for the next question. Use one session-scoped local state artifact under root `tmp/` only when the rolling state is no longer compact, the user explicitly asks to preserve it, or a real handoff/interruption requires persistence. Batch artifact updates at those checkpoints, not after every answer. Artifact operations are internal: do not announce file creation, reads, updates, pruning, or paths unless the user asks.
-4. Select the highest-value unresolved branch, then ask one focused question. Prefer the host's structured UI; otherwise use a lettered chat prompt with `◯` single-select or `☐` multi-select options. Offer 2-6 relevant choices and end with `Other — type your own answer` whenever options are appropriate.
+4. Select the highest-value unresolved branch, then ask one focused question through the native Codex question tool permitted by the active session: prefer `request_user_input`, or use `request_user_input_async` when the synchronous tool is unavailable or disallowed. Follow the tool's current schema and mode/purpose restrictions. Use the lettered chat fallback only when no permitted native tool fits the question; its 2-6 choices and explicit `Other` option do not apply to native tool payloads.
 5. Accept free text. Reduce each answer to only the facts, gaps, conflicts, and dependencies that can affect later work; preserve the source as `User-provided`, `evidence-backed`, or `inferred`.
 6. Adapt to the updated state, revisit only immediate dependencies, and stop when enough information exists to satisfy the request. Do not retain question history, old options, reasoning traces, duplicate facts, or completed branches.
 7. Present confirmed requirements, assumptions and inferences, open questions, and the precise next action. Request confirmation before treating the interview as complete.
 
 Read [question-design.md](references/question-design.md) for branch selection, state-artifact storage and pruning, question formats, and answer handling.
+
+## Codex Question Tools
+
+In the Codex VS Code extension and interactive Codex CLI, use the exposed native question tool rather than drawing radio buttons in chat when that tool is callable and permitted. Check the live tool registry and active mode; a skill cannot enable a missing tool or switch modes. If `request_user_input` requires Plan mode, the user can select Plan mode or `/plan` in a supporting client before the interview. Continue with an available asynchronous tool or chat fallback instead of attempting an invalid call or forcing a mode change.
+
+Ask one question per call by default. Use stable decision IDs and concise, mutually exclusive choices; rely on the UI's built-in free-text entry rather than adding a duplicate `Other` choice. For async questions, keep the decision pending while doing independent work; do not proceed with dependent work before a required answer arrives. Never treat a preselected option, empty response, timeout, or dismissed question as consent.
+
+Use native interview tools only for purposes their tool contract permits. When approval or permission requests are prohibited, present the concrete decision in chat or use the host's dedicated approval mechanism; do not disguise approval as a preference question. See the reference for native payloads, multi-select limitations, fallback behavior, and validation scenarios.
 
 ## Completion Gate
 

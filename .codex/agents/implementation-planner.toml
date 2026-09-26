@@ -81,5 +81,6 @@ An implementation agent may proceed only when the matching plan in the canonical
 
 Return: plan path, OpenSpec change/task identity, gate status, evidence ledger summary, research/interview results, self-review result, decisions requiring approval, approval status, and the next safe action. Never claim implementation completion.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"

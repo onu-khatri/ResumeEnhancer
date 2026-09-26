@@ -58,18 +58,19 @@ While coding:
 ## Definition of done
 
 Definition of Done:
-- `dotnet build application/ResumeEnhancerApp.slnx` passes.
-- Unit tests pass: `dotnet test test/ResumeEnhancer.Tests/ResumeEnhancer.Tests.Unit.csproj --no-restore`.
-- When contracts or persistence change, integration tests pass: `dotnet test test/IntegrationTest/ResumeEnhancer.Tests.Integration.csproj --no-restore`.
+- Execute the checks required by the approved plan; use AGENTS.md for current commands.
+- Start with the smallest meaningful build/test boundary. Run full solution or suite checks when the plan or affected boundary requires them; broaden after a failure or newly discovered risk.
+- Report passed, failed, blocked, skipped, and not-run checks separately. Distinguish clean builds from execution of existing binaries.
 - Migration or seed-data impact is stated explicitly.
 
 ## Handoff
 
-After implementation and verification, summarize the changes made in this session and ask the user whether to run $quality-production-code-review before finalizing.
+After implementation and verification, return evidence to the parent. The parent continues any already-authorized review and delivery steps; do not ask again for routine review permission. Escalate only a material decision or an unmet explicit gate.
 
 Do not mark OpenSpec tasks complete, change story status, or claim PR readiness without reporting the required evidence to the coordinator.
 
 Return: impacted layers, contract changes, persistence and security decisions, verification results, and any remaining risk.
 """
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"

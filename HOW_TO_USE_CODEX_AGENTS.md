@@ -44,7 +44,10 @@ In this repo:
 - agents live in `.codex/agents`
 - skills live in `.codex/skills`
 
-Do not move skills into `.agents` or `.codex/agents` if you want Codex to keep treating them as skills.
+Keep repository-owned skills in `.codex/skills` under current project policy.
+Official client discovery paths can differ; use the operating guide to verify
+them. `.agents/skills` contains generator-managed OpenSpec workflows here,
+and `.codex/agents` contains role definitions rather than skills.
 
 ## How to invoke an agent
 
@@ -208,6 +211,13 @@ Example:
 ```text
 Use the `story-orchestrator` agent to plan kickoff for the approved stories in User-Stories/.
 ```
+
+## Configuration and operating guide
+
+See [.codex/README.md](.codex/README.md) for current model defaults, creating
+agents and skills, delegation, handoffs, tools, hooks, MCP connections,
+validation, runtime limitations, and rollback. That guide records operational
+setup; AGENTS.md remains the policy authority.
 
 ## Agent usage tips
 
