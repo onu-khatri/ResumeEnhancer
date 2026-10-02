@@ -127,24 +127,24 @@ Select the smallest applicable set:
 
 | Decision or work | Route |
 |---|---|
-| Backend feature/pattern/security/persistence | `$backend-feature-development`, `$backend-dotnet-patterns`, `$backend-security`, `$backend-ef-core` as triggered |
-| Architecture/domain/ADR | `$architecture-review`, `$backend-dotnet-architecture`, `$architecture-domain-modeling`, `$architecture-adr` as triggered |
-| Frontend feature or UI | `$frontend-development` plus `$frontend-guidelines`; use React, design, security, performance, or review skills only when triggered |
-| Full-stack/story delivery | `$delivery-full-stack-feature`, story/issue kickoff, and applicable OpenSpec workflow |
-| Development code, tests, configuration, migrations, or architecture implementation | `$workflow-development-entry` first; it routes specialists but does not invoke implementers |
-| OpenSpec transition | `$openspec-workflow` plus `$openspec-repository-policy`; use `$openspec-orchestration` for approved worktree coordination |
-| Plan created by `$workflow-planning` | `$plan-review-approval` |
-| Production review/security/quality | `$quality-production-code-review`, `$quality-ai-code-review`, `$quality-code-review-checklist`, `$security-management`, or focused quality skill |
-| Research or durable knowledge | `$research-deep`, `$knowledge-project-builder`, or documentation/product skill as triggered |
-| Branch/worktree/commit/push/PR | `$git-worktrees`, `$git-workflows`, `$git-commit`, `$delivery-pull-request` as triggered |
+| Backend feature/pattern/security/persistence | `$onu-backend-feature-development`, `$onu-backend-dotnet-patterns`, `$onu-backend-security`, `$onu-backend-ef-core` as triggered |
+| Architecture/domain/ADR | `$onu-architecture-review`, `$onu-backend-dotnet-architecture`, `$onu-architecture-domain-modeling`, `$onu-architecture-adr` as triggered |
+| Frontend feature or UI | `$onu-frontend-development` plus `$onu-frontend-guidelines`; use React, design, security, performance, or review skills only when triggered |
+| Full-stack/story delivery | `$onu-delivery-full-stack-feature`, story/issue kickoff, and applicable OpenSpec workflow |
+| Development code, tests, configuration, migrations, or architecture implementation | `$onu-workflow-development-entry` first; it routes specialists but does not invoke implementers |
+| OpenSpec transition | `$onu-openspec-workflow` plus `$onu-openspec-repository-policy`; use `$onu-openspec-orchestration` for approved worktree coordination |
+| Plan created by `$onu-workflow-planning` | `$onu-plan-review-approval` |
+| Production review/security/quality | `$onu-quality-production-code-review`, `$onu-quality-ai-code-review`, `$onu-quality-code-review-checklist`, `$onu-security-management`, or focused quality skill |
+| Research or durable knowledge | `$onu-research-deep`, `$onu-knowledge-project-builder`, or documentation/product skill as triggered |
+| Branch/worktree/commit/push/PR | `$onu-git-worktrees`, `$onu-git-workflows`, `$onu-git-commit`, `$onu-delivery-pull-request` as triggered |
 
 Specialist skills return constraints, findings, evidence, or handoff; they do
 not recursively invoke unrelated specialists or duplicate implementation
-ownership. `$frontend-guidelines` is a non-delegating standards authority.
+ownership. `$onu-frontend-guidelines` is a non-delegating standards authority.
 
 ## Development and approval gates
 
-Use `$workflow-development-entry` before development-related work. For
+Use `$onu-workflow-development-entry` before development-related work. For
 OpenSpec implementation, use the following lifecycle and do not collapse its
 responsibilities:
 
@@ -197,7 +197,7 @@ shared UI primitives, generated artifacts, dependencies, and ownership. Keep eac
 
 The parent/sub-agent lifecycle, event schema, parent acknowledgement, checkpoint and lost-agent fallback, and tracing capability rules are canonical here:
 
-`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`
+`.codex/skills/onu-orchestration-agent-improvement/references/delegation-protocol.md`
 
 Every delegated lane must use that protocol and report observable evidence, not merely “working.” The parent assigns a stable `parent_step_id` to every delegated lane, reconciles each event, updates the user on meaningful state changes, and continues automatically when `needs_user: false`. Native event, heartbeat, and OpenTelemetry support are capability-gated; use the protocol's text/status and bounded-polling fallback when unavailable.
 

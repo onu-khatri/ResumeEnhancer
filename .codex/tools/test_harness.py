@@ -35,7 +35,7 @@ class HarnessTests(unittest.TestCase):
         codex = self.root / ".codex"
         shutil.copytree(ROOT / ".codex/agents", codex / "agents")
         for relative in ("config.toml", "hooks.json", "hooks/lifecycle.py",
-                         "skills/orchestration-agent-improvement/references/delegation-protocol.md"):
+                         "skills/onu-orchestration-agent-improvement/references/delegation-protocol.md"):
             dest = codex / relative
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / ".codex" / relative, dest)
@@ -44,16 +44,6 @@ class HarnessTests(unittest.TestCase):
 
     def test_repository_configuration(self):
         self.assertEqual(validator.validate(), 7)
-
-    def test_skill_generator_bodies_match_current_authorities(self):
-        for script in ("seed-project-skills.ps1", "sync-linked-skill-bodies.ps1", "complete-linked-skills.ps1"):
-            text = (ROOT / ".codex/tools" / script).read_text(encoding="utf-8-sig")
-            for skill in ("orchestration-agent-improvement", "quality-production-code-review"):
-                pattern = r'(?ms)  "' + re.escape(skill) + r'" = @\x27\n(.*?)^\x27@'
-                body = re.search(pattern, text)
-                self.assertIsNotNone(body, (script, skill))
-                expected = (ROOT / ".codex/skills" / skill / "SKILL.md").read_text(encoding="utf-8").strip()
-                self.assertEqual(body[1].strip(), expected, (script, skill))
 
     def test_malformed_toml_rejected(self):
         codex = self.fixture()

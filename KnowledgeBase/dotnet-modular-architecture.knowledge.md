@@ -80,7 +80,7 @@ public Create<ModuleName>Handler(IOtherModuleRepository repository)
 
 ## Project Adaptation Boundary
 
-This topic is generic. For ResumeEnhancer facts, retrieve [ResumeEnhancer architecture routing](../.codex/skills/architecture-review/references/resumeenhancer-architecture-routing.md) through the index. That routing reference directs module, cross-module, API/application, and persistence decisions to their existing authorities.
+This topic is generic. For ResumeEnhancer facts, retrieve the module, cross-module, API/application, and persistence authorities through the index and ADRs.
 
 For ResumeEnhancer, ADR-001 governs module ownership and ADR-002 governs cross-module interaction choice. Retrieve the ADR authority; do not reproduce its rules here.
 

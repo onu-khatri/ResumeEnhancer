@@ -1,6 +1,14 @@
-# ResumeEnhancer Repository Topography
+---
+title: Repository Topography
+intent: Provide a fast map of where to gather evidence across the ResumeEnhancer repository layers.
+scope: ResumeEnhancer repository layout, module names, evidence zones, and verification commands. Excludes generic architecture and pattern guidance.
+audience: Autonomous Codex implementation and knowledge-building agents
+last_reviewed: 2026-10-02
+---
 
-Read this reference when the requested knowledge spans multiple layers or when you need a fast map of where to gather evidence.
+# Repository Topography
+
+Read this knowledge when the requested work spans multiple layers or when you need a fast map of where to gather evidence.
 
 ## Main evidence zones
 
@@ -81,5 +89,3 @@ Suggested file naming (one topic → three files across the workflow):
 - Unit tests: `dotnet test test\ResumeEnhancer.Tests\ResumeEnhancer.Tests.Unit.csproj --no-restore`
 - Integration tests: `dotnet test test\IntegrationTest\ResumeEnhancer.Tests.Integration.csproj --no-restore`
 - Frontend: `npm run check` and `npm run build` in `application/WebSolution/websolution.client/`
-
-

@@ -3,22 +3,22 @@ description = "ResumeEnhancer backend implementer for Minimal APIs, validators, 
 developer_instructions = """
 ## Mission and authority
 
-Read AGENTS.md first, then check KnowledgeBase/INDEX.md. For every backend task, load $backend-dotnet-patterns and $backend-feature-development, then use the index to retrieve only the API/application, persistence, and project-adaptation knowledge needed for the task.
+Read AGENTS.md first, then check KnowledgeBase/INDEX.md. For every backend task, load $onu-backend-dotnet-patterns and $onu-backend-feature-development, then use the index to retrieve only the API/application, persistence, and project-adaptation knowledge needed for the task.
 
 When delegated, use the canonical delegated-work protocol at
-`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`:
+`.codex/skills/onu-orchestration-agent-improvement/references/delegation-protocol.md`:
 accept the assignment explicitly, report meaningful evidence checkpoints, and
 return the full canonical envelope against `parent_step_id`.
 
 ## Delivery context
 
-When working under $delivery-issues-kickoff, use the assigned worktree and branch as-is. Load $git-commit for commit/staging/push decisions and $git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.
+When working under $onu-delivery-issues-kickoff, use the assigned worktree and branch as-is. Load $onu-git-commit for commit/staging/push decisions and $onu-git-workflows only for an explicitly requested history or branch operation; do not create a second worktree or rewrite shared history.
 
 ## Specialist routing
 
 When the task changes repositories, EF configuration, schema, migrations, or setup data, retrieve the EF Core persistence topic and the project persistence knowledge identified by the index before coding.
 
-When the task affects authentication, authorization or ownership, exports, admin or privacy flows, file handling, quotas or entitlements, or another backend trust boundary, load $backend-security before coding and apply its security workflow.
+When the task affects authentication, authorization or ownership, exports, admin or privacy flows, file handling, quotas or entitlements, or another backend trust boundary, load $onu-backend-security before coding and apply its security workflow.
 
 When delegated by $openspec-apply-change for a backend task, implement only the assigned backend slice. The OpenSpec coordinator retains change selection, cross-slice coordination, and task-checkbox ownership.
 

@@ -9,7 +9,7 @@ from uuid import uuid4
 ROOT = Path(__file__).resolve().parents[2]
 EVENTS = {"SessionStart", "SubagentStart", "SubagentStop"}
 MAX_INPUT = 4 * 1024 * 1024
-PROTOCOL = ".codex/skills/orchestration-agent-improvement/references/delegation-protocol.md"
+PROTOCOL = ".codex/skills/onu-orchestration-agent-improvement/references/delegation-protocol.md"
 
 
 def observe(payload, root=ROOT):
