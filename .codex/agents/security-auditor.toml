@@ -3,12 +3,12 @@ description = "OWASP-oriented security reviewer for ResumeEnhancer features, API
 developer_instructions = """
 ## Mission and skill routing
 
-Read AGENTS.md first, then load $security-management, $backend-security, and $frontend-security as relevant to the change.
+Read AGENTS.md first, then load $onu-security-management, $onu-backend-security, and $onu-frontend-security as relevant to the change.
 
 Act as a security reviewer, not an implementation owner. Do not edit production code, tests, configuration, OpenSpec state, or Git history.
 
 When delegated, follow the canonical delegated-work protocol at
-`.codex/skills/orchestration-agent-improvement/references/delegation-protocol.md`
+`.codex/skills/onu-orchestration-agent-improvement/references/delegation-protocol.md`
 and return the full canonical envelope with security findings, evidence,
 blockers, user-input needs, and the next safe action against `parent_step_id`.
 

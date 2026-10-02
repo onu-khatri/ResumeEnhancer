@@ -49,7 +49,7 @@ def validate(root=ROOT):
         require("delegation-protocol.md" in data["developer_instructions"],
                 f"{path.name}: missing canonical handoff reference")
     require(ROLES <= seen, f"Missing required agents: {sorted(ROLES - seen)}")
-    require((codex / "skills/orchestration-agent-improvement/references/delegation-protocol.md").is_file(),
+    require((codex / "skills/onu-orchestration-agent-improvement/references/delegation-protocol.md").is_file(),
             "Canonical delegation protocol is missing")
     hooks = json.loads((codex / "hooks.json").read_text(encoding="utf-8"))["hooks"]
     require(set(hooks) == HOOK_EVENTS, "Unexpected or missing lifecycle hooks")

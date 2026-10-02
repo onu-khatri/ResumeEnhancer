@@ -1,6 +1,14 @@
-# ResumeEnhancer Frontend Adaptation
+---
+title: Frontend Client Adaptation
+intent: Distinguish verified local client conventions from generic React advice for the ResumeEnhancer client.
+scope: ResumeEnhancer-specific frontend stack, file layout, and conventions. Excludes generic React/TypeScript/TanStack/Zustand pattern guidance.
+audience: Autonomous Codex frontend implementation and review agents
+last_reviewed: 2026-10-02
+---
 
-Use this reference to distinguish verified local conventions from generic React advice. Current source is authoritative when this guide and the client differ.
+# Frontend Client Adaptation
+
+Use this knowledge to distinguish verified local conventions from generic React advice. Current source is authoritative when this guide and the client differ.
 
 ## Verified Baseline
 

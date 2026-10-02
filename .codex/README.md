@@ -98,7 +98,7 @@ model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
 Read AGENTS.md and only the authorities needed for the assigned boundary.
-Follow .codex/skills/orchestration-agent-improvement/references/delegation-protocol.md.
+Follow .codex/skills/onu-orchestration-agent-improvement/references/delegation-protocol.md.
 Return evidence-backed findings and limitations to the parent. Do not delegate.
 """
 ```
@@ -121,7 +121,7 @@ migrations, composition, and shared UI primitives under one writer.
 
 ## Tools and context
 
-For material user decisions, use [workflow-user-interview](skills/workflow-user-interview/SKILL.md).
+For material user decisions, use [workflow-user-interview](skills/onu-workflow-user-interview/SKILL.md).
 It prefers the exposed `request_user_input` tool in the VS Code extension and
 interactive CLI when the active mode permits it, then an available async
 question tool, then chat. Where the synchronous tool requires Plan mode, select
@@ -183,13 +183,13 @@ generated OpenSpec workflows. Do not move or duplicate skills casually. Verify
 the intended client's discovery and resolve any gap explicitly without editing
 generated workflows. See [official skill discovery](https://learn.chatgpt.com/docs/build-skills).
 
-The three legacy skill-generation scripts in `tools/` embed source bodies.
-When changing one of those skills, synchronize its embedded copies. Do not run
-an entire generator just to update one skill; it can overwrite unrelated work.
+Skill discovery and loading are handled by the `onu-skill-discovery` skill
+(`skills/onu-skill-discovery/SKILL.md` and its `scripts/` helpers). Skill bodies are
+read directly from `SKILL.md`; there are no generated or synchronized copies.
 
 ## Workflows and handoffs
 
-Use [the canonical protocol](skills/orchestration-agent-improvement/references/delegation-protocol.md)
+Use [the canonical protocol](skills/onu-orchestration-agent-improvement/references/delegation-protocol.md)
 for lifecycle states and event fields. It is the single source of truth.
 
 An assignment should include:

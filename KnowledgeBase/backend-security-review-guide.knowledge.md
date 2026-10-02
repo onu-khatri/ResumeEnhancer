@@ -1,4 +1,12 @@
-# Backend Security Review Guide (ResumeEnhancer)
+---
+title: Backend Security Review Guide
+intent: Map OWASP backend security concerns to the actual patterns and identifiers in the ResumeEnhancer repository.
+scope: ResumeEnhancer-specific security review checklist (trust model, ownership, validation, exposure, secrets, abuse). Excludes generic OWASP guidance.
+audience: Autonomous Codex backend security implementation and review agents
+last_reviewed: 2026-10-02
+---
+
+# Backend Security Review Guide
 
 Use this note when the code touches a trust boundary or a protected data path. It maps OWASP concerns to the actual patterns in this repository.
 
